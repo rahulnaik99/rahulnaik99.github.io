@@ -227,7 +227,7 @@ footer em{color:var(--cyan);font-style:normal}
       <div class="tl-year" style="--c:var(--yellow)">2022 · PHASE 1 · CLASSICAL ML</div>
       <div class="tl-card" style="--c:var(--yellow)">
         <div class="tl-title">🏢 Employee Health Risk Tracker — ML Return-to-Office Risk Prediction</div>
-        <div class="tl-role" style="color:var(--yellow)">System Engineer @ TCS · Personal Project · Scikit-learn Era</div>
+        <div class="tl-role" style="color:var(--yellow)">System Engineer @ TCS · PNC Bank · Scikit-learn Era</div>
         <div class="tl-desc">
           <strong>Context:</strong> Post-pandemic 2022. Companies mandating return-to-office with zero visibility into which employees would actually comply. HR teams making blanket decisions — causing attrition.<br><br>
           <strong>What it does:</strong> Predicts each employee's WFO risk (0–100%) using 10 HR features. Trains Logistic Regression and Random Forest, picks the best via 5-fold CV ROC-AUC. Exposes predictions via FastAPI. Streamlit dashboard for HR teams.<br><br>
@@ -245,7 +245,7 @@ footer em{color:var(--cyan);font-style:normal}
       <div class="tl-year" style="--c:var(--cyan)">2023 · PHASE 2 · OPENAI API FOUNDATION</div>
       <div class="tl-card" style="--c:var(--cyan)">
         <div class="tl-title">🤖 FinBot — Banking FAQ Chatbot</div>
-        <div class="tl-role" style="color:var(--cyan)">System Engineer @ TCS · Personal Project · Raw API Era</div>
+        <div class="tl-role" style="color:var(--cyan)">System Engineer @ TCS · PNC Bank · Raw API Era</div>
         <div class="tl-desc">
           <strong>Context:</strong> ChatGPT had just launched. Instead of using LangChain immediately, deliberately chose to build directly on the OpenAI API to understand how LLMs work at the message-array level — role management, token limits, statelessness, prompt design.<br><br>
           <strong>What it does:</strong> Domain-specific banking FAQ chatbot. Classifies intent via zero-shot prompting. Returns structured JSON (intent, answer, follow-ups, escalation flag). Session-based multi-turn memory with history trimming. Rate-limited FastAPI service.<br><br>
@@ -263,7 +263,7 @@ footer em{color:var(--cyan);font-style:normal}
       <div class="tl-year" style="--c:var(--green)">2023–2024 · PHASE 3 · RAG + LANGCHAIN</div>
       <div class="tl-card" style="--c:var(--green)">
         <div class="tl-title">📄 FinDoc QA — LangChain Document Intelligence</div>
-        <div class="tl-role" style="color:var(--green)">System Engineer @ TCS · Personal Project · RAG Era</div>
+        <div class="tl-role" style="color:var(--green)">System Engineer @ TCS · PNC Bank · RAG Era</div>
         <div class="tl-desc">
           <strong>Context:</strong> FinBot answered from GPT-4o's training data. But banking compliance teams needed answers from their own documents — internal policy PDFs, RBI circulars, loan handbooks — content that's not in any model's training data.<br><br>
           <strong>What it does:</strong> RAG pipeline — chunk PDFs, embed with OpenAI, store in ChromaDB, retrieve with MMR, answer with GPT-4o using grounded prompting. Multi-turn conversation memory. Source citations. Streamlit UI.<br><br>
@@ -281,7 +281,7 @@ footer em{color:var(--cyan);font-style:normal}
       <div class="tl-year" style="--c:var(--purple)">2024–2025 · PHASE 4 · MULTI-AGENT PRODUCTION</div>
       <div class="tl-card" style="--c:var(--purple)">
         <div class="tl-title">🏦 LoanIQ — Production RAG Loan Eligibility Engine</div>
-        <div class="tl-role" style="color:var(--purple)">AI Engineer @ Publicis Sapient · Personal Project (Bench)</div>
+        <div class="tl-role" style="color:var(--purple)">AI Engineer @ Publicis Sapient · Wellington Management</div>
         <div class="tl-desc">
           <strong>Context:</strong> FinDoc QA was a single-chain system — one retrieval, one LLM call. Loan eligibility requires multiple specialised decisions in sequence: financial ratio analysis, policy lookup, compliance checking, underwriting rules, final decision. A single chain can't do this reliably.<br><br>
           <strong>What it does:</strong> 6-agent LangGraph pipeline. Hybrid BM25 + pgvector retrieval. Cohere reranking. Parallel agent execution. RAGAS evaluation. LangSmith observability. OpenAI function calling. ECOA-compliant PostgreSQL audit logs. Full Docker Compose stack.<br><br>
