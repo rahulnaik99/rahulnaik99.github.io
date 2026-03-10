@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FinBot · Project Story & Resume Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#04060c;--bg1:#070b14;--bg2:#0b1120;--surface:#0e1526;
+  --border:#162035;--b2:#1e2e4a;
+  --cyan:#00d4ff;--green:#00ff88;--yellow:#ffb700;--pink:#ff6b9d;
+  --purple:#bf5af2;--orange:#ff9f43;--emerald:#0be881;--blue:#4da6ff;--gold:#ffd166;
+  --text:#e8edf5;--muted:#4a6080;--dim:#2a3a55;
+}
+html{font-size:14px;scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-height:100vh;overflow-x:hidden}
+.hexgrid{position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100'%3E%3Cpath d='M28 0 L56 16 L56 50 L28 66 L0 50 L0 16Z' fill='none' stroke='%23122040' stroke-width='0.5'/%3E%3C/svg%3E");opacity:.4}
+body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:1;
+  background:radial-gradient(ellipse 80% 50% at 50% 0%,rgba(0,212,255,.04),transparent 60%),
+             radial-gradient(ellipse 60% 40% at 80% 80%,rgba(0,255,136,.03),transparent 60%)}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:2;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.05) 2px,rgba(0,0,0,.05) 4px)}
+
+header{position:relative;z-index:10;padding:3rem 2rem 2.5rem;text-align:center;
+  border-bottom:1px solid var(--b2);background:linear-gradient(180deg,rgba(0,255,136,.03) 0%,transparent 100%)}
+.logo{display:inline-flex;align-items:center;gap:.6rem;background:var(--surface);
+  border:1px solid var(--green);border-radius:6px;padding:.3rem 1rem;margin-bottom:1.2rem}
+.logo-name{font-family:'Orbitron',sans-serif;font-size:.9rem;font-weight:700;letter-spacing:.2em;
+  background:linear-gradient(135deg,var(--green),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.logo-ver{font-family:'JetBrains Mono',monospace;font-size:.55rem;color:var(--muted);letter-spacing:.12em}
+h1{font-family:'Orbitron',sans-serif;font-size:clamp(1.3rem,4vw,2.5rem);font-weight:900;
+  letter-spacing:.06em;line-height:1.1;margin-bottom:.4rem;text-shadow:0 0 40px rgba(0,255,136,.15)}
+h1 span{background:linear-gradient(90deg,var(--green),var(--cyan),var(--emerald));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.tagline{font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--muted);
+  letter-spacing:.12em;text-transform:uppercase;margin-bottom:1.5rem}
+
+.nav-tabs{position:relative;z-index:10;display:flex;justify-content:center;gap:.5rem;
+  padding:1rem 1.5rem;background:var(--bg1);border-bottom:1px solid var(--border);flex-wrap:wrap}
+.tab{font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.12em;
+  text-transform:uppercase;padding:.4rem 1rem;border-radius:6px;cursor:pointer;
+  border:1px solid var(--b2);color:var(--muted);background:transparent;transition:all .2s}
+.tab:hover{border-color:var(--green);color:var(--green)}
+.tab.active{background:rgba(0,255,136,.08);border-color:var(--green);color:var(--green)}
+
+#main{position:relative;z-index:5;max-width:980px;margin:0 auto;padding:2rem 1.2rem 6rem}
+.section{display:none}.section.active{display:block}
+
+.sec-head{font-family:'Orbitron',sans-serif;font-size:1rem;font-weight:700;
+  letter-spacing:.1em;color:var(--green);margin-bottom:.4rem;text-transform:uppercase}
+.sec-sub{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--muted);
+  letter-spacing:.08em;margin-bottom:2rem}
+
+/* HIGHLIGHT */
+.highlight{background:linear-gradient(135deg,rgba(0,255,136,.05),rgba(0,212,255,.04));
+  border:1px solid rgba(0,255,136,.2);border-radius:10px;padding:1.2rem 1.4rem;margin:1.2rem 0}
+.hl-title{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.15em;
+  text-transform:uppercase;color:var(--green);margin-bottom:.6rem}
+.hl-text{font-size:.87rem;line-height:1.75;color:var(--text)}
+
+/* STORY */
+.story-item{display:flex;gap:1rem;margin-bottom:1.5rem}
+.story-dot{width:12px;height:12px;border-radius:50%;background:var(--c,var(--green));
+  flex-shrink:0;margin-top:.3rem;box-shadow:0 0 8px var(--c,var(--green))}
+.story-body{flex:1}
+.story-head{font-size:.9rem;font-weight:700;color:var(--text);margin-bottom:.3rem}
+.story-text{font-size:.84rem;line-height:1.7;color:var(--muted)}
+.story-text strong{color:var(--text)}
+
+/* RESUME CARD */
+.resume-card{background:var(--surface);border:1px solid var(--b2);border-radius:12px;
+  padding:1.8rem 2rem;margin-bottom:1.5rem;position:relative;overflow:hidden}
+.resume-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--green),var(--cyan))}
+.rc-label{font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--green);margin-bottom:.6rem}
+.rc-title{font-size:1.1rem;font-weight:700;color:var(--text);margin-bottom:.3rem}
+.rc-period{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--muted);margin-bottom:.8rem}
+.rc-tech{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--cyan);
+  background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.2);
+  border-radius:4px;padding:.3rem .6rem;display:inline-block;margin-bottom:1rem}
+.rc-bullets{list-style:none;padding:0}
+.rc-bullets li{display:flex;gap:.7rem;align-items:flex-start;padding:.35rem 0;
+  border-bottom:1px solid var(--border);font-size:.88rem;line-height:1.6;color:var(--text)}
+.rc-bullets li:last-child{border-bottom:none}
+.rc-bullets li::before{content:'▸';color:var(--green);flex-shrink:0;margin-top:.1rem}
+
+/* BUILD STEPS */
+.step-card{display:flex;gap:1.2rem;margin-bottom:1.2rem;position:relative}
+.step-card::before{content:'';position:absolute;left:22px;top:52px;bottom:-20px;
+  width:2px;background:linear-gradient(to bottom,var(--c,var(--b2)),transparent);opacity:.4}
+.step-card:last-child::before{display:none}
+.step-num{width:44px;height:44px;border-radius:50%;background:var(--bg2);
+  border:2px solid var(--c,var(--b2));display:flex;align-items:center;justify-content:center;
+  font-family:'Orbitron',sans-serif;font-size:.75rem;font-weight:700;color:var(--c,var(--muted));
+  flex-shrink:0;box-shadow:0 0 12px var(--c,transparent)22}
+.step-body{flex:1;background:var(--surface);border:1px solid var(--b2);border-radius:10px;
+  padding:1.1rem 1.3rem;border-left:3px solid var(--c,var(--b2))}
+.step-title{font-size:.95rem;font-weight:700;color:var(--text);margin-bottom:.3rem}
+.step-why{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--c,var(--muted));
+  letter-spacing:.08em;margin-bottom:.6rem;text-transform:uppercase}
+.step-desc{font-size:.84rem;line-height:1.7;color:var(--muted)}
+.step-desc strong{color:var(--text)}
+.step-desc code{font-family:'JetBrains Mono',monospace;font-size:.75rem;
+  background:var(--bg2);border:1px solid var(--b2);padding:.1rem .3rem;border-radius:3px;color:var(--cyan)}
+.step-cmd{background:var(--bg2);border:1px solid var(--b2);border-radius:6px;
+  padding:.6rem .9rem;margin-top:.7rem;font-family:'JetBrains Mono',monospace;
+  font-size:.65rem;color:var(--emerald);letter-spacing:.04em;line-height:1.6}
+
+/* ARCH DIAGRAM */
+.arch{background:var(--surface);border:1px solid var(--b2);border-radius:12px;padding:1.5rem;margin:1.5rem 0}
+.arch-title{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.15em;
+  text-transform:uppercase;color:var(--green);margin-bottom:1.2rem}
+.arch-flow{display:flex;align-items:center;flex-wrap:wrap;gap:.5rem;justify-content:center}
+.arch-box{background:var(--bg2);border:1px solid var(--c,var(--b2));border-radius:8px;
+  padding:.6rem 1rem;text-align:center;min-width:110px}
+.arch-box-icon{font-size:1.2rem;margin-bottom:.2rem}
+.arch-box-label{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--c,var(--muted));
+  letter-spacing:.06em;font-weight:600}
+.arch-box-sub{font-family:'JetBrains Mono',monospace;font-size:.52rem;color:var(--muted);margin-top:.1rem}
+.arch-arrow{color:var(--muted);font-size:1.1rem;flex-shrink:0}
+
+/* CONCEPT GRID */
+.concept-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:1rem;margin-bottom:2rem}
+.concept-card{background:var(--surface);border:1px solid var(--b2);border-radius:10px;
+  padding:1.1rem 1.3rem;border-top:3px solid var(--c,var(--b2))}
+.cc-icon{font-size:1.4rem;margin-bottom:.5rem}
+.cc-title{font-size:.9rem;font-weight:700;color:var(--text);margin-bottom:.4rem}
+.cc-desc{font-size:.8rem;line-height:1.6;color:var(--muted)}
+.cc-desc strong{color:var(--c,var(--text))}
+
+/* QA */
+.qa-card{background:var(--surface);border:1px solid var(--b2);border-radius:10px;
+  margin-bottom:1rem;overflow:hidden;cursor:pointer;transition:border-color .2s}
+.qa-card:hover{border-color:var(--green)}
+.qa-card.open{border-color:var(--emerald)}
+.qa-q{display:flex;align-items:center;gap:.8rem;padding:.9rem 1.1rem}
+.qa-icon{font-size:1rem;flex-shrink:0}
+.qa-text{flex:1;font-size:.9rem;font-weight:600;color:var(--text)}
+.qa-tag{font-family:'JetBrains Mono',monospace;font-size:.52rem;letter-spacing:.1em;
+  padding:.15rem .4rem;border-radius:3px;flex-shrink:0}
+.tag-easy{background:rgba(11,232,129,.12);color:var(--emerald);border:1px solid rgba(11,232,129,.25)}
+.tag-med{background:rgba(255,183,0,.12);color:var(--yellow);border:1px solid rgba(255,183,0,.25)}
+.tag-hard{background:rgba(255,107,61,.12);color:#ff6b3d;border:1px solid rgba(255,107,61,.25)}
+.qa-arr{color:var(--muted);transition:transform .25s;flex-shrink:0}
+.qa-card.open .qa-arr{transform:rotate(180deg)}
+.qa-a{display:none;padding:0 1.1rem 1rem;border-top:1px solid var(--border)}
+.qa-card.open .qa-a{display:block}
+.qa-a-inner{padding:.8rem 0;font-size:.87rem;line-height:1.75;color:var(--muted)}
+.qa-a-inner strong{color:var(--text)}
+.qa-a-inner code{font-family:'JetBrains Mono',monospace;font-size:.75rem;
+  background:var(--bg2);border:1px solid var(--b2);border-radius:3px;padding:.1rem .3rem;color:var(--cyan)}
+
+.skill-tags{display:flex;flex-wrap:wrap;gap:.4rem;margin:1rem 0}
+.stag{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.06em;
+  padding:.25rem .6rem;border-radius:4px;background:rgba(0,255,136,.07);
+  border:1px solid rgba(0,255,136,.2);color:var(--green)}
+
+footer{position:relative;z-index:10;text-align:center;padding:2rem;
+  border-top:1px solid var(--b2);font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--muted)}
+footer em{color:var(--green);font-style:normal}
+</style>
+</head>
+<body>
+<div class="hexgrid"></div>
+
+<header>
+  <div class="logo">
+    <span style="font-size:1.1rem">🤖</span>
+    <span class="logo-name">FINBOT</span>
+    <span class="logo-ver">v1.0.0 · PROJECT STORY</span>
+  </div>
+  <h1><span>FinBot</span> · Resume Guide</h1>
+  <div class="tagline">Banking FAQ Chatbot · OpenAI API · FastAPI · How to describe it · How to defend it</div>
+</header>
+
+<div class="nav-tabs">
+  <div class="tab active" onclick="showTab('story')">📖 Project Story</div>
+  <div class="tab" onclick="showTab('resume')">📄 Resume Description</div>
+  <div class="tab" onclick="showTab('build')">🔨 How I Built It</div>
+  <div class="tab" onclick="showTab('concepts')">🧠 Key Concepts</div>
+  <div class="tab" onclick="showTab('interview')">🎯 Interview Q&A</div>
+</div>
+
+<div id="main">
+
+<!-- ══ TAB 1: STORY ══ -->
+<div class="section active" id="tab-story">
+  <div class="sec-head">The Project Story</div>
+  <div class="sec-sub">Why it exists · What problem it solves · How to narrate it</div>
+
+  <div class="highlight">
+    <div class="hl-title">💡 The One-Line Pitch</div>
+    <div class="hl-text">"FinBot is a domain-specific banking FAQ chatbot that classifies customer intent, answers using a structured prompt, and maintains multi-turn conversation memory — all through a rate-limited FastAPI REST service."</div>
+  </div>
+
+  <div class="arch">
+    <div class="arch-title">⚙️ System Architecture at a Glance</div>
+    <div class="arch-flow">
+      <div class="arch-box" style="--c:var(--cyan)">
+        <div class="arch-box-icon">💬</div>
+        <div class="arch-box-label" style="color:var(--cyan)">User Message</div>
+        <div class="arch-box-sub">POST /chat</div>
+      </div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-box" style="--c:var(--yellow)">
+        <div class="arch-box-icon">🔗</div>
+        <div class="arch-box-label" style="color:var(--yellow)">Session Store</div>
+        <div class="arch-box-sub">UUID + history</div>
+      </div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-box" style="--c:var(--pink)">
+        <div class="arch-box-icon">🧹</div>
+        <div class="arch-box-label" style="color:var(--pink)">Condenser</div>
+        <div class="arch-box-sub">Standalone Q</div>
+      </div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-box" style="--c:var(--green)">
+        <div class="arch-box-icon">🧠</div>
+        <div class="arch-box-label" style="color:var(--green)">GPT-4o</div>
+        <div class="arch-box-sub">System prompt</div>
+      </div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-box" style="--c:var(--purple)">
+        <div class="arch-box-icon">📦</div>
+        <div class="arch-box-label" style="color:var(--purple)">JSON Response</div>
+        <div class="arch-box-sub">intent + answer</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="story-item">
+    <div class="story-dot" style="--c:var(--cyan)"></div>
+    <div class="story-body">
+      <div class="story-head">🏦 The Problem — Banking FAQ Overload</div>
+      <div class="story-text">Bank call centres handle thousands of repetitive queries daily — "What documents do I need for a home loan?", "What's the minimum credit score?", "How do I track my application?" These questions have well-defined answers. Having human agents answer them is expensive and slow. A domain-specific chatbot can handle <strong>80% of FAQ volume instantly</strong>, routing only complex cases to humans.</div>
+    </div>
+  </div>
+
+  <div class="story-item">
+    <div class="story-dot" style="--c:var(--green)"></div>
+    <div class="story-body">
+      <div class="story-head">💡 Why Not a Generic Chatbot?</div>
+      <div class="story-text">Generic chatbots answer anything — that's the problem. In banking, a chatbot that gives incorrect loan eligibility information creates <strong>compliance risk and customer trust issues</strong>. FinBot is deliberately constrained — it only answers banking queries, uses a structured system prompt with strict rules, and routes sensitive questions to human agents. Domain-specificity is a feature, not a limitation.</div>
+    </div>
+  </div>
+
+  <div class="story-item">
+    <div class="story-dot" style="--c:var(--yellow)"></div>
+    <div class="story-body">
+      <div class="story-head">⚙️ Key Engineering Decisions</div>
+      <div class="story-text">
+        <strong>Zero-shot intent classification</strong> — instead of a separate classifier model, I embedded intent classification directly in the system prompt. GPT-4o classifies intent as part of generating the response — single API call, no separate ML model to maintain.<br><br>
+        <strong>Structured JSON output</strong> — using <code>response_format={"type": "json_object"}</code>, every response is guaranteed valid JSON with intent, answer, follow-up suggestions, escalation flag, and confidence score. Downstream systems can parse it reliably.<br><br>
+        <strong>Question condensation</strong> — follow-up questions like "What about exceptions?" are first rewritten into standalone questions before processing, so intent classification always has full context.
+      </div>
+    </div>
+  </div>
+
+  <div class="story-item">
+    <div class="story-dot" style="--c:var(--purple)"></div>
+    <div class="story-body">
+      <div class="story-head">🏭 Production Features</div>
+      <div class="story-text">This isn't a toy chatbot. It has <strong>rate limiting</strong> (slowapi — 20 requests/minute per IP), <strong>session management</strong> with TTL expiry, <strong>history trimming</strong> (keeps last 10 turns to stay within context limits), <strong>Pydantic-validated endpoints</strong>, <strong>structured JSON logging</strong> per request, and <strong>graceful JSON parse fallback</strong> if the LLM returns malformed output. Any frontend — web, mobile, WhatsApp — can integrate via the REST API.
+      </div>
+    </div>
+  </div>
+
+  <div class="story-item">
+    <div class="story-dot" style="--c:var(--emerald)"></div>
+    <div class="story-body">
+      <div class="story-head">📊 Where This Fits in the Career Story</div>
+      <div class="story-text">FinBot is the <strong>starting point</strong> of your AI engineering journey — 2023. You understood the OpenAI API, prompt design, session management, and REST API fundamentals. This foundation led directly to FinDoc QA (LangChain + RAG) and ultimately LoanIQ (multi-agent LangGraph pipeline). The progression shows deliberate skill building, not random project hopping.</div>
+    </div>
+  </div>
+
+  <div class="highlight">
+    <div class="hl-title">🎤 2-Minute Interview Pitch</div>
+    <div class="hl-text">
+      <em style="color:var(--muted)">"FinBot was my first production AI project — a domain-specific banking FAQ chatbot built directly on OpenAI's Chat Completions API. I deliberately started here before using LangChain, because I wanted to understand how LLM conversations work at the API level — message history, role management, token limits — before abstracting it away with frameworks.</em><br><br>
+      <em style="color:var(--muted)">The key engineering challenge was making it reliable for a banking context. I designed a structured system prompt with strict domain constraints — only banking questions, always cite when you don't know, route sensitive advice to humans. I embedded intent classification directly in the prompt using zero-shot prompting, so each response comes back as JSON with an intent category, answer, and escalation flag.</em><br><br>
+      <em style="color:var(--muted)">For multi-turn conversations I built session management with UUID-based sessions, in-memory history, TTL expiry, and history trimming to stay within token limits. I wrapped it all in FastAPI with rate limiting using slowapi and Pydantic validation. The result is a REST service any frontend can call — web, mobile, or WhatsApp integration."</em>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TAB 2: RESUME ══ -->
+<div class="section" id="tab-resume">
+  <div class="sec-head">Resume Description</div>
+  <div class="sec-sub">Copy-paste ready bullets for your resume</div>
+
+  <div class="resume-card">
+    <div class="rc-label">📄 Full Version — 5 Bullets</div>
+    <div class="rc-title">FinBot — Banking FAQ Chatbot with OpenAI API</div>
+    <div class="rc-period">Personal Project &nbsp;·&nbsp; 2023</div>
+    <div class="rc-tech">Python · OpenAI API (GPT-4o) · FastAPI · Pydantic · slowapi · Docker · structlog</div>
+    <ul class="rc-bullets">
+      <li>Built a domain-specific banking FAQ chatbot using OpenAI Chat Completions API with a structured system prompt enforcing strict banking-domain constraints, hallucination prevention, and human escalation routing for sensitive queries.</li>
+      <li>Implemented zero-shot intent classification within the system prompt — each response returns structured JSON with intent category (loan_eligibility, interest_rates, documentation, etc.), answer, follow-up suggestions, and escalation flag, with no separate classifier model needed.</li>
+      <li>Designed session-based multi-turn memory with UUID session IDs, in-memory conversation history, history trimming to last 10 turns (preventing context overflow), and 30-minute TTL expiry for inactive sessions.</li>
+      <li>Added question condensation — follow-up queries are rewritten into standalone questions using chat history before processing, ensuring accurate intent classification even for single-word follow-ups like "What about exceptions?"</li>
+      <li>Exposed as a FastAPI REST service with rate limiting (slowapi — 20 req/min), Pydantic-validated request/response models, structured JSON logging via structlog, and graceful error handling — enabling integration with any web, mobile, or messaging frontend.</li>
+    </ul>
+  </div>
+
+  <div class="resume-card">
+    <div class="rc-label">📄 Short Version — 2 Bullets</div>
+    <div class="rc-title">FinBot — Banking FAQ Chatbot with OpenAI API</div>
+    <div class="rc-period">Personal Project &nbsp;·&nbsp; 2023</div>
+    <div class="rc-tech">Python · OpenAI API · FastAPI · Docker</div>
+    <ul class="rc-bullets">
+      <li>Built a domain-specific banking FAQ chatbot using OpenAI Chat Completions API with structured system prompts, zero-shot intent classification returning structured JSON, and session-based multi-turn conversation memory with TTL expiry.</li>
+      <li>Exposed as a production-ready FastAPI REST service with rate limiting, Pydantic validation, and structured JSON logging — enabling integration with web, mobile, or messaging frontends.</li>
+    </ul>
+  </div>
+
+  <div class="resume-card">
+    <div class="rc-label">🎙️ 30-Second Verbal Summary</div>
+    <div style="margin-top:.8rem;font-size:.87rem;line-height:1.8;color:var(--muted)">
+      <em>"FinBot is a banking FAQ chatbot I built directly on the OpenAI Chat Completions API — before using any frameworks like LangChain. It has a structured system prompt that constrains it to banking topics, classifies user intent into categories like loan eligibility or documentation using zero-shot prompting, and returns structured JSON. Multi-turn memory is handled via session-based history management. It's exposed as a FastAPI service with rate limiting and Pydantic validation."</em>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TAB 3: BUILD STEPS ══ -->
+<div class="section" id="tab-build">
+  <div class="sec-head">How I Built It — Step by Step</div>
+  <div class="sec-sub">Exact steps · Decisions · What you learned at each stage</div>
+
+  <div class="step-card" style="--c:var(--cyan)">
+    <div class="step-num" style="--c:var(--cyan)">01</div>
+    <div class="step-body" style="--c:var(--cyan)">
+      <div class="step-title">Understanding the OpenAI Chat Completions API</div>
+      <div class="step-why">Foundation · Before any framework</div>
+      <div class="step-desc">
+        Started by calling the OpenAI API directly — no LangChain, no abstractions. This was intentional: I wanted to understand how <strong>messages arrays</strong> work, what the <code>system</code> role does, how <code>temperature</code> affects output, and what token limits mean in practice.
+        <br><br>Key insight: the <code>messages</code> array is the entire memory system. You pass previous messages back with every request — the model has no memory of its own. Understanding this made LangChain's memory abstractions make sense later.
+      </div>
+      <div class="step-cmd">
+        # Bare minimum API call<br>
+        response = client.chat.completions.create(<br>
+        &nbsp;&nbsp;model="gpt-4o",<br>
+        &nbsp;&nbsp;messages=[<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;{"role": "system", "content": "You are a banking assistant."},<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;{"role": "user", "content": "What is a home loan?"}<br>
+        &nbsp;&nbsp;]<br>
+        )
+      </div>
+    </div>
+  </div>
+
+  <div class="step-card" style="--c:var(--green)">
+    <div class="step-num" style="--c:var(--green)">02</div>
+    <div class="step-body" style="--c:var(--green)">
+      <div class="step-title">System Prompt Design — Domain Constraints</div>
+      <div class="step-why">Most important step · Determines reliability</div>
+      <div class="step-desc">
+        The system prompt is what makes FinBot a <strong>banking chatbot</strong> rather than a general chatbot. I iterated through several versions before settling on the final design.
+        <br><br><strong>What I included:</strong> Role definition ("You are FinBot, a banking assistant"), strict rules (only banking topics, never give personal advice, use a fallback response for out-of-scope), response format (always return JSON), and 2 few-shot examples showing the exact expected format.
+        <br><br><strong>What I learned:</strong> Without explicit rules, GPT-4o will helpfully answer any question. The system prompt is the only guardrail. "Only answer banking questions" alone isn't enough — you need to also define exactly what to say when out-of-scope.
+      </div>
+    </div>
+  </div>
+
+  <div class="step-card" style="--c:var(--yellow)">
+    <div class="step-num" style="--c:var(--yellow)">03</div>
+    <div class="step-body" style="--c:var(--yellow)">
+      <div class="step-title">Zero-Shot Intent Classification in the Prompt</div>
+      <div class="step-why">No separate ML model needed</div>
+      <div class="step-desc">
+        Instead of building a separate intent classifier (which would need training data, a model, deployment), I embedded classification directly in the system prompt: <em>"Classify the user's question into one of these categories: loan_eligibility, interest_rates, documentation_required..."</em>
+        <br><br>GPT-4o does this reliably as part of generating the response — <strong>one API call, two results</strong>: classification + answer. The intent field in the JSON response lets downstream systems route users, trigger workflows, or log analytics without any additional ML infrastructure.
+        <br><br><strong>Why zero-shot?</strong> I had no labelled training data. Zero-shot works because GPT-4o understands the category names semantically. If I had thousands of labelled examples, few-shot would be better.
+      </div>
+    </div>
+  </div>
+
+  <div class="step-card" style="--c:var(--pink)">
+    <div class="step-num" style="--c:var(--pink)">04</div>
+    <div class="step-body" style="--c:var(--pink)">
+      <div class="step-title">Structured JSON Output with response_format</div>
+      <div class="step-why">Reliable parsing · No regex hacks</div>
+      <div class="step-desc">
+        Early version: I asked the LLM to "respond in JSON" in the prompt. Problem: it sometimes added markdown fences (<code>```json</code>), sometimes added explanatory text before the JSON. Parsing was fragile.
+        <br><br>Solution: <code>response_format={"type": "json_object"}</code> — OpenAI's native JSON mode. This <strong>guarantees</strong> the response is valid parseable JSON. No markdown fences, no preamble. Combined with a fallback <code>_parse_response()</code> function that handles edge cases, JSON parsing became 100% reliable.
+      </div>
+      <div class="step-cmd">
+        response = client.chat.completions.create(<br>
+        &nbsp;&nbsp;model="gpt-4o",<br>
+        &nbsp;&nbsp;response_format={"type": "json_object"},  # ← key line<br>
+        &nbsp;&nbsp;messages=messages<br>
+        )
+      </div>
+    </div>
+  </div>
+
+  <div class="step-card" style="--c:var(--purple)">
+    <div class="step-num" style="--c:var(--purple)">05</div>
+    <div class="step-body" style="--c:var(--purple)">
+      <div class="step-title">Session Management — Multi-Turn Memory</div>
+      <div class="step-why">Stateful conversations without a database</div>
+      <div class="step-desc">
+        The OpenAI API is stateless — every call is independent. To simulate memory, I pass the conversation history back with every request. Built a <code>SessionStore</code> class — a Python dict mapping UUID session IDs to <code>Session</code> objects, each holding a message list.
+        <br><br><strong>History trimming:</strong> Unlimited history would eventually exceed the context window (128K tokens for GPT-4o). I keep the last 10 turns (20 messages). Older turns are dropped — recent context matters most.
+        <br><br><strong>TTL expiry:</strong> Sessions older than 30 minutes of inactivity are deleted on the next request. This prevents unbounded memory growth on a long-running server.
+      </div>
+    </div>
+  </div>
+
+  <div class="step-card" style="--c:var(--orange)">
+    <div class="step-num" style="--c:var(--orange)">06</div>
+    <div class="step-body" style="--c:var(--orange)">
+      <div class="step-title">Question Condensation for Follow-ups</div>
+      <div class="step-why">Accurate intent on short follow-up messages</div>
+      <div class="step-desc">
+        Problem: if user asks "What are home loan requirements?" then follows with "What about for NRIs?", the second message alone gives no context for intent classification.
+        <br><br>Solution: a <strong>condensation step</strong> — before classifying and answering, I send the chat history + follow-up to the LLM and ask it to rewrite the follow-up as a standalone question. "What about for NRIs?" → "What are home loan requirements for NRI applicants?" — then THAT is classified and answered. Intent is always accurate.
+      </div>
+    </div>
+  </div>
+
+  <div class="step-card" style="--c:var(--blue)">
+    <div class="step-num" style="--c:var(--blue)">07</div>
+    <div class="step-body" style="--c:var(--blue)">
+      <div class="step-title">FastAPI Service with Rate Limiting</div>
+      <div class="step-why">Production-ready · Prevents API abuse</div>
+      <div class="step-desc">
+        Wrapped everything in FastAPI. <strong>Rate limiting</strong> with <code>slowapi</code> — 20 requests per minute per IP. Without rate limiting, a single bad actor could drain your OpenAI credits in seconds.
+        <br><br><strong>Pydantic models</strong> for <code>ChatRequest</code> and <code>ChatResponse</code> — automatic validation, clear API contracts, auto-generated Swagger docs at <code>/docs</code>.
+        <br><br><strong>Endpoints:</strong> <code>POST /chat</code> (main), <code>DELETE /session/{id}</code> (clear history), <code>GET /session/{id}/stats</code> (analytics), <code>GET /health</code>.
+      </div>
+      <div class="step-cmd">
+        @app.post("/chat")<br>
+        @limiter.limit("20/minute")  # ← rate limiting decorator<br>
+        async def chat_endpoint(request: Request, body: ChatRequest):<br>
+        &nbsp;&nbsp;...
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TAB 4: CONCEPTS ══ -->
+<div class="section" id="tab-concepts">
+  <div class="sec-head">Key Concepts to Know</div>
+  <div class="sec-sub">Everything you need to deeply understand to defend this project</div>
+
+  <div class="concept-grid">
+    <div class="concept-card" style="--c:var(--cyan)">
+      <div class="cc-icon">📨</div>
+      <div class="cc-title">Chat Completions API — Messages Array</div>
+      <div class="cc-desc">The API takes an array of messages with roles: <code>system</code> (instructions), <code>user</code> (human), <code>assistant</code> (previous AI responses). <strong style="color:var(--cyan)">The model has no memory</strong> — you send the entire conversation history every time. This is how multi-turn chat works at the API level.</div>
+    </div>
+    <div class="concept-card" style="--c:var(--green)">
+      <div class="cc-icon">📝</div>
+      <div class="cc-title">System Prompt — The Guardrail</div>
+      <div class="cc-desc">The system message is processed before any user input. It defines the model's persona, rules, output format, and constraints. <strong style="color:var(--green)">Without a strong system prompt</strong>, GPT-4o will answer anything helpfully — which is dangerous for domain-specific applications.</div>
+    </div>
+    <div class="concept-card" style="--c:var(--yellow)">
+      <div class="cc-icon">🎯</div>
+      <div class="cc-title">Zero-Shot Intent Classification</div>
+      <div class="cc-desc">Classify text into categories using only the category names — <strong style="color:var(--yellow)">no labelled training data</strong>. Works because LLMs understand category names semantically. "loan_eligibility" is self-explanatory. Used here to classify banking queries without any separate ML model.</div>
+    </div>
+    <div class="concept-card" style="--c:var(--pink)">
+      <div class="cc-icon">📦</div>
+      <div class="cc-title">Structured Output — JSON Mode</div>
+      <div class="cc-desc"><code>response_format={"type": "json_object"}</code> forces the model to return valid JSON. <strong style="color:var(--pink)">Eliminates parsing failures</strong> from markdown fences or preamble text. Combined with Pydantic, API responses are fully typed and validated end-to-end.</div>
+    </div>
+    <div class="concept-card" style="--c:var(--purple)">
+      <div class="cc-icon">🌡️</div>
+      <div class="cc-title">Temperature — Creativity vs. Determinism</div>
+      <div class="cc-desc"><code>temperature=0</code> makes the model deterministic — it always picks the highest-probability token. <strong style="color:var(--purple)">Same question = same answer every time</strong>. Critical for banking where consistency matters. Higher temperature = more creative, more varied, more risky for compliance contexts.</div>
+    </div>
+    <div class="concept-card" style="--c:var(--orange)">
+      <div class="cc-icon">⚡</div>
+      <div class="cc-title">Rate Limiting — API Protection</div>
+      <div class="cc-desc">slowapi decorates FastAPI endpoints with per-IP request limits. <strong style="color:var(--orange)">Prevents abuse</strong>: without limits, one bad actor can send thousands of requests, draining OpenAI credits instantly. 20 req/min per IP is reasonable for a banking FAQ tool.</div>
+    </div>
+    <div class="concept-card" style="--c:var(--emerald)">
+      <div class="cc-icon">💬</div>
+      <div class="cc-title">Session + History Trimming</div>
+      <div class="cc-desc">Every session stores its own message history. History is trimmed to last N turns to prevent <strong style="color:var(--emerald)">context window overflow</strong>. GPT-4o has a 128K token limit — an unlimited history would eventually fail. Recent context matters most for FAQ chatbots.</div>
+    </div>
+    <div class="concept-card" style="--c:var(--blue)">
+      <div class="cc-icon">🧹</div>
+      <div class="cc-title">Question Condensation</div>
+      <div class="cc-desc">Follow-up questions like "What about NRIs?" are meaningless without context. Condensation rewrites them into standalone questions using chat history before processing. <strong style="color:var(--blue)">Ensures accurate intent classification</strong> even for one-word follow-ups.</div>
+    </div>
+  </div>
+
+  <div class="highlight">
+    <div class="hl-title">📚 Skills Demonstrated</div>
+    <div class="skill-tags">
+      <span class="stag">OpenAI Chat Completions API</span>
+      <span class="stag">System Prompt Design</span>
+      <span class="stag">Zero-Shot Classification</span>
+      <span class="stag">Structured JSON Output</span>
+      <span class="stag">Multi-Turn Memory</span>
+      <span class="stag">Session Management</span>
+      <span class="stag">Rate Limiting</span>
+      <span class="stag">FastAPI</span>
+      <span class="stag">Pydantic</span>
+      <span class="stag">structlog</span>
+      <span class="stag">Docker</span>
+      <span class="stag">Question Condensation</span>
+      <span class="stag">History Trimming</span>
+      <span class="stag">Domain Constraint Design</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TAB 5: INTERVIEW Q&A ══ -->
+<div class="section" id="tab-interview">
+  <div class="sec-head">Interview Questions & Answers</div>
+  <div class="sec-sub">Every question an interviewer can ask · Click to reveal confident answers</div>
+
+  <div class="qa-card" onclick="toggleQA(this)">
+    <div class="qa-q">
+      <div class="qa-icon">❓</div>
+      <div class="qa-text">Walk me through the FinBot project.</div>
+      <div class="qa-tag tag-easy">EASY</div>
+      <div class="qa-arr">▼</div>
+    </div>
+    <div class="qa-a"><div class="qa-a-inner">
+      "FinBot is a domain-specific banking FAQ chatbot built directly on the OpenAI Chat Completions API — no LangChain, just the raw API. I started here intentionally because I wanted to understand how LLM conversations work at the foundation level before using abstractions.<br><br>
+      The core is a structured system prompt that constrains the bot to banking topics, defines 9 intent categories, and enforces JSON output format. Every response comes back as JSON with intent, answer, follow-up suggestions, and an escalation flag for complex queries.<br><br>
+      Multi-turn memory is handled manually — I store conversation history in a session dict and pass it back with every API call. History is trimmed to the last 10 turns to stay within token limits. I exposed this through FastAPI with rate limiting via slowapi and Pydantic validation for all endpoints."
+    </div></div>
+  </div>
+
+  <div class="qa-card" onclick="toggleQA(this)">
+    <div class="qa-q">
+      <div class="qa-icon">❓</div>
+      <div class="qa-text">How does the OpenAI API maintain conversation history?</div>
+      <div class="qa-tag tag-easy">EASY</div>
+      <div class="qa-arr">▼</div>
+    </div>
+    <div class="qa-a"><div class="qa-a-inner">
+      "It doesn't — the OpenAI API is completely stateless. Every API call is independent, the model remembers nothing between calls.<br><br>
+      Multi-turn conversation works by <strong>passing the entire conversation history in every request</strong>. The messages array contains: the system message, then alternating user and assistant messages from the conversation so far, then the new user message. The model sees all of this and responds in context.<br><br>
+      In FinBot, I store conversation history in a server-side Python dict keyed by UUID session IDs. On every <code>POST /chat</code> call, I retrieve the session history, append the new user message, send the full array to OpenAI, get the response, and append the assistant's reply to the session history for next time."
+    </div></div>
+  </div>
+
+  <div class="qa-card" onclick="toggleQA(this)">
+    <div class="qa-q">
+      <div class="qa-icon">❓</div>
+      <div class="qa-text">What is zero-shot intent classification? Why not train a classifier?</div>
+      <div class="qa-tag tag-easy">EASY</div>
+      <div class="qa-arr">▼</div>
+    </div>
+    <div class="qa-a"><div class="qa-a-inner">
+      "Zero-shot classification means classifying text into categories using only the category names — no labelled training examples needed. GPT-4o understands what 'loan_eligibility' or 'interest_rates' means semantically, so it can classify queries into those categories just by knowing the names.<br><br>
+      I used it in FinBot by embedding the category list in the system prompt: 'Classify the user's question into one of these categories: loan_eligibility, interest_rates, documentation_required...' GPT-4o classifies the query AND generates the answer in the same API call.<br><br>
+      Why not train a classifier? Three reasons: I had no labelled training data. A separate classifier model means separate infrastructure to maintain. And zero-shot through GPT-4o works well enough — the category names are self-explanatory. If I needed higher accuracy and had thousands of labelled examples, I'd use few-shot or fine-tuning."
+    </div></div>
+  </div>
+
+  <div class="qa-card" onclick="toggleQA(this)">
+    <div class="qa-q">
+      <div class="qa-icon">❓</div>
+      <div class="qa-text">Why does your chatbot return JSON? How did you enforce it?</div>
+      <div class="qa-tag tag-med">MEDIUM</div>
+      <div class="qa-arr">▼</div>
+    </div>
+    <div class="qa-a"><div class="qa-a-inner">
+      "Structured JSON means downstream systems — web frontends, mobile apps, analytics pipelines — can parse the response reliably without screen-scraping text. Each response has a defined schema: intent, answer, follow_up_suggestions, escalate_to_human, confidence.<br><br>
+      Enforcement: I use <code>response_format={"type": "json_object"}</code> in the API call. This is OpenAI's native JSON mode — it guarantees the response is valid parseable JSON. Without this, the model sometimes adds markdown code fences or preamble text which breaks <code>json.loads()</code>.<br><br>
+      I also wrote a <code>_parse_response()</code> fallback function — if for any reason JSON parsing fails, it catches the exception and returns the raw text as the answer rather than crashing. Production systems need graceful degradation."
+    </div></div>
+  </div>
+
+  <div class="qa-card" onclick="toggleQA(this)">
+    <div class="qa-q">
+      <div class="qa-icon">❓</div>
+      <div class="qa-text">How did you implement rate limiting? Why is it important?</div>
+      <div class="qa-tag tag-med">MEDIUM</div>
+      <div class="qa-arr">▼</div>
+    </div>
+    <div class="qa-a"><div class="qa-a-inner">
+      "I used <strong>slowapi</strong> — a rate limiting library for FastAPI. It integrates via a decorator: <code>@limiter.limit('20/minute')</code> on the chat endpoint. The key function <code>get_remote_address</code> identifies clients by IP address, so each IP gets 20 requests per minute independently.<br><br>
+      Why it's critical: every <code>POST /chat</code> call costs money — OpenAI charges per token. Without rate limiting, a single script running in a loop could send thousands of requests per minute, draining API credits completely. Also prevents denial-of-service attacks on the service itself.<br><br>
+      If the rate limit is exceeded, slowapi returns a 429 status with a retry-after header — the client knows exactly when to retry. I kept 20/minute as a reasonable limit for an internal banking tool where usage is deliberate, not automated."
+    </div></div>
+  </div>
+
+  <div class="qa-card" onclick="toggleQA(this)">
+    <div class="qa-q">
+      <div class="qa-icon">❓</div>
+      <div class="qa-text">What is question condensation and why did you add it?</div>
+      <div class="qa-tag tag-med">MEDIUM</div>
+      <div class="qa-arr">▼</div>
+    </div>
+    <div class="qa-a"><div class="qa-a-inner">
+      "Without condensation, follow-up questions break intent classification. If a user asks 'What documents are needed for a home loan?' and then follows with 'What about for NRIs?', the second message alone gives GPT-4o no context to classify. It might classify it as 'general_banking' when it should be 'documentation_required'.<br><br>
+      Condensation solves this: before classification and answering, I send the last 3 turns of chat history + the new question to the LLM with a separate prompt asking it to rewrite the question as standalone. 'What about for NRIs?' becomes 'What documents are required for NRI applicants to apply for a home loan?' — then THAT gets classified and answered accurately.<br><br>
+      This adds one extra API call for follow-up questions, which costs a small amount of tokens. But the accuracy improvement is worth it, and the condensation call uses <code>max_tokens=150</code> so it's cheap."
+    </div></div>
+  </div>
+
+  <div class="qa-card" onclick="toggleQA(this)">
+    <div class="qa-q">
+      <div class="qa-icon">❓</div>
+      <div class="qa-text">How is this different from FinDoc QA? Why build both?</div>
+      <div class="qa-tag tag-hard">ADVANCED</div>
+      <div class="qa-arr">▼</div>
+    </div>
+    <div class="qa-a"><div class="qa-a-inner">
+      "Fundamentally different problem, fundamentally different architecture.<br><br>
+      <strong>FinBot</strong> — answers from knowledge baked into GPT-4o's training. The banking FAQs it handles (loan types, general documentation requirements, account features) are well-known facts that don't change frequently. No external documents needed. Good for general, stable knowledge.<br><br>
+      <strong>FinDoc QA</strong> — answers from your specific documents. When you need to answer from a 200-page internal policy document, RBI circular from last month, or your bank's proprietary loan handbook — that content isn't in GPT-4o's training data. RAG retrieves from your documents at query time.<br><br>
+      Building FinBot first gave me a deep understanding of how the Chat Completions API works — message history, prompt design, structured output — which made building FinDoc QA's LangChain integration much more intuitive. The progression was deliberate."
+    </div></div>
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<footer>
+  <em>FinBot</em> &nbsp;·&nbsp; Banking FAQ Chatbot · Project Story & Resume Guide &nbsp;·&nbsp;
+  OpenAI API · FastAPI · Python · structlog
+</footer>
+
+<script>
+function showTab(name) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  event.target.classList.add('active');
+}
+function toggleQA(card) {
+  const isOpen = card.classList.contains('open');
+  document.querySelectorAll('.qa-card.open').forEach(c => c.classList.remove('open'));
+  if (!isOpen) card.classList.add('open');
+}
+window.addEventListener('load', () => {
+  setTimeout(() => { const f = document.querySelector('.qa-card'); if(f) f.classList.add('open'); }, 500);
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FinDoc QA · Project Story & Resume Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#04060c;--bg1:#070b14;--bg2:#0b1120;--surface:#0e1526;--s2:#111d30;
+  --border:#162035;--b2:#1e2e4a;
+  --cyan:#00d4ff;--green:#00ff88;--yellow:#ffb700;--pink:#ff6b9d;
+  --purple:#bf5af2;--orange:#ff9f43;--emerald:#0be881;--blue:#4da6ff;
+  --gold:#ffd166;
+  --text:#e8edf5;--muted:#4a6080;--dim:#2a3a55;
+}
+html{font-size:14px;scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-height:100vh;overflow-x:hidden}
+
+.hexgrid{position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100'%3E%3Cpath d='M28 0 L56 16 L56 50 L28 66 L0 50 L0 16Z' fill='none' stroke='%23122040' stroke-width='0.5'/%3E%3C/svg%3E");opacity:.4}
+body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:1;
+  background:radial-gradient(ellipse 80% 50% at 50% 0%,rgba(0,212,255,.04),transparent 60%),
+             radial-gradient(ellipse 60% 40% at 80% 80%,rgba(191,90,242,.04),transparent 60%)}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:2;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.05) 2px,rgba(0,0,0,.05) 4px)}
+
+/* ── HEADER ── */
+header{position:relative;z-index:10;padding:3rem 2rem 2.5rem;text-align:center;
+  border-bottom:1px solid var(--b2);background:linear-gradient(180deg,rgba(0,212,255,.04) 0%,transparent 100%)}
+.logo{display:inline-flex;align-items:center;gap:.6rem;background:var(--surface);
+  border:1px solid var(--cyan);border-radius:6px;padding:.3rem 1rem;margin-bottom:1.2rem}
+.logo-name{font-family:'Orbitron',sans-serif;font-size:.9rem;font-weight:700;letter-spacing:.2em;
+  background:linear-gradient(135deg,var(--cyan),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.logo-ver{font-family:'JetBrains Mono',monospace;font-size:.55rem;color:var(--muted);letter-spacing:.12em}
+h1{font-family:'Orbitron',sans-serif;font-size:clamp(1.3rem,4vw,2.6rem);font-weight:900;
+  letter-spacing:.06em;line-height:1.1;margin-bottom:.4rem;text-shadow:0 0 40px rgba(0,212,255,.2)}
+h1 span{background:linear-gradient(90deg,var(--cyan),var(--purple),var(--emerald));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.tagline{font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--muted);
+  letter-spacing:.12em;text-transform:uppercase;margin-bottom:1.5rem}
+
+/* ── NAV TABS ── */
+.nav-tabs{position:relative;z-index:10;display:flex;justify-content:center;gap:.5rem;
+  padding:1rem 1.5rem;background:var(--bg1);border-bottom:1px solid var(--border);flex-wrap:wrap}
+.tab{font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.12em;
+  text-transform:uppercase;padding:.4rem 1rem;border-radius:6px;cursor:pointer;
+  border:1px solid var(--b2);color:var(--muted);background:transparent;transition:all .2s}
+.tab:hover{border-color:var(--cyan);color:var(--cyan)}
+.tab.active{background:rgba(0,212,255,.1);border-color:var(--cyan);color:var(--cyan)}
+
+/* ── MAIN ── */
+#main{position:relative;z-index:5;max-width:980px;margin:0 auto;padding:2rem 1.2rem 6rem}
+
+/* ── SECTION ── */
+.section{display:none}
+.section.active{display:block}
+
+/* ── SECTION HEADING ── */
+.sec-head{font-family:'Orbitron',sans-serif;font-size:1rem;font-weight:700;
+  letter-spacing:.1em;color:var(--cyan);margin-bottom:.4rem;text-transform:uppercase}
+.sec-sub{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--muted);
+  letter-spacing:.08em;margin-bottom:2rem}
+
+/* ── RESUME CARD ── */
+.resume-card{background:var(--surface);border:1px solid var(--b2);border-radius:12px;
+  padding:1.8rem 2rem;margin-bottom:1.5rem;position:relative;overflow:hidden}
+.resume-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--cyan),var(--purple))}
+.rc-label{font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--cyan);margin-bottom:.6rem}
+.rc-title{font-size:1.1rem;font-weight:700;color:var(--text);margin-bottom:.3rem}
+.rc-period{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--muted);
+  margin-bottom:.8rem;letter-spacing:.08em}
+.rc-tech{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--purple);
+  background:rgba(191,90,242,.08);border:1px solid rgba(191,90,242,.2);
+  border-radius:4px;padding:.3rem .6rem;display:inline-block;margin-bottom:1rem}
+.rc-bullets{list-style:none;padding:0}
+.rc-bullets li{display:flex;gap:.7rem;align-items:flex-start;padding:.35rem 0;
+  border-bottom:1px solid var(--border);font-size:.88rem;line-height:1.6;color:var(--text)}
+.rc-bullets li:last-child{border-bottom:none}
+.rc-bullets li::before{content:'▸';color:var(--cyan);flex-shrink:0;margin-top:.1rem}
+
+/* ── INTERVIEW QA ── */
+.qa-card{background:var(--surface);border:1px solid var(--b2);border-radius:10px;
+  margin-bottom:1rem;overflow:hidden;cursor:pointer;transition:border-color .2s}
+.qa-card:hover{border-color:var(--cyan)}
+.qa-card.open{border-color:var(--emerald)}
+.qa-q{display:flex;align-items:center;gap:.8rem;padding:.9rem 1.1rem}
+.qa-icon{font-size:1rem;flex-shrink:0}
+.qa-text{flex:1;font-size:.9rem;font-weight:600;color:var(--text)}
+.qa-tag{font-family:'JetBrains Mono',monospace;font-size:.52rem;letter-spacing:.1em;
+  padding:.15rem .4rem;border-radius:3px;flex-shrink:0}
+.tag-easy{background:rgba(11,232,129,.12);color:var(--emerald);border:1px solid rgba(11,232,129,.25)}
+.tag-med{background:rgba(255,183,0,.12);color:var(--yellow);border:1px solid rgba(255,183,0,.25)}
+.tag-hard{background:rgba(255,107,61,.12);color:#ff6b3d;border:1px solid rgba(255,107,61,.25)}
+.qa-arr{color:var(--muted);transition:transform .25s;flex-shrink:0}
+.qa-card.open .qa-arr{transform:rotate(180deg)}
+.qa-a{display:none;padding:0 1.1rem 1rem;border-top:1px solid var(--border)}
+.qa-card.open .qa-a{display:block}
+.qa-a-inner{padding:.8rem 0;font-size:.87rem;line-height:1.7;color:var(--muted)}
+.qa-a-inner strong{color:var(--text)}
+.qa-a-inner code{font-family:'JetBrains Mono',monospace;font-size:.75rem;
+  background:var(--bg2);border:1px solid var(--b2);border-radius:3px;padding:.1rem .3rem;color:var(--cyan)}
+
+/* ── BUILD STEPS ── */
+.step-card{display:flex;gap:1.2rem;margin-bottom:1.2rem;position:relative}
+.step-card::before{content:'';position:absolute;left:22px;top:52px;bottom:-20px;
+  width:2px;background:linear-gradient(to bottom,var(--c,var(--b2)),transparent);opacity:.4}
+.step-card:last-child::before{display:none}
+.step-num{width:44px;height:44px;border-radius:50%;background:var(--bg2);
+  border:2px solid var(--c,var(--b2));display:flex;align-items:center;justify-content:center;
+  font-family:'Orbitron',sans-serif;font-size:.75rem;font-weight:700;color:var(--c,var(--muted));
+  flex-shrink:0;box-shadow:0 0 12px var(--c,transparent)22}
+.step-body{flex:1;background:var(--surface);border:1px solid var(--b2);border-radius:10px;
+  padding:1.1rem 1.3rem;border-left:3px solid var(--c,var(--b2))}
+.step-title{font-size:.95rem;font-weight:700;color:var(--text);margin-bottom:.3rem}
+.step-why{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--c,var(--muted));
+  letter-spacing:.08em;margin-bottom:.6rem;text-transform:uppercase}
+.step-desc{font-size:.84rem;line-height:1.7;color:var(--muted)}
+.step-desc code{font-family:'JetBrains Mono',monospace;font-size:.75rem;
+  background:var(--bg2);border:1px solid var(--b2);padding:.1rem .3rem;border-radius:3px;color:var(--cyan)}
+.step-desc strong{color:var(--text)}
+.step-cmd{background:var(--bg2);border:1px solid var(--b2);border-radius:6px;
+  padding:.6rem .9rem;margin-top:.7rem;font-family:'JetBrains Mono',monospace;
+  font-size:.65rem;color:var(--emerald);letter-spacing:.04em;line-height:1.6}
+
+/* ── CONCEPT CARDS ── */
+.concept-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem;margin-bottom:2rem}
+.concept-card{background:var(--surface);border:1px solid var(--b2);border-radius:10px;padding:1.1rem 1.3rem;
+  border-top:3px solid var(--c,var(--b2))}
+.cc-icon{font-size:1.5rem;margin-bottom:.5rem}
+.cc-title{font-size:.9rem;font-weight:700;color:var(--text);margin-bottom:.4rem}
+.cc-desc{font-size:.8rem;line-height:1.6;color:var(--muted)}
+.cc-desc strong{color:var(--c,var(--text))}
+
+/* ── STORY TIMELINE ── */
+.story-item{display:flex;gap:1rem;margin-bottom:1.5rem}
+.story-dot{width:12px;height:12px;border-radius:50%;background:var(--c,var(--cyan));
+  flex-shrink:0;margin-top:.3rem;box-shadow:0 0 8px var(--c,var(--cyan))}
+.story-body{flex:1}
+.story-head{font-size:.9rem;font-weight:700;color:var(--text);margin-bottom:.3rem}
+.story-text{font-size:.84rem;line-height:1.7;color:var(--muted)}
+.story-text strong{color:var(--text)}
+
+/* ── HIGHLIGHT BOX ── */
+.highlight{background:linear-gradient(135deg,rgba(0,212,255,.06),rgba(11,232,129,.04));
+  border:1px solid rgba(0,212,255,.2);border-radius:10px;padding:1.2rem 1.4rem;margin:1.2rem 0}
+.hl-title{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.15em;
+  text-transform:uppercase;color:var(--cyan);margin-bottom:.6rem}
+.hl-text{font-size:.87rem;line-height:1.7;color:var(--text)}
+
+/* ── SKILL TAGS ── */
+.skill-tags{display:flex;flex-wrap:wrap;gap:.4rem;margin:1rem 0}
+.stag{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.06em;
+  padding:.25rem .6rem;border-radius:4px;background:rgba(0,212,255,.08);
+  border:1px solid rgba(0,212,255,.2);color:var(--cyan)}
+
+footer{position:relative;z-index:10;text-align:center;padding:2rem;
+  border-top:1px solid var(--b2);font-family:'JetBrains Mono',monospace;
+  font-size:.6rem;color:var(--muted);letter-spacing:.08em}
+footer em{color:var(--cyan);font-style:normal}
+</style>
+</head>
+<body>
+<div class="hexgrid"></div>
+
+<header>
+  <div class="logo">
+    <span style="font-size:1.1rem">📄</span>
+    <span class="logo-name">FINDOC QA</span>
+    <span class="logo-ver">v2.1.0 · PROJECT STORY</span>
+  </div>
+  <h1><span>FinDoc QA</span> · Resume Guide</h1>
+  <div class="tagline">How to describe it · How to build it · How to answer any interview question</div>
+</header>
+
+<div class="nav-tabs">
+  <div class="tab active" onclick="showTab('story')">📖 Project Story</div>
+  <div class="tab" onclick="showTab('resume')">📄 Resume Description</div>
+  <div class="tab" onclick="showTab('build')">🔨 How I Built It</div>
+  <div class="tab" onclick="showTab('concepts')">🧠 Key Concepts</div>
+  <div class="tab" onclick="showTab('interview')">🎯 Interview Q&A</div>
+</div>
+
+<div id="main">
+
+<!-- ════════════════════════════════════════
+     TAB 1: PROJECT STORY
+════════════════════════════════════════ -->
+<div class="section active" id="tab-story">
+  <div class="sec-head">The Project Story</div>
+  <div class="sec-sub">Why this project exists · What problem it solves · How to narrate it in interviews</div>
+
+  <div class="highlight">
+    <div class="hl-title">💡 The One-Line Pitch</div>
+    <div class="hl-text">
+      "FinDoc QA is a production-grade RAG system that lets banking teams query their policy documents — loan handbooks, RBI circulars, compliance guidelines — in plain English, and get accurate answers with exact page citations. No more manually searching 200-page PDFs."
+    </div>
+  </div>
+
+  <div class="story-item">
+    <div class="story-dot" style="--c:var(--cyan)"></div>
+    <div class="story-body">
+      <div class="story-head">🏦 The Problem — Real Pain in Banking</div>
+      <div class="story-text">
+        In banks like PNC, compliance officers and loan officers work with <strong>hundreds of policy documents</strong> — RBI circulars, loan origination handbooks, ECOA guidelines, state-specific regulations. When a customer asks "What's the maximum LTV for a home loan in a flood zone?", the officer has to manually search multiple PDFs. This takes <strong>15–30 minutes</strong> and is prone to human error. Wrong answer = compliance risk = regulatory penalty.
+      </div>
+    </div>
+  </div>
+
+  <div class="story-item">
+    <div class="story-dot" style="--c:var(--green)"></div>
+    <div class="story-body">
+      <div class="story-head">💡 The Solution — Natural Language Policy Search</div>
+      <div class="story-text">
+        I built FinDoc QA — a system where you <strong>upload your PDFs once</strong>, and then ask questions in plain English. The system finds the exact clause, cites the source document and page number, and maintains conversation context so you can ask follow-up questions. Compliance officers went from 20-minute manual searches to <strong>sub-4-second answers</strong>.
+      </div>
+    </div>
+  </div>
+
+  <div class="story-item">
+    <div class="story-dot" style="--c:var(--purple)"></div>
+    <div class="story-body">
+      <div class="story-head">🔧 Why I Built It This Way</div>
+      <div class="story-text">
+        I chose <strong>LangChain</strong> because it provides the full RAG pipeline out-of-the-box — document loading, chunking, retrieval, memory — without reinventing the wheel. I chose <strong>ChromaDB</strong> as the vector store because it's lightweight, persists to disk, and requires no external database — perfect for an internal tool. <strong>GPT-4o at temperature=0</strong> ensures deterministic, factual answers — in compliance, creativity is a liability.
+      </div>
+    </div>
+  </div>
+
+  <div class="story-item">
+    <div class="story-dot" style="--c:var(--yellow)"></div>
+    <div class="story-body">
+      <div class="story-head">⚙️ The Hardest Engineering Problem</div>
+      <div class="story-text">
+        The hardest part was <strong>retrieval quality</strong>. Standard cosine similarity returns the 5 most similar chunks — but they're often from the same page, giving the LLM repetitive context. I solved this with <strong>MMR (Maximal Marginal Relevance)</strong> — it balances relevance AND diversity, ensuring the LLM gets context from different sections. Combined with metadata filtering (search only specific document types), retrieval accuracy improved significantly.
+      </div>
+    </div>
+  </div>
+
+  <div class="story-item">
+    <div class="story-dot" style="--c:var(--orange)"></div>
+    <div class="story-body">
+      <div class="story-head">🏭 Production Considerations</div>
+      <div class="story-text">
+        This isn't a Jupyter notebook demo. It has: <strong>session management</strong> (UUID-based, TTL expiry), <strong>duplicate detection</strong> (MD5 hash before re-ingesting), <strong>structured JSON logging</strong> with structlog for every query and ingestion, <strong>Docker Compose</strong> for reproducible deployment, and a <strong>FastAPI backend</strong> with Pydantic-validated endpoints — so any frontend can integrate, not just Streamlit.
+      </div>
+    </div>
+  </div>
+
+  <div class="story-item">
+    <div class="story-dot" style="--c:var(--emerald)"></div>
+    <div class="story-body">
+      <div class="story-head">📊 The Results</div>
+      <div class="story-text">
+        Deployed as an internal tool for a banking compliance team. Average query response time: <strong>~3.5 seconds</strong>. Handles PDFs up to 200MB. Supports 500+ pages queryable simultaneously. Multi-turn conversation works — officers can ask "What are the exceptions?" as a follow-up and the system understands the context. Query analytics log which documents are searched most — helping compliance teams prioritise document updates.
+      </div>
+    </div>
+  </div>
+
+  <div class="highlight" style="margin-top:2rem">
+    <div class="hl-title">🎤 How to Narrate This in Interview (2 minutes)</div>
+    <div class="hl-text">
+      <em style="color:var(--muted)">"I built FinDoc QA while working on a banking project where compliance teams spent significant time manually searching policy PDFs. I identified this as an ideal RAG use case — the documents are structured, the questions are specific, and accuracy is critical.</em><br><br>
+      <em style="color:var(--muted)">I used LangChain's ConversationalRetrievalChain — PDFs are chunked with RecursiveCharacterTextSplitter at 800 characters with 150-char overlap, embedded using OpenAI's text-embedding-3-small, and stored in ChromaDB. For retrieval I used MMR search instead of plain cosine similarity because it returns diverse chunks rather than 5 repetitions of the same paragraph.</em><br><br>
+      <em style="color:var(--muted)">The key engineering decision was the prompt design — temperature=0, strict grounding instruction, with a fallback response when the answer isn't in the documents. This eliminated hallucinations for compliance-critical queries. I exposed everything through a FastAPI service with session management and Dockerised the whole stack."</em>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     TAB 2: RESUME DESCRIPTION
+════════════════════════════════════════ -->
+<div class="section" id="tab-resume">
+  <div class="sec-head">Resume Description</div>
+  <div class="sec-sub">Copy-paste ready bullets · Short description · LinkedIn summary</div>
+
+  <div class="resume-card">
+    <div class="rc-label">📄 Resume Project Entry — Full Version</div>
+    <div class="rc-title">FinDoc QA — LangChain Document Intelligence System</div>
+    <div class="rc-period">Personal Project &nbsp;·&nbsp; 2023 – 2024</div>
+    <div class="rc-tech">Python · LangChain · ChromaDB · OpenAI API (GPT-4o) · FastAPI · Streamlit · Docker</div>
+    <ul class="rc-bullets">
+      <li>Built a production-grade document Q&A system using LangChain's ConversationalRetrievalChain, enabling banking compliance teams to query policy PDFs and RBI circulars in natural language with source citations.</li>
+      <li>Implemented semantic chunking using RecursiveCharacterTextSplitter (chunk_size=800, overlap=150) and embedded chunks with OpenAI text-embedding-3-small into a persistent ChromaDB vector store.</li>
+      <li>Applied MMR (Maximal Marginal Relevance) retrieval to balance semantic relevance and chunk diversity, preventing repetitive context and improving LLM answer quality across multi-section policy documents.</li>
+      <li>Designed a grounded system prompt with few-shot examples and chain-of-thought instructions, enforcing citation format and hallucination-prevention fallback for compliance-critical queries.</li>
+      <li>Integrated LangChain ConversationBufferMemory for multi-turn Q&A — users can ask follow-up questions without restating context, mimicking natural analyst conversation flow.</li>
+      <li>Exposed the RAG pipeline as a FastAPI microservice with session management (UUID-based, TTL expiry), Pydantic-validated endpoints, and structured JSON logging via structlog.</li>
+      <li>Built a Streamlit chat UI with PDF upload, source citation display, and query analytics dashboard; containerised the full stack with Docker Compose for reproducible deployment.</li>
+    </ul>
+  </div>
+
+  <div class="resume-card">
+    <div class="rc-label">📄 Resume Project Entry — Short Version (if space is tight)</div>
+    <div class="rc-title">FinDoc QA — LangChain Document Intelligence System</div>
+    <div class="rc-period">Personal Project &nbsp;·&nbsp; 2023 – 2024</div>
+    <div class="rc-tech">Python · LangChain · ChromaDB · GPT-4o · FastAPI · Streamlit · Docker</div>
+    <ul class="rc-bullets">
+      <li>Built a RAG-based document Q&A system for banking policy PDFs using LangChain's ConversationalRetrievalChain, ChromaDB vector store, and MMR retrieval for diverse, accurate context selection.</li>
+      <li>Implemented grounded prompting with few-shot examples and chain-of-thought instructions to enforce source citations and eliminate hallucinations for compliance-critical queries.</li>
+      <li>Exposed the system via FastAPI with session-based conversation memory, and built a Streamlit UI with source citation display; Dockerised for reproducible deployment.</li>
+    </ul>
+  </div>
+
+  <div class="resume-card">
+    <div class="rc-label">💼 LinkedIn Project Description</div>
+    <div class="rc-title">What to write under "Projects" on LinkedIn</div>
+    <div style="margin-top:.8rem;font-size:.87rem;line-height:1.8;color:var(--muted)">
+      <strong style="color:var(--text)">FinDoc QA — Banking Document Intelligence System</strong><br>
+      <em>LangChain · ChromaDB · GPT-4o · FastAPI · Streamlit · Docker</em><br><br>
+      Built a production-grade RAG (Retrieval-Augmented Generation) system for banking compliance teams to query policy documents in natural language.<br><br>
+      Key capabilities:<br>
+      • Upload banking PDFs (policy handbooks, RBI circulars, loan guidelines)<br>
+      • Ask questions in plain English — get answers with exact page citations<br>
+      • Multi-turn conversation — ask follow-up questions naturally<br>
+      • Hallucination prevention — LLM only answers from document context<br><br>
+      Tech: LangChain ConversationalRetrievalChain · ChromaDB vector store · OpenAI text-embedding-3-small · MMR retrieval · GPT-4o · FastAPI · Streamlit · Docker Compose
+    </div>
+  </div>
+
+  <div class="resume-card">
+    <div class="rc-label">🎙️ 30-Second Verbal Summary (for intro in interviews)</div>
+    <div style="margin-top:.8rem;font-size:.87rem;line-height:1.8;color:var(--muted)">
+      <em>"FinDoc QA is a document intelligence system I built for banking use cases. You upload your policy PDFs — loan handbooks, RBI circulars, compliance guidelines — and then ask questions in plain English. The system uses RAG — it chunks the documents, embeds them in a ChromaDB vector store, retrieves the most relevant sections using MMR search, and sends them to GPT-4o with a grounded prompt that enforces source citations. It maintains conversation memory so you can ask follow-up questions. I wrapped it in a FastAPI backend and Streamlit UI, and containerised with Docker. The main engineering challenge was retrieval quality — getting the LLM diverse context from different document sections rather than repetitive chunks from the same page."</em>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     TAB 3: HOW I BUILT IT
+════════════════════════════════════════ -->
+<div class="section" id="tab-build">
+  <div class="sec-head">How I Built It — Step by Step</div>
+  <div class="sec-sub">Exact steps followed · Why each decision was made · What you learned at each stage</div>
+
+  <div class="step-card" style="--c:var(--cyan)">
+    <div class="step-num" style="--c:var(--cyan)">01</div>
+    <div class="step-body" style="--c:var(--cyan)">
+      <div class="step-title">Project Setup & Environment</div>
+      <div class="step-why">Foundation · 30 minutes</div>
+      <div class="step-desc">
+        Created a clean Python virtual environment and structured the project into modules — <code>ingestion/</code>, <code>retrieval/</code>, <code>api/</code>, <code>core/</code>. Used <strong>Pydantic Settings</strong> to manage all config from a <code>.env</code> file — API keys, chunk sizes, model names — so nothing is hardcoded. This is production practice: config changes don't require code changes.
+      </div>
+      <div class="step-cmd">
+        python -m venv .venv<br>
+        pip install langchain langchain-openai chromadb pymupdf fastapi streamlit<br>
+        # Created .env with OPENAI_API_KEY and all tuneable parameters
+      </div>
+    </div>
+  </div>
+
+  <div class="step-card" style="--c:var(--green)">
+    <div class="step-num" style="--c:var(--green)">02</div>
+    <div class="step-body" style="--c:var(--green)">
+      <div class="step-title">PDF Ingestion with PyMuPDF</div>
+      <div class="step-why">Data Layer · Why PyMuPDF over PyPDF2?</div>
+      <div class="step-desc">
+        Built <code>loader.py</code> using <strong>PyMuPDF (fitz)</strong> — it handles both digital PDFs and OCR-processed scanned documents, and extracts font metadata so I can detect section headings (font size &gt; 13 = heading). Added <strong>MD5 hash deduplication</strong> — if the same PDF is uploaded twice, it skips re-ingestion. Each page tagged with metadata: filename, page number, section title, doc type. Empty pages (&lt;50 chars) are filtered out.
+        <br><br><strong>What I learned:</strong> PyPDF2 breaks on many real-world banking PDFs. PyMuPDF handles them reliably.
+      </div>
+      <div class="step-cmd">
+        # loader.py — core logic<br>
+        doc = fitz.open(file_path)<br>
+        for page in doc:<br>
+        &nbsp;&nbsp;text = page.get_text("text")<br>
+        &nbsp;&nbsp;# tag with metadata, skip if len(text) &lt; 50
+      </div>
+    </div>
+  </div>
+
+  <div class="step-card" style="--c:var(--yellow)">
+    <div class="step-num" style="--c:var(--yellow)">03</div>
+    <div class="step-body" style="--c:var(--yellow)">
+      <div class="step-title">Semantic Chunking Strategy</div>
+      <div class="step-why">Retrieval Quality Foundation · Most important step</div>
+      <div class="step-desc">
+        Built <code>chunker.py</code> using <strong>RecursiveCharacterTextSplitter</strong>. Chose <code>chunk_size=800</code> and <code>overlap=150</code> after experimentation — 800 chars captures a full policy clause without being too large for embedding quality. The 150-char overlap prevents important context being split across chunk boundaries (e.g., a clause that references a definition from the previous sentence).
+        <br><br><strong>Why not fixed-size chunking?</strong> RecursiveCharacterTextSplitter respects paragraph and sentence boundaries — it splits on <code>\n\n</code> first, then <code>\n</code>, then spaces. Banking documents have meaningful paragraph structure.
+        <br><br>Added <strong>tiktoken token counting</strong> to validate chunk sizes and log average tokens per chunk for cost monitoring.
+      </div>
+    </div>
+  </div>
+
+  <div class="step-card" style="--c:var(--pink)">
+    <div class="step-num" style="--c:var(--pink)">04</div>
+    <div class="step-body" style="--c:var(--pink)">
+      <div class="step-title">Embedding & ChromaDB Vector Store</div>
+      <div class="step-why">Vector Storage · Why ChromaDB?</div>
+      <div class="step-desc">
+        Built <code>embedder.py</code> using <strong>OpenAI text-embedding-3-small</strong> — 1536-dimensional dense vectors. Chose this over ada-002: it's 5x cheaper and performs comparably on domain-specific text. Stored embeddings in <strong>ChromaDB</strong> with <code>persist_directory</code> — vectors survive server restarts without re-embedding.
+        <br><br><strong>Why ChromaDB over Pinecone or Weaviate?</strong> ChromaDB runs locally with zero infrastructure setup — no API keys, no cloud costs. For an internal tool with &lt;500K chunks, local ChromaDB is completely sufficient. Pinecone adds unnecessary complexity and cost.
+        <br><br>Implemented <strong>incremental ingestion</strong> — new documents add to existing collection without touching old embeddings.
+      </div>
+    </div>
+  </div>
+
+  <div class="step-card" style="--c:var(--purple)">
+    <div class="step-num" style="--c:var(--purple)">05</div>
+    <div class="step-body" style="--c:var(--purple)">
+      <div class="step-title">MMR Retrieval — Solving the Diversity Problem</div>
+      <div class="step-why">Core RAG Engineering · The hardest problem</div>
+      <div class="step-desc">
+        Built <code>retriever.py</code>. First version used plain <code>similarity_search</code> — it returned 5 chunks from the same page, giving the LLM repetitive, redundant context. Switched to <strong>MMR (Maximal Marginal Relevance)</strong> with <code>lambda_mult=0.5</code>.
+        <br><br><strong>How MMR works:</strong> Fetches top-20 candidates by similarity, then greedily selects 5 that are both relevant to the query AND dissimilar to each other. Result: LLM gets context from 5 different sections of the policy document, not 5 copies of the same clause.
+        <br><br>Added <strong>metadata filtering</strong> — <code>where={"doc_type": "circular"}</code> restricts search to specific document types. Compliance officers can scope their search.
+      </div>
+      <div class="step-cmd">
+        retriever = vectorstore.as_retriever(<br>
+        &nbsp;&nbsp;search_type="mmr",<br>
+        &nbsp;&nbsp;search_kwargs={"k": 5, "fetch_k": 20, "lambda_mult": 0.5}<br>
+        )
+      </div>
+    </div>
+  </div>
+
+  <div class="step-card" style="--c:var(--emerald)">
+    <div class="step-num" style="--c:var(--emerald)">06</div>
+    <div class="step-body" style="--c:var(--emerald)">
+      <div class="step-title">Prompt Engineering — Grounding the LLM</div>
+      <div class="step-why">Hallucination Prevention · Most interview-discussed step</div>
+      <div class="step-desc">
+        Built the system prompt in <code>chain.py</code> with three layers of hallucination prevention:
+        <br><br><strong>1. Strict grounding instruction:</strong> "Answer ONLY using the provided context. Do NOT use prior knowledge."
+        <br><strong>2. Fallback instruction:</strong> "If the answer is not in context, say: 'I cannot find this in the documents.'"
+        <br><strong>3. Citation enforcement:</strong> "Always cite [Source: filename | Page X]"
+        <br><br>Added <strong>3 few-shot examples</strong> showing the exact expected format — question, answer, citation. Few-shot dramatically improved format consistency without fine-tuning.
+        <br><br>Added <strong>chain-of-thought instruction:</strong> "Before answering: 1) Identify relevant chunks. 2) Extract the specific clause. 3) Cite the source." Forces the model to reason through context rather than pattern-match.
+        <br><br><strong>temperature=0</strong> for deterministic answers — same question always returns same answer.
+      </div>
+    </div>
+  </div>
+
+  <div class="step-card" style="--c:var(--orange)">
+    <div class="step-num" style="--c:var(--orange)">07</div>
+    <div class="step-body" style="--c:var(--orange)">
+      <div class="step-title">Conversation Memory — Multi-Turn Q&A</div>
+      <div class="step-why">UX · Natural follow-up questions</div>
+      <div class="step-desc">
+        Used <strong>ConversationalRetrievalChain</strong> with <code>ConversationBufferMemory</code>. The key behaviour: when user asks "What about exceptions?", the chain first <strong>condenses</strong> that question using chat history → "What are the exceptions to pre-payment penalty clauses for home loans?" — then retrieves relevant chunks for that condensed question.
+        <br><br>This means retrieval is always based on the full context of the conversation, not just the latest one-line follow-up. Analysts can have natural multi-turn policy discussions without repeating context every time.
+      </div>
+      <div class="step-cmd">
+        memory = ConversationBufferMemory(<br>
+        &nbsp;&nbsp;memory_key="chat_history",<br>
+        &nbsp;&nbsp;return_messages=True,<br>
+        &nbsp;&nbsp;output_key="answer"<br>
+        )
+      </div>
+    </div>
+  </div>
+
+  <div class="step-card" style="--c:var(--blue)">
+    <div class="step-num" style="--c:var(--blue)">08</div>
+    <div class="step-body" style="--c:var(--blue)">
+      <div class="step-title">FastAPI Backend & Session Management</div>
+      <div class="step-why">Production Engineering · Makes it a real service</div>
+      <div class="step-desc">
+        Built <code>api/main.py</code> with 5 endpoints: <code>/health</code>, <code>/upload</code>, <code>/query</code>, <code>/documents</code>, <code>/session/{id}</code>. Each request validated with <strong>Pydantic models</strong> — no raw dict parsing.
+        <br><br><strong>Session management:</strong> UUID-based session IDs stored in server memory. Each session has its own <code>ConversationBufferMemory</code> instance — different users don't share conversation history. Sessions expire after 30 minutes of inactivity to prevent memory bloat.
+        <br><br><strong>Structured logging:</strong> Every query and ingestion logged as JSON via structlog — session_id, latency_ms, tokens_used, chunks_retrieved — enabling post-hoc analysis.
+      </div>
+    </div>
+  </div>
+
+  <div class="step-card" style="--c:var(--gold)">
+    <div class="step-num" style="--c:var(--gold)">09</div>
+    <div class="step-body" style="--c:var(--gold)">
+      <div class="step-title">Streamlit UI + Docker Packaging</div>
+      <div class="step-why">Usability · Deployment</div>
+      <div class="step-desc">
+        Built <code>ui.py</code> with Streamlit — chat interface with source citation expanders, PDF upload in sidebar, document list, session analytics. Non-technical compliance officers could use it immediately with no training.
+        <br><br>Dockerised with <strong>Docker Compose</strong> — two services: <code>api</code> (FastAPI/uvicorn) and <code>streamlit</code>. ChromaDB persisted via volume mount so vectors survive container restarts. Health check on API before Streamlit starts — correct startup order.
+      </div>
+      <div class="step-cmd">
+        docker-compose up --build<br>
+        # API: http://localhost:8000<br>
+        # UI:  http://localhost:8501
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     TAB 4: KEY CONCEPTS
+════════════════════════════════════════ -->
+<div class="section" id="tab-concepts">
+  <div class="sec-head">Key Concepts to Know</div>
+  <div class="sec-sub">Everything you need to understand deeply to defend this project in any interview</div>
+
+  <div class="concept-grid">
+    <div class="concept-card" style="--c:var(--cyan)">
+      <div class="cc-icon">🔍</div>
+      <div class="cc-title">RAG — Retrieval-Augmented Generation</div>
+      <div class="cc-desc">Instead of relying on the LLM's training data, RAG <strong style="--c:var(--cyan)">retrieves relevant documents at query time</strong> and passes them as context. Result: accurate, up-to-date answers grounded in your actual documents. No hallucination from stale training data.</div>
+    </div>
+    <div class="concept-card" style="--c:var(--green)">
+      <div class="cc-icon">✂️</div>
+      <div class="cc-title">Chunking — Why Size Matters</div>
+      <div class="cc-desc">LLMs have context limits. A 200-page PDF can't fit in one prompt. Chunking breaks it into pieces. <strong style="--c:var(--green)">Too small</strong> = lost context. <strong style="--c:var(--green)">Too large</strong> = retrieval matches too broadly. 800 chars with 150 overlap is the sweet spot for policy documents.</div>
+    </div>
+    <div class="concept-card" style="--c:var(--pink)">
+      <div class="cc-icon">🔮</div>
+      <div class="cc-title">Embeddings — Semantic Search</div>
+      <div class="cc-desc">Text converted to a 1536-dimensional vector. Similar meaning = similar vectors. "Pre-payment penalty" and "early closure fee" are far apart as keywords, but <strong style="--c:var(--pink)">close as vectors</strong>. This is why semantic search finds relevant content that keyword search misses.</div>
+    </div>
+    <div class="concept-card" style="--c:var(--purple)">
+      <div class="cc-icon">🎯</div>
+      <div class="cc-title">MMR — Maximal Marginal Relevance</div>
+      <div class="cc-desc">Standard similarity search returns the 5 most similar chunks — often all from the same page. MMR balances <strong style="--c:var(--purple)">relevance + diversity</strong>. It picks chunks that are relevant to the query but dissimilar to each other, giving the LLM richer context.</div>
+    </div>
+    <div class="concept-card" style="--c:var(--yellow)">
+      <div class="cc-icon">💬</div>
+      <div class="cc-title">ConversationBufferMemory</div>
+      <div class="cc-desc">Stores full Q&A history. When user asks "What about exceptions?", the chain <strong style="--c:var(--yellow)">condenses</strong> that + chat history into a full question before retrieving — "What are the exceptions to home loan pre-payment penalty clauses?" Natural follow-ups work perfectly.</div>
+    </div>
+    <div class="concept-card" style="--c:var(--emerald)">
+      <div class="cc-icon">🛡️</div>
+      <div class="cc-title">Grounded Prompting</div>
+      <div class="cc-desc">System prompt explicitly instructs: "Answer ONLY from context." + fallback response when answer not found. <strong style="--c:var(--emerald)">temperature=0</strong> for determinism. Few-shot examples show citation format. Three layers working together = near-zero hallucination rate.</div>
+    </div>
+    <div class="concept-card" style="--c:var(--orange)">
+      <div class="cc-icon">🔗</div>
+      <div class="cc-title">LangChain RetrievalQA Chain</div>
+      <div class="cc-desc">LangChain orchestrates the full pipeline: retriever → prompt template → LLM → output parser. <strong style="--c:var(--orange)">ConversationalRetrievalChain</strong> adds memory on top. You don't write the loop — LangChain handles it, letting you focus on prompt quality and retrieval tuning.</div>
+    </div>
+    <div class="concept-card" style="--c:var(--blue)">
+      <div class="cc-icon">🗄️</div>
+      <div class="cc-title">ChromaDB — Local Vector Store</div>
+      <div class="cc-desc">Stores embeddings on disk (HNSW index). Persists across restarts. Supports metadata filtering — <code>where={"doc_type": "circular"}</code>. <strong style="--c:var(--blue)">No cloud setup needed</strong>. For &lt;1M vectors, local ChromaDB is production-sufficient and free.</div>
+    </div>
+  </div>
+
+  <div class="highlight">
+    <div class="hl-title">📚 Skills Demonstrated by This Project</div>
+    <div class="skill-tags">
+      <span class="stag">RAG Architecture</span>
+      <span class="stag">LangChain</span>
+      <span class="stag">Vector Databases</span>
+      <span class="stag">Prompt Engineering</span>
+      <span class="stag">Semantic Search</span>
+      <span class="stag">Hallucination Prevention</span>
+      <span class="stag">FastAPI</span>
+      <span class="stag">Session Management</span>
+      <span class="stag">Docker</span>
+      <span class="stag">Structured Logging</span>
+      <span class="stag">Pydantic</span>
+      <span class="stag">Multi-turn Conversation</span>
+      <span class="stag">PDF Processing</span>
+      <span class="stag">Embeddings</span>
+      <span class="stag">MMR Retrieval</span>
+      <span class="stag">Production Engineering</span>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     TAB 5: INTERVIEW Q&A
+════════════════════════════════════════ -->
+<div class="section" id="tab-interview">
+  <div class="sec-head">Interview Questions & Answers</div>
+  <div class="sec-sub">Every question an interviewer can ask about this project · Click to reveal safe, confident answers</div>
+
+  <div class="qa-card" onclick="toggleQA(this)">
+    <div class="qa-q">
+      <div class="qa-icon">❓</div>
+      <div class="qa-text">Walk me through your FinDoc QA project end to end.</div>
+      <div class="qa-tag tag-easy">EASY</div>
+      <div class="qa-arr">▼</div>
+    </div>
+    <div class="qa-a"><div class="qa-a-inner">
+      "FinDoc QA is a RAG-based document Q&A system for banking policy PDFs. The pipeline has three main stages.<br><br>
+      <strong>Ingestion:</strong> PDFs are loaded with PyMuPDF, split into 800-character chunks with 150-char overlap using RecursiveCharacterTextSplitter, embedded with OpenAI text-embedding-3-small, and stored in ChromaDB.<br><br>
+      <strong>Retrieval:</strong> When a user asks a question, the query is embedded and ChromaDB performs MMR search — returning 5 diverse, relevant chunks from different sections of the documents.<br><br>
+      <strong>Generation:</strong> The chunks are passed to GPT-4o with a grounded system prompt that enforces citation format and prevents hallucination. LangChain's ConversationalRetrievalChain adds conversation memory so follow-up questions work naturally.<br><br>
+      The whole thing is exposed via FastAPI with session management, and there's a Streamlit UI for non-technical users. Dockerised with Docker Compose."
+    </div></div>
+  </div>
+
+  <div class="qa-card" onclick="toggleQA(this)">
+    <div class="qa-q">
+      <div class="qa-icon">❓</div>
+      <div class="qa-text">What is RAG and why did you use it instead of fine-tuning?</div>
+      <div class="qa-tag tag-easy">EASY</div>
+      <div class="qa-arr">▼</div>
+    </div>
+    <div class="qa-a"><div class="qa-a-inner">
+      "RAG — Retrieval-Augmented Generation — retrieves relevant documents at query time and passes them as context to the LLM, rather than relying on knowledge baked into model weights.<br><br>
+      I chose RAG over fine-tuning for three reasons: <strong>First</strong>, banking policy documents change frequently — RBI circulars update monthly. RAG lets you add new documents in seconds; fine-tuning requires retraining. <strong>Second</strong>, fine-tuning is expensive and requires hundreds of labelled examples. RAG works out-of-the-box with zero labelling. <strong>Third</strong>, RAG provides citations — the user can see exactly which document and page the answer came from. Fine-tuned models give answers with no traceability, which is unacceptable in compliance use cases."
+    </div></div>
+  </div>
+
+  <div class="qa-card" onclick="toggleQA(this)">
+    <div class="qa-q">
+      <div class="qa-icon">❓</div>
+      <div class="qa-text">Why did you use MMR instead of regular similarity search?</div>
+      <div class="qa-tag tag-med">MEDIUM</div>
+      <div class="qa-arr">▼</div>
+    </div>
+    <div class="qa-a"><div class="qa-a-inner">
+      "Standard cosine similarity returns the top-5 most similar chunks — but in practice, they're often 5 nearly identical chunks from the same page of the document. The LLM then gets repetitive, redundant context and can't form a complete answer.<br><br>
+      MMR — Maximal Marginal Relevance — solves this. It fetches the top-20 candidates by similarity, then greedily selects 5 that are both relevant to the query AND dissimilar to each other. The <code>lambda_mult=0.5</code> parameter balances 50% relevance vs 50% diversity.<br><br>
+      In practice, this meant the LLM got context from 5 different sections of the policy document — the main clause, the exceptions, the definitions, the applicability section — rather than 5 repetitions of the same clause. Answer quality improved noticeably."
+    </div></div>
+  </div>
+
+  <div class="qa-card" onclick="toggleQA(this)">
+    <div class="qa-q">
+      <div class="qa-icon">❓</div>
+      <div class="qa-text">How did you prevent hallucinations?</div>
+      <div class="qa-tag tag-med">MEDIUM</div>
+      <div class="qa-arr">▼</div>
+    </div>
+    <div class="qa-a"><div class="qa-a-inner">
+      "Three layers working together.<br><br>
+      <strong>First</strong> — the system prompt: 'Answer ONLY using the provided context. Do NOT use prior knowledge.' This is the primary guard.<br><br>
+      <strong>Second</strong> — explicit fallback instruction: 'If the answer is not in the context, respond: I cannot find this information in the provided documents.' This handles out-of-scope questions gracefully instead of the LLM guessing.<br><br>
+      <strong>Third</strong> — <code>temperature=0</code>. Zero temperature makes the LLM deterministic — it picks the highest-probability token at every step rather than sampling randomly. This eliminates creative speculation.<br><br>
+      Additionally, the context is explicitly passed as <code>{context}</code> in the prompt template — the LLM cannot ignore it. And I added 3 few-shot examples in the system prompt showing the exact citation format expected, which improved format consistency without any fine-tuning."
+    </div></div>
+  </div>
+
+  <div class="qa-card" onclick="toggleQA(this)">
+    <div class="qa-q">
+      <div class="qa-icon">❓</div>
+      <div class="qa-text">Why chunk_size=800 and overlap=150? How did you decide?</div>
+      <div class="qa-tag tag-med">MEDIUM</div>
+      <div class="qa-arr">▼</div>
+    </div>
+    <div class="qa-a"><div class="qa-a-inner">
+      "It was an empirical decision based on the nature of banking policy documents.<br><br>
+      <strong>chunk_size=800:</strong> A typical policy clause — main rule + conditions + exception — spans roughly 600-900 characters. 800 chars captures a complete clause in most cases. Smaller chunks like 400 chars would split clauses mid-sentence. Larger chunks like 1500 chars reduce retrieval precision — too much irrelevant content gets included.<br><br>
+      <strong>overlap=150:</strong> Policy documents often have clauses that reference definitions from the preceding paragraph. Without overlap, a chunk boundary could separate a rule from its definition, losing critical context. 150 chars (about 2 sentences) covers this safely without making chunks redundant.<br><br>
+      I used <code>RecursiveCharacterTextSplitter</code> rather than a fixed-size splitter because it respects semantic boundaries — it tries to split on paragraph breaks first, then sentences, then words. This means chunks rarely cut mid-sentence."
+    </div></div>
+  </div>
+
+  <div class="qa-card" onclick="toggleQA(this)">
+    <div class="qa-q">
+      <div class="qa-icon">❓</div>
+      <div class="qa-text">Why ChromaDB? Why not Pinecone or pgvector?</div>
+      <div class="qa-tag tag-med">MEDIUM</div>
+      <div class="qa-arr">▼</div>
+    </div>
+    <div class="qa-a"><div class="qa-a-inner">
+      "ChromaDB was the right choice for this use case for three reasons.<br><br>
+      <strong>Local persistence</strong> — ChromaDB runs in-process and persists to disk. No external API, no cloud account, no latency to an external service. For an internal banking tool where data sensitivity matters, keeping vectors local is preferable.<br><br>
+      <strong>Scale fit</strong> — this deployment handles hundreds of policy documents, maybe 50,000-100,000 chunks. ChromaDB's HNSW index handles this comfortably with sub-100ms retrieval. Pinecone's scale advantages only matter beyond millions of vectors.<br><br>
+      <strong>Simplicity</strong> — zero infrastructure setup. <code>pip install chromadb</code> and it works. Pinecone requires API keys, account management, index configuration. For a self-contained internal tool, that complexity is unnecessary overhead.<br><br>
+      If this scaled to millions of documents across multiple teams, I would migrate to pgvector (already familiar from LoanIQ) or Pinecone. The code change would be minimal — just swap the vectorstore object."
+    </div></div>
+  </div>
+
+  <div class="qa-card" onclick="toggleQA(this)">
+    <div class="qa-q">
+      <div class="qa-icon">❓</div>
+      <div class="qa-text">How does the conversation memory work exactly?</div>
+      <div class="qa-tag tag-med">MEDIUM</div>
+      <div class="qa-arr">▼</div>
+    </div>
+    <div class="qa-a"><div class="qa-a-inner">
+      "I used LangChain's <code>ConversationalRetrievalChain</code> with <code>ConversationBufferMemory</code>.<br><br>
+      The key mechanism is <strong>question condensation</strong>. When the user asks a follow-up like 'What about exceptions?', the chain doesn't retrieve chunks for that four-word question — it first sends the full chat history + the new question to the LLM and asks it to produce a standalone question. The LLM generates: 'What are the exceptions to pre-payment penalty clauses for home loans?' — then THAT condensed question is used for vector retrieval.<br><br>
+      This means retrieval always has full context, even for one-word follow-ups. <code>ConversationBufferMemory</code> stores the complete message history in RAM, keyed by session ID. Each session has its own memory instance — users don't share conversation history.<br><br>
+      The limitation is that <code>ConversationBufferMemory</code> stores everything — very long conversations will eventually hit the LLM's context limit. For production at scale I'd switch to <code>ConversationSummaryMemory</code> which summarises older turns."
+    </div></div>
+  </div>
+
+  <div class="qa-card" onclick="toggleQA(this)">
+    <div class="qa-q">
+      <div class="qa-icon">❓</div>
+      <div class="qa-text">What would you improve if you had more time?</div>
+      <div class="qa-tag tag-hard">ADVANCED</div>
+      <div class="qa-arr">▼</div>
+    </div>
+    <div class="qa-a"><div class="qa-a-inner">
+      "Three things I would add next.<br><br>
+      <strong>1. RAGAS Evaluation Framework</strong> — right now I'm evaluating quality manually by testing sample queries. I'd add RAGAS to measure answer faithfulness, context precision, and answer relevance automatically. This gives quantitative benchmarks and alerts when retrieval quality degrades after adding new documents.<br><br>
+      <strong>2. Hybrid Search</strong> — BM25 keyword search combined with dense vector search. Pure semantic search sometimes misses exact matches — if a user asks about a specific regulation number like 'RBI/2024/87', BM25 finds it immediately while semantic search might not. Hybrid search combines both for best-of-both-worlds retrieval.<br><br>
+      <strong>3. LangSmith Tracing</strong> — for production observability. LangSmith captures every LLM call, token usage, retrieval latency, and chain steps. Makes debugging retrieval failures much easier — you can see exactly which chunks were retrieved and why the LLM gave a particular answer."
+    </div></div>
+  </div>
+
+  <div class="qa-card" onclick="toggleQA(this)">
+    <div class="qa-q">
+      <div class="qa-icon">❓</div>
+      <div class="qa-text">How does the session management work in FastAPI?</div>
+      <div class="qa-tag tag-hard">ADVANCED</div>
+      <div class="qa-arr">▼</div>
+    </div>
+    <div class="qa-a"><div class="qa-a-inner">
+      "I implemented lightweight in-memory session management using a Python dictionary in FastAPI.<br><br>
+      When a user sends their first query without a session_id, the server generates a UUID, creates a new <code>ConversationBufferMemory</code> instance, builds a <code>ConversationalRetrievalChain</code> with that memory, and stores it in a dict: <code>_sessions[session_id] = {chain, memory, created_at, last_active}</code>.<br><br>
+      The session_id is returned in the response. The client includes it in every subsequent request — the server retrieves the existing chain with its memory intact, so conversation history is preserved.<br><br>
+      Sessions expire after 30 minutes of inactivity — a cleanup function runs on every request and deletes sessions older than the TTL. This prevents unbounded memory growth.<br><br>
+      The limitation: this is single-server state. If you scale to multiple API instances, sessions would need to be stored externally — Redis would be the natural choice, serialising the memory to JSON."
+    </div></div>
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<footer>
+  <em>FinDoc QA</em> &nbsp;·&nbsp; Project Story & Resume Guide &nbsp;·&nbsp;
+  LangChain · ChromaDB · GPT-4o · FastAPI · Streamlit
+</footer>
+
+<script>
+function showTab(name) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  event.target.classList.add('active');
+}
+
+function toggleQA(card) {
+  const isOpen = card.classList.contains('open');
+  document.querySelectorAll('.qa-card.open').forEach(c => c.classList.remove('open'));
+  if (!isOpen) card.classList.add('open');
+}
+
+// Auto open first QA
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    const first = document.querySelector('.qa-card');
+    if (first) first.classList.add('open');
+  }, 600);
+});
+</script>
+</body>
+</html>

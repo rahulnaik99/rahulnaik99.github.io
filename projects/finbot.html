@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FinBot · AI Financial Advisor — Rahul Naik</title>
+<link rel="stylesheet" href="../assets/css/theme.css">
+<style>
+.page-frame{padding-top:60px;position:relative;z-index:5}
+.project-iframe{width:100%;min-height:calc(100vh - 60px);border:none;display:block}
+.back-bar{position:sticky;top:60px;z-index:90;background:rgba(4,6,12,0.88);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0.6rem 1.5rem;display:flex;align-items:center;gap:1rem}
+[data-theme="light"] .back-bar{background:rgba(240,244,248,0.92)}
+.back-link{font-family:var(--font-mono);font-size:0.58rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color 0.2s}
+.back-link:hover{color:#00ff88}
+.back-sep{color:var(--dim);font-size:0.7rem}
+.back-crumb{font-family:var(--font-mono);font-size:0.58rem;letter-spacing:0.1em;color:#00ff88}
+.project-nav-pills{margin-left:auto;display:flex;gap:0.4rem}
+.project-nav-pills a{font-family:var(--font-mono);font-size:0.52rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);text-decoration:none;padding:0.25rem 0.6rem;border:1px solid var(--border);border-radius:4px;transition:all 0.2s}
+.project-nav-pills a:hover{color:#00ff88;border-color:#00ff88}
+</style>
+</head>
+<body>
+<div class="hexgrid"></div>
+<nav class="site-nav">
+  <a class="nav-logo" href="../index.html"><span class="dot"></span>RN</a>
+  <div class="hamburger" id="hamburger"><span></span><span></span><span></span></div>
+  <div class="nav-links" id="nav-links">
+    <a href="../index.html">Home</a>
+    <a href="../index.html#projects">Projects</a>
+    <a href="../index.html#about">About</a>
+    <a href="project-evolution.html">Journey</a>
+    <a href="../index.html#contact">Contact</a>
+  </div>
+  <div class="nav-right">
+    <div class="theme-toggle" id="themeToggle">
+      <div class="toggle-track"><div class="toggle-thumb"></div></div>
+      <span class="theme-label">LIGHT</span>
+    </div>
+  </div>
+</nav>
+<div class="page-frame">
+  <div class="back-bar">
+    <a class="back-link" href="../index.html">← Home</a>
+    <span class="back-sep">/</span>
+    <span class="back-crumb">FinBot · AI Advisor</span>
+    <div class="project-nav-pills">
+      <a href="loaniq.html">LoanIQ</a>
+      <a href="findocqa.html">FinDoc QA</a>
+      <a href="wfo-risk.html">WFO Risk</a>
+    </div>
+  </div>
+  <iframe class="project-iframe" src="finbot-original.html" title="FinBot" id="projectFrame"></iframe>
+</div>
+<script src="../assets/js/main.js"></script>
+<script>
+document.getElementById('hamburger').addEventListener('click',function(){document.getElementById('nav-links').classList.toggle('open')});
+const frame=document.getElementById('projectFrame');
+if(frame){frame.addEventListener('load',function(){try{const h=frame.contentDocument.body.scrollHeight;if(h>200)frame.style.height=h+'px';}catch(e){}});}
+</script>
+</body>
+</html>

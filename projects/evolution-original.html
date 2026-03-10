@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rahul Naik · Project Evolution & Technical Journey</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#04060c;--bg1:#070b14;--bg2:#0b1120;--surface:#0e1526;
+  --border:#162035;--b2:#1e2e4a;
+  --cyan:#00d4ff;--green:#00ff88;--yellow:#ffb700;--pink:#ff6b9d;
+  --purple:#bf5af2;--orange:#ff9f43;--emerald:#0be881;--blue:#4da6ff;
+  --gold:#ffd166;--red:#ff5f5f;
+  --text:#e8edf5;--muted:#4a6080;--dim:#2a3a55;
+  --p1:#ffb700;--p2:#00d4ff;--p3:#00ff88;--p4:#bf5af2;
+}
+html{font-size:14px;scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-height:100vh;overflow-x:hidden}
+.hexgrid{position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100'%3E%3Cpath d='M28 0 L56 16 L56 50 L28 66 L0 50 L0 16Z' fill='none' stroke='%23122040' stroke-width='0.5'/%3E%3C/svg%3E");opacity:.35}
+body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:1;
+  background:radial-gradient(ellipse 70% 40% at 20% 20%,rgba(255,183,0,.03),transparent),
+             radial-gradient(ellipse 60% 40% at 80% 80%,rgba(0,212,255,.03),transparent)}
+
+/* ── HEADER ── */
+header{position:relative;z-index:10;padding:2.5rem 2rem 2rem;text-align:center;
+  border-bottom:1px solid var(--b2)}
+.logo-row{display:flex;align-items:center;justify-content:center;gap:.8rem;margin-bottom:1rem}
+.logo-pill{font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.2em;
+  padding:.3rem .9rem;border-radius:20px;border:1px solid var(--b2);color:var(--muted)}
+.logo-pill.active{border-color:var(--cyan);color:var(--cyan);background:rgba(0,212,255,.07)}
+h1{font-family:'Orbitron',sans-serif;font-size:clamp(1.1rem,3.5vw,2.2rem);font-weight:900;
+  letter-spacing:.05em;margin-bottom:.5rem}
+h1 em{background:linear-gradient(90deg,var(--yellow),var(--cyan),var(--green),var(--purple));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;font-style:normal}
+.sub{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--muted);letter-spacing:.1em}
+
+/* ── NAV TABS ── */
+.nav{position:sticky;top:0;z-index:20;display:flex;justify-content:center;gap:.4rem;
+  padding:.8rem 1rem;background:rgba(4,6,12,.92);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);flex-wrap:wrap}
+.tab{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.1em;
+  text-transform:uppercase;padding:.4rem .9rem;border-radius:6px;cursor:pointer;
+  border:1px solid var(--b2);color:var(--muted);background:transparent;transition:all .2s;white-space:nowrap}
+.tab:hover,.tab.active{border-color:var(--c,var(--cyan));color:var(--c,var(--cyan));
+  background:rgba(0,212,255,.06)}
+.tab[data-c="yellow"]{--c:var(--yellow)}
+.tab[data-c="cyan"]{--c:var(--cyan)}
+.tab[data-c="green"]{--c:var(--green)}
+.tab[data-c="purple"]{--c:var(--purple)}
+.tab[data-c="pink"]{--c:var(--pink)}
+.tab[data-c="orange"]{--c:var(--orange)}
+
+/* ── MAIN ── */
+#main{position:relative;z-index:5;max-width:1100px;margin:0 auto;padding:2rem 1.2rem 6rem}
+.section{display:none}.section.active{display:block}
+.sec-head{font-family:'Orbitron',sans-serif;font-size:.95rem;font-weight:700;
+  letter-spacing:.12em;color:var(--c,var(--cyan));text-transform:uppercase;margin-bottom:.3rem}
+.sec-sub{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--muted);
+  letter-spacing:.08em;margin-bottom:2rem}
+
+/* ── PROJECT TIMELINE ── */
+.timeline{position:relative;padding-left:2rem}
+.timeline::before{content:'';position:absolute;left:8px;top:0;bottom:0;width:2px;
+  background:linear-gradient(to bottom,var(--yellow),var(--cyan),var(--green),var(--purple))}
+.tl-item{position:relative;margin-bottom:2.5rem}
+.tl-dot{position:absolute;left:-2rem;top:.4rem;width:18px;height:18px;border-radius:50%;
+  background:var(--c,var(--cyan));border:3px solid var(--bg);box-shadow:0 0 10px var(--c,var(--cyan))}
+.tl-year{font-family:'Orbitron',monospace;font-size:.65rem;color:var(--c,var(--cyan));
+  letter-spacing:.15em;margin-bottom:.3rem}
+.tl-card{background:var(--surface);border:1px solid var(--b2);border-radius:12px;
+  padding:1.4rem 1.6rem;border-left:4px solid var(--c,var(--b2));position:relative;overflow:hidden}
+.tl-title{font-size:1rem;font-weight:700;color:var(--text);margin-bottom:.2rem}
+.tl-role{font-size:.8rem;color:var(--c,var(--muted));margin-bottom:.8rem;font-weight:500}
+.tl-desc{font-size:.84rem;line-height:1.7;color:var(--muted)}
+.tl-desc strong{color:var(--text)}
+.tl-tags{display:flex;flex-wrap:wrap;gap:.3rem;margin-top:.8rem}
+.tag{font-family:'JetBrains Mono',monospace;font-size:.55rem;padding:.2rem .5rem;
+  border-radius:3px;background:rgba(255,255,255,.04);border:1px solid var(--b2);color:var(--muted)}
+
+/* ── DIFF TABLE ── */
+.diff-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.8rem;margin-bottom:2rem}
+@media(max-width:800px){.diff-grid{grid-template-columns:repeat(2,1fr)}}
+.diff-card{background:var(--surface);border:1px solid var(--b2);border-radius:10px;
+  padding:1.1rem;border-top:3px solid var(--c,var(--b2));position:relative}
+.diff-num{font-family:'Orbitron',monospace;font-size:.6rem;color:var(--c,var(--muted));
+  letter-spacing:.15em;margin-bottom:.4rem}
+.diff-title{font-size:.9rem;font-weight:700;color:var(--text);margin-bottom:.6rem}
+.diff-row{margin-bottom:.5rem}
+.diff-label{font-family:'JetBrains Mono',monospace;font-size:.52rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--c,var(--muted));margin-bottom:.2rem}
+.diff-val{font-size:.78rem;line-height:1.5;color:var(--muted)}
+.diff-val strong{color:var(--text)}
+
+/* ── PROBLEM / SOLUTION CARDS ── */
+.ps-block{margin-bottom:2rem}
+.ps-proj{display:flex;align-items:center;gap:.8rem;margin-bottom:1rem}
+.ps-badge{font-family:'Orbitron',monospace;font-size:.55rem;letter-spacing:.15em;
+  padding:.25rem .7rem;border-radius:4px;background:rgba(255,255,255,.05);
+  border:1px solid var(--c,var(--b2));color:var(--c,var(--muted))}
+.ps-name{font-size:.95rem;font-weight:700;color:var(--text)}
+.ps-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.8rem}
+@media(max-width:700px){.ps-grid{grid-template-columns:1fr}}
+.ps-card{background:var(--surface);border:1px solid var(--b2);border-radius:10px;padding:1rem 1.1rem}
+.ps-card-title{font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.15em;
+  text-transform:uppercase;margin-bottom:.5rem;padding:.2rem .5rem;border-radius:3px;
+  display:inline-block}
+.ps-card-title.prob{background:rgba(255,95,95,.1);color:var(--red);border:1px solid rgba(255,95,95,.2)}
+.ps-card-title.sol{background:rgba(11,232,129,.1);color:var(--emerald);border:1px solid rgba(11,232,129,.2)}
+.ps-card-title.tech{background:rgba(0,212,255,.1);color:var(--cyan);border:1px solid rgba(0,212,255,.2)}
+.ps-list{list-style:none;margin-top:.5rem}
+.ps-list li{font-size:.8rem;line-height:1.6;color:var(--muted);padding:.2rem 0;
+  border-bottom:1px solid var(--border);display:flex;gap:.5rem}
+.ps-list li:last-child{border-bottom:none}
+.ps-list li::before{content:'→';color:var(--c,var(--muted));flex-shrink:0}
+
+/* ── IMPROVEMENTS ── */
+.imp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem;margin-bottom:2rem}
+.imp-card{background:var(--surface);border:1px solid var(--b2);border-radius:10px;padding:1.1rem 1.3rem;
+  border-left:3px solid var(--c,var(--b2))}
+.imp-proj{font-family:'JetBrains Mono',monospace;font-size:.52rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--c,var(--muted));margin-bottom:.3rem}
+.imp-title{font-size:.9rem;font-weight:700;color:var(--text);margin-bottom:.5rem}
+.imp-desc{font-size:.8rem;line-height:1.6;color:var(--muted)}
+.imp-desc strong{color:var(--text)}
+.imp-effort{font-family:'JetBrains Mono',monospace;font-size:.52rem;margin-top:.5rem;
+  padding:.15rem .4rem;border-radius:3px;display:inline-block}
+.imp-easy{background:rgba(11,232,129,.1);color:var(--emerald);border:1px solid rgba(11,232,129,.2)}
+.imp-med{background:rgba(255,183,0,.1);color:var(--yellow);border:1px solid rgba(255,183,0,.2)}
+.imp-hard{background:rgba(191,90,242,.1);color:var(--purple);border:1px solid rgba(191,90,242,.2)}
+
+/* ── BUSINESS IMPACT ── */
+.biz-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1rem;margin-bottom:2rem}
+.biz-card{background:var(--surface);border:1px solid var(--b2);border-radius:12px;
+  padding:1.3rem;border-top:3px solid var(--c,var(--b2));overflow:hidden;position:relative}
+.biz-proj{font-family:'JetBrains Mono',monospace;font-size:.52rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--c,var(--muted));margin-bottom:.3rem}
+.biz-title{font-size:.95rem;font-weight:700;color:var(--text);margin-bottom:.8rem}
+.biz-metric{display:flex;align-items:flex-start;gap:.7rem;margin-bottom:.6rem}
+.biz-icon{font-size:1.1rem;flex-shrink:0;margin-top:.05rem}
+.biz-text{font-size:.8rem;line-height:1.5;color:var(--muted)}
+.biz-text strong{color:var(--text)}
+.biz-scale{margin-top:.8rem;padding:.6rem .8rem;background:var(--bg2);border-radius:6px;
+  font-size:.75rem;color:var(--muted);border:1px solid var(--border)}
+.biz-scale strong{color:var(--c,var(--text))}
+
+/* ── TECH EVOLUTION ── */
+.evo-table{width:100%;border-collapse:collapse;font-size:.82rem;margin-bottom:2rem}
+.evo-table th{background:var(--bg2);color:var(--cyan);font-family:'JetBrains Mono',monospace;
+  font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;padding:.6rem .9rem;
+  text-align:left;border-bottom:2px solid var(--b2)}
+.evo-table td{padding:.55rem .9rem;border-bottom:1px solid var(--border);color:var(--text);
+  vertical-align:top}
+.evo-table tr:hover td{background:rgba(0,212,255,.02)}
+.evo-cat{font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.08em;
+  color:var(--cyan);font-weight:600}
+.evo-cell{font-size:.78rem;color:var(--muted)}
+.evo-cell strong{color:var(--text)}
+.evo-cell .none{color:var(--border);font-style:italic}
+.arrow-col{text-align:center;color:var(--muted);font-size:.9rem}
+
+/* ── HIGHLIGHT ── */
+.highlight{background:linear-gradient(135deg,rgba(0,212,255,.05),rgba(11,232,129,.03));
+  border:1px solid rgba(0,212,255,.2);border-radius:10px;padding:1.2rem 1.4rem;margin:1.5rem 0}
+.hl-title{font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.15em;
+  text-transform:uppercase;color:var(--cyan);margin-bottom:.6rem}
+.hl-text{font-size:.87rem;line-height:1.75;color:var(--text)}
+
+/* ── SKILL LEVEL BARS ── */
+.skill-bars{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:.8rem;margin-bottom:2rem}
+.skill-bar-item{background:var(--surface);border:1px solid var(--b2);border-radius:8px;padding:.9rem 1rem}
+.sb-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:.4rem}
+.sb-name{font-size:.82rem;font-weight:600;color:var(--text)}
+.sb-pct{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--muted)}
+.sb-track{background:var(--bg2);border-radius:4px;height:6px;overflow:hidden}
+.sb-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--from),var(--to))}
+
+footer{position:relative;z-index:10;text-align:center;padding:2rem;
+  border-top:1px solid var(--b2);font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--muted)}
+footer em{color:var(--cyan);font-style:normal}
+</style>
+</head>
+<body>
+<div class="hexgrid"></div>
+
+<header>
+  <div class="logo-row">
+    <span class="logo-pill active">RAHUL NAIK</span>
+    <span class="logo-pill">AI ENGINEER</span>
+    <span class="logo-pill">4 PROJECTS · 4 YEARS</span>
+  </div>
+  <h1><em>Project Evolution</em> · Technical Journey</h1>
+  <div class="sub">How each project differs · Problems faced · Tech that solved them · Business impact · What's next</div>
+</header>
+
+<div class="nav">
+  <div class="tab active" data-c="yellow" onclick="showTab('timeline')">📅 Timeline</div>
+  <div class="tab" data-c="cyan" onclick="showTab('diff')">⚖️ How They Differ</div>
+  <div class="tab" data-c="pink" onclick="showTab('problems')">🔥 Problems & Solutions</div>
+  <div class="tab" data-c="green" onclick="showTab('tech')">🧬 Tech Evolution</div>
+  <div class="tab" data-c="purple" onclick="showTab('improvements')">🚀 Improvements</div>
+  <div class="tab" data-c="orange" onclick="showTab('business')">📈 Business Impact</div>
+</div>
+
+<div id="main">
+
+<!-- ══════════════════════════════════════════
+     TAB 1: TIMELINE
+══════════════════════════════════════════ -->
+<div class="section active" id="tab-timeline">
+  <div class="sec-head" style="--c:var(--yellow)">Project Timeline</div>
+  <div class="sec-sub">4 projects · 4 years · progressive complexity · each one building on the last</div>
+
+  <div class="highlight">
+    <div class="hl-title">🧭 The Journey at a Glance</div>
+    <div class="hl-text">
+      Started in 2022 with <strong>classical ML</strong> (Scikit-learn, no LLMs). Moved to <strong>OpenAI API directly</strong> in 2023 to understand LLMs at the foundation level. Then <strong>LangChain + RAG</strong> to solve document intelligence. Finally <strong>LangGraph multi-agent</strong> — the most complex architecture — for production loan decisioning. Each project answered a real business question that the previous one couldn't.
+    </div>
+  </div>
+
+  <div class="timeline">
+
+    <div class="tl-item">
+      <div class="tl-dot" style="--c:var(--yellow)"></div>
+      <div class="tl-year" style="--c:var(--yellow)">2022 · PHASE 1 · CLASSICAL ML</div>
+      <div class="tl-card" style="--c:var(--yellow)">
+        <div class="tl-title">🏢 WFO Risk Tracker — ML Return-to-Office Risk Prediction</div>
+        <div class="tl-role" style="color:var(--yellow)">System Engineer @ TCS · Personal Project · Scikit-learn Era</div>
+        <div class="tl-desc">
+          <strong>Context:</strong> Post-pandemic 2022. Companies mandating return-to-office with zero visibility into which employees would actually comply. HR teams making blanket decisions — causing attrition.<br><br>
+          <strong>What it does:</strong> Predicts each employee's WFO risk (0–100%) using 10 HR features. Trains Logistic Regression and Random Forest, picks the best via 5-fold CV ROC-AUC. Exposes predictions via FastAPI. Streamlit dashboard for HR teams.<br><br>
+          <strong>Why it matters:</strong> First project — proves ability to frame a real business problem as ML, build end-to-end pipeline, evaluate honestly, and ship a usable product. No LLMs, no RAG — pure data science fundamentals.
+        </div>
+        <div class="tl-tags">
+          <span class="tag">Python</span><span class="tag">Scikit-learn</span><span class="tag">Pandas</span><span class="tag">NumPy</span>
+          <span class="tag">FastAPI</span><span class="tag">Streamlit</span><span class="tag">Plotly</span><span class="tag">joblib</span><span class="tag">Docker</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot" style="--c:var(--cyan)"></div>
+      <div class="tl-year" style="--c:var(--cyan)">2023 · PHASE 2 · OPENAI API FOUNDATION</div>
+      <div class="tl-card" style="--c:var(--cyan)">
+        <div class="tl-title">🤖 FinBot — Banking FAQ Chatbot</div>
+        <div class="tl-role" style="color:var(--cyan)">System Engineer @ TCS · Personal Project · Raw API Era</div>
+        <div class="tl-desc">
+          <strong>Context:</strong> ChatGPT had just launched. Instead of using LangChain immediately, deliberately chose to build directly on the OpenAI API to understand how LLMs work at the message-array level — role management, token limits, statelessness, prompt design.<br><br>
+          <strong>What it does:</strong> Domain-specific banking FAQ chatbot. Classifies intent via zero-shot prompting. Returns structured JSON (intent, answer, follow-ups, escalation flag). Session-based multi-turn memory with history trimming. Rate-limited FastAPI service.<br><br>
+          <strong>Why it matters:</strong> Understanding the raw API made every LangChain abstraction make intuitive sense later. This is the foundation layer — without it, RAG and agents are just magic boxes.
+        </div>
+        <div class="tl-tags">
+          <span class="tag">Python</span><span class="tag">OpenAI API</span><span class="tag">FastAPI</span><span class="tag">Pydantic</span>
+          <span class="tag">slowapi</span><span class="tag">structlog</span><span class="tag">Docker</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot" style="--c:var(--green)"></div>
+      <div class="tl-year" style="--c:var(--green)">2023–2024 · PHASE 3 · RAG + LANGCHAIN</div>
+      <div class="tl-card" style="--c:var(--green)">
+        <div class="tl-title">📄 FinDoc QA — LangChain Document Intelligence</div>
+        <div class="tl-role" style="color:var(--green)">System Engineer @ TCS · Personal Project · RAG Era</div>
+        <div class="tl-desc">
+          <strong>Context:</strong> FinBot answered from GPT-4o's training data. But banking compliance teams needed answers from their own documents — internal policy PDFs, RBI circulars, loan handbooks — content that's not in any model's training data.<br><br>
+          <strong>What it does:</strong> RAG pipeline — chunk PDFs, embed with OpenAI, store in ChromaDB, retrieve with MMR, answer with GPT-4o using grounded prompting. Multi-turn conversation memory. Source citations. Streamlit UI.<br><br>
+          <strong>Why it matters:</strong> First production RAG system. Solved the hallucination problem through grounded prompting. Introduced the retrieve-then-generate pattern that LoanIQ's agents build on.
+        </div>
+        <div class="tl-tags">
+          <span class="tag">Python</span><span class="tag">LangChain</span><span class="tag">ChromaDB</span><span class="tag">OpenAI API</span>
+          <span class="tag">PyMuPDF</span><span class="tag">FastAPI</span><span class="tag">Streamlit</span><span class="tag">Docker</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot" style="--c:var(--purple)"></div>
+      <div class="tl-year" style="--c:var(--purple)">2024–2025 · PHASE 4 · MULTI-AGENT PRODUCTION</div>
+      <div class="tl-card" style="--c:var(--purple)">
+        <div class="tl-title">🏦 LoanIQ — Production RAG Loan Eligibility Engine</div>
+        <div class="tl-role" style="color:var(--purple)">AI Engineer @ Publicis Sapient · Personal Project (Bench)</div>
+        <div class="tl-desc">
+          <strong>Context:</strong> FinDoc QA was a single-chain system — one retrieval, one LLM call. Loan eligibility requires multiple specialised decisions in sequence: financial ratio analysis, policy lookup, compliance checking, underwriting rules, final decision. A single chain can't do this reliably.<br><br>
+          <strong>What it does:</strong> 6-agent LangGraph pipeline. Hybrid BM25 + pgvector retrieval. Cohere reranking. Parallel agent execution. RAGAS evaluation. LangSmith observability. OpenAI function calling. ECOA-compliant PostgreSQL audit logs. Full Docker Compose stack.<br><br>
+          <strong>Why it matters:</strong> This is the production-grade ceiling — every technique from the previous 3 projects feeds into this one. Multi-agent, multi-retrieval, multi-model, fully observable, compliance-ready.
+        </div>
+        <div class="tl-tags">
+          <span class="tag">Python</span><span class="tag">LangGraph</span><span class="tag">GPT-4o</span><span class="tag">pgvector</span>
+          <span class="tag">PostgreSQL</span><span class="tag">FastAPI</span><span class="tag">Alembic</span><span class="tag">RAGAS</span>
+          <span class="tag">LangSmith</span><span class="tag">Cohere Rerank</span><span class="tag">BM25</span><span class="tag">Redis</span><span class="tag">Docker</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     TAB 2: HOW THEY DIFFER
+══════════════════════════════════════════ -->
+<div class="section" id="tab-diff">
+  <div class="sec-head" style="--c:var(--cyan)">How Each Project Differs</div>
+  <div class="sec-sub">Same domain (banking/BFSI) · fundamentally different problems · different architectures</div>
+
+  <div class="diff-grid">
+    <div class="diff-card" style="--c:var(--yellow)">
+      <div class="diff-num" style="color:var(--yellow)">PROJECT 01 · 2022</div>
+      <div class="diff-title">WFO Risk Tracker</div>
+      <div class="diff-row"><div class="diff-label" style="color:var(--yellow)">Problem Type</div>
+        <div class="diff-val"><strong>Structured prediction</strong> — tabular HR data → risk score</div></div>
+      <div class="diff-row"><div class="diff-label" style="color:var(--yellow)">AI Approach</div>
+        <div class="diff-val">Classical ML — Logistic Regression + Random Forest. No LLMs.</div></div>
+      <div class="diff-row"><div class="diff-label" style="color:var(--yellow)">Data Source</div>
+        <div class="diff-val">Structured tabular CSV — 10 numeric/binary HR features</div></div>
+      <div class="diff-row"><div class="diff-label" style="color:var(--yellow)">Output</div>
+        <div class="diff-val">Risk score (0–100%) + Low/Medium/High category</div></div>
+      <div class="diff-row"><div class="diff-label" style="color:var(--yellow)">Memory</div>
+        <div class="diff-val">None — stateless batch predictions</div></div>
+      <div class="diff-row"><div class="diff-label" style="color:var(--yellow)">Complexity</div>
+        <div class="diff-val">⭐⭐ — single model pipeline</div></div>
+    </div>
+
+    <div class="diff-card" style="--c:var(--cyan)">
+      <div class="diff-num" style="color:var(--cyan)">PROJECT 02 · 2023</div>
+      <div class="diff-title">FinBot</div>
+      <div class="diff-row"><div class="diff-label" style="color:var(--cyan)">Problem Type</div>
+        <div class="diff-val"><strong>Conversational AI</strong> — FAQ answering from LLM training data</div></div>
+      <div class="diff-row"><div class="diff-label" style="color:var(--cyan)">AI Approach</div>
+        <div class="diff-val">OpenAI Chat Completions API. Zero-shot classification. JSON mode.</div></div>
+      <div class="diff-row"><div class="diff-label" style="color:var(--cyan)">Data Source</div>
+        <div class="diff-val">LLM parametric knowledge — no external documents</div></div>
+      <div class="diff-row"><div class="diff-label" style="color:var(--cyan)">Output</div>
+        <div class="diff-val">Structured JSON — intent + answer + follow-ups + escalation flag</div></div>
+      <div class="diff-row"><div class="diff-label" style="color:var(--cyan)">Memory</div>
+        <div class="diff-val">Session-based in-memory message history (last 10 turns)</div></div>
+      <div class="diff-row"><div class="diff-label" style="color:var(--cyan)">Complexity</div>
+        <div class="diff-val">⭐⭐⭐ — stateful sessions + rate limiting</div></div>
+    </div>
+
+    <div class="diff-card" style="--c:var(--green)">
+      <div class="diff-num" style="color:var(--green)">PROJECT 03 · 2023–24</div>
+      <div class="diff-title">FinDoc QA</div>
+      <div class="diff-row"><div class="diff-label" style="color:var(--green)">Problem Type</div>
+        <div class="diff-val"><strong>Document intelligence</strong> — answer from proprietary PDFs</div></div>
+      <div class="diff-row"><div class="diff-label" style="color:var(--green)">AI Approach</div>
+        <div class="diff-val">RAG — LangChain + ChromaDB + MMR retrieval + GPT-4o</div></div>
+      <div class="diff-row"><div class="diff-label" style="color:var(--green)">Data Source</div>
+        <div class="diff-val">External PDFs — policy docs, RBI circulars, loan handbooks</div></div>
+      <div class="diff-row"><div class="diff-label" style="color:var(--green)">Output</div>
+        <div class="diff-val">Answer with source citations (document name + page number)</div></div>
+      <div class="diff-row"><div class="diff-label" style="color:var(--green)">Memory</div>
+        <div class="diff-val">ConversationBufferMemory — multi-turn with question condensation</div></div>
+      <div class="diff-row"><div class="diff-label" style="color:var(--green)">Complexity</div>
+        <div class="diff-val">⭐⭐⭐⭐ — full RAG pipeline + UI + sessions</div></div>
+    </div>
+
+    <div class="diff-card" style="--c:var(--purple)">
+      <div class="diff-num" style="color:var(--purple)">PROJECT 04 · 2024–25</div>
+      <div class="diff-title">LoanIQ</div>
+      <div class="diff-row"><div class="diff-label" style="color:var(--purple)">Problem Type</div>
+        <div class="diff-val"><strong>Multi-step decisioning</strong> — loan eligibility via agent pipeline</div></div>
+      <div class="diff-row"><div class="diff-label" style="color:var(--purple)">AI Approach</div>
+        <div class="diff-val">LangGraph 6-agent pipeline + Hybrid RAG + Cohere reranking</div></div>
+      <div class="diff-row"><div class="diff-label" style="color:var(--purple)">Data Source</div>
+        <div class="diff-val">Policy PDFs + PostgreSQL + applicant financial data (real-time)</div></div>
+      <div class="diff-row"><div class="diff-label" style="color:var(--purple)">Output</div>
+        <div class="diff-val">Structured JSON — decision + reasons + counter-offer via function calling</div></div>
+      <div class="diff-row"><div class="diff-label" style="color:var(--purple)">Memory</div>
+        <div class="diff-val">LangGraph typed state — full pipeline state across 6 agents</div></div>
+      <div class="diff-row"><div class="diff-label" style="color:var(--purple)">Complexity</div>
+        <div class="diff-val">⭐⭐⭐⭐⭐ — production multi-agent, compliance, observability</div></div>
+    </div>
+  </div>
+
+  <div class="highlight">
+    <div class="hl-title">🔑 The Core Difference — One Line Each</div>
+    <div class="hl-text">
+      <strong style="color:var(--yellow)">WFO Risk:</strong> "What is this employee's probability of not returning?" — tabular ML, no language.<br>
+      <strong style="color:var(--cyan)">FinBot:</strong> "Answer this banking question from what GPT already knows." — no external data needed.<br>
+      <strong style="color:var(--green)">FinDoc QA:</strong> "Answer this from our documents — GPT doesn't have this content." — RAG, grounded answers.<br>
+      <strong style="color:var(--purple)">LoanIQ:</strong> "Make a complex multi-step decision using 6 specialised agents and our policy database." — orchestrated intelligence.
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     TAB 3: PROBLEMS & SOLUTIONS
+══════════════════════════════════════════ -->
+<div class="section" id="tab-problems">
+  <div class="sec-head" style="--c:var(--pink)">Major Problems Faced & How Tech Solved Them</div>
+  <div class="sec-sub">Real engineering challenges · what failed · what fixed it</div>
+
+  <!-- WFO -->
+  <div class="ps-block">
+    <div class="ps-proj">
+      <span class="ps-badge" style="--c:var(--yellow)">WFO RISK · 2022</span>
+      <span class="ps-name">WFO Risk Tracker</span>
+    </div>
+    <div class="ps-grid">
+      <div class="ps-card">
+        <div class="ps-card-title prob">🔥 Problems</div>
+        <ul class="ps-list" style="--c:var(--red)">
+          <li>No real HR data — confidential, couldn't use it</li>
+          <li>Features on wildly different scales (age: 18–70 vs commute: 0–200km)</li>
+          <li>Single train/test split gave unreliable metrics — lucky splits</li>
+          <li>Model saved without scaler — inference gave garbage predictions</li>
+          <li>No way for HR to use the model — just a Python script</li>
+        </ul>
+      </div>
+      <div class="ps-card">
+        <div class="ps-card-title sol">✅ Solutions</div>
+        <ul class="ps-list" style="--c:var(--emerald)">
+          <li>Built realistic synthetic dataset using NumPy with domain-appropriate distributions</li>
+          <li>StandardScaler — normalised all features to mean=0, std=1</li>
+          <li>5-fold cross-validated ROC-AUC — averaged across 5 splits, eliminated luck</li>
+          <li>joblib saves model AND scaler together — loaded as a pair at inference time</li>
+          <li>Streamlit dashboard — HR can use sliders, get gauge chart + recommendation</li>
+        </ul>
+      </div>
+      <div class="ps-card">
+        <div class="ps-card-title tech">⚙️ Tech That Solved It</div>
+        <ul class="ps-list" style="--c:var(--cyan)">
+          <li>Scikit-learn RandomForestClassifier with max_depth=8 — prevented overfitting</li>
+          <li>cross_val_score with cv=5, scoring="roc_auc" — reliable evaluation</li>
+          <li>joblib.dump() — model + scaler serialisation</li>
+          <li>Streamlit + Plotly — non-technical HR dashboard</li>
+          <li>FastAPI batch endpoint — bulk predictions for entire org</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- FinBot -->
+  <div class="ps-block">
+    <div class="ps-proj">
+      <span class="ps-badge" style="--c:var(--cyan)">FINBOT · 2023</span>
+      <span class="ps-name">FinBot — Banking FAQ Chatbot</span>
+    </div>
+    <div class="ps-grid">
+      <div class="ps-card">
+        <div class="ps-card-title prob">🔥 Problems</div>
+        <ul class="ps-list" style="--c:var(--red)">
+          <li>LLM answered any question — banking chatbot can't answer non-banking queries</li>
+          <li>JSON responses had markdown fences — json.loads() kept failing</li>
+          <li>Follow-ups like "What about NRIs?" had no context for classification</li>
+          <li>No rate limiting — one script could drain entire OpenAI budget instantly</li>
+          <li>Context window overflow — unlimited history caused API errors on long sessions</li>
+        </ul>
+      </div>
+      <div class="ps-card">
+        <div class="ps-card-title sol">✅ Solutions</div>
+        <ul class="ps-list" style="--c:var(--emerald)">
+          <li>Strict system prompt with explicit domain rules and out-of-scope fallback response</li>
+          <li>OpenAI JSON mode — response_format: json_object guarantees valid parseable JSON</li>
+          <li>Question condensation — rewrites follow-ups into standalone questions before classification</li>
+          <li>slowapi rate limiter — 20 req/min per IP with 429 + retry-after header</li>
+          <li>History trimming — keeps last 10 turns (20 messages), drops older context</li>
+        </ul>
+      </div>
+      <div class="ps-card">
+        <div class="ps-card-title tech">⚙️ Tech That Solved It</div>
+        <ul class="ps-list" style="--c:var(--cyan)">
+          <li>OpenAI system role — prompt engineering for domain constraint</li>
+          <li>response_format: {"type": "json_object"} — native JSON enforcement</li>
+          <li>Condensation LLM call with max_tokens=150 — cheap context resolution</li>
+          <li>slowapi + get_remote_address — per-IP rate limiting decorator</li>
+          <li>Python dict + TTL cleanup — lightweight stateful session store</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- FinDoc QA -->
+  <div class="ps-block">
+    <div class="ps-proj">
+      <span class="ps-badge" style="--c:var(--green)">FINDOC QA · 2023–24</span>
+      <span class="ps-name">FinDoc QA — Document Intelligence</span>
+    </div>
+    <div class="ps-grid">
+      <div class="ps-card">
+        <div class="ps-card-title prob">🔥 Problems</div>
+        <ul class="ps-list" style="--c:var(--red)">
+          <li>GPT-4o hallucinated answers not in documents — unacceptable for compliance</li>
+          <li>Standard similarity search returned 5 chunks from the same page — repetitive context</li>
+          <li>Fixed-size chunking split policy clauses mid-sentence — lost meaning at boundaries</li>
+          <li>PyPDF2 broke on many real banking PDFs — corrupt output, missing text</li>
+          <li>Same PDF re-uploaded repeatedly — wasted embedding cost and storage</li>
+        </ul>
+      </div>
+      <div class="ps-card">
+        <div class="ps-card-title sol">✅ Solutions</div>
+        <ul class="ps-list" style="--c:var(--emerald)">
+          <li>Grounded system prompt + fallback — "If not in context, say I cannot find this"</li>
+          <li>MMR retrieval (lambda_mult=0.5) — balances relevance AND diversity across chunks</li>
+          <li>RecursiveCharacterTextSplitter — respects paragraph/sentence boundaries, not fixed splits</li>
+          <li>PyMuPDF (fitz) — handles scanned PDFs, extracts font metadata for section detection</li>
+          <li>MD5 hash deduplication — skips ingestion if document already in ChromaDB</li>
+        </ul>
+      </div>
+      <div class="ps-card">
+        <div class="ps-card-title tech">⚙️ Tech That Solved It</div>
+        <ul class="ps-list" style="--c:var(--cyan)">
+          <li>LangChain ConversationalRetrievalChain — orchestrates retrieval + memory + generation</li>
+          <li>ChromaDB as_retriever(search_type="mmr") — built-in MMR support</li>
+          <li>RecursiveCharacterTextSplitter(chunk_size=800, overlap=150) — semantic splits</li>
+          <li>PyMuPDF fitz.open() — reliable PDF parsing across all banking doc formats</li>
+          <li>hashlib.md5() on file bytes — dedup before embedding</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- LoanIQ -->
+  <div class="ps-block">
+    <div class="ps-proj">
+      <span class="ps-badge" style="--c:var(--purple)">LOANIQ · 2024–25</span>
+      <span class="ps-name">LoanIQ — Multi-Agent Loan Eligibility</span>
+    </div>
+    <div class="ps-grid">
+      <div class="ps-card">
+        <div class="ps-card-title prob">🔥 Problems</div>
+        <ul class="ps-list" style="--c:var(--red)">
+          <li>Single chain can't handle 6 different specialised decisions reliably</li>
+          <li>Dense-only retrieval missed exact policy clause numbers (e.g., "RBI/2024/87")</li>
+          <li>Top-5 similar chunks still often redundant — low context precision</li>
+          <li>Policy + Compliance agents ran sequentially — doubled latency unnecessarily</li>
+          <li>LLM returned free-text decisions — hard to parse reliably downstream</li>
+          <li>No audit trail — ECOA requires adverse action records to be retained</li>
+          <li>No visibility into which agent failed or used most tokens</li>
+        </ul>
+      </div>
+      <div class="ps-card">
+        <div class="ps-card-title sol">✅ Solutions</div>
+        <ul class="ps-list" style="--c:var(--emerald)">
+          <li>LangGraph — 6 specialised agents with typed state machine and conditional routing</li>
+          <li>BM25 + pgvector hybrid — keyword search catches exact citations, dense catches semantics</li>
+          <li>Cohere Rerank cross-encoder — re-scores top-20 chunks, returns best 5 by actual relevance</li>
+          <li>LangGraph async branching — Policy and Compliance run in parallel, reducing latency ~30%</li>
+          <li>OpenAI function calling — enforces structured JSON schema at the API level, not prompt level</li>
+          <li>Append-only audit_logs PostgreSQL table — immutable ECOA adverse action records</li>
+          <li>LangSmith tracing — per-agent token usage, latency, retrieval quality in one dashboard</li>
+        </ul>
+      </div>
+      <div class="ps-card">
+        <div class="ps-card-title tech">⚙️ Tech That Solved It</div>
+        <ul class="ps-list" style="--c:var(--cyan)">
+          <li>LangGraph StateGraph — typed agent orchestration with conditional edges</li>
+          <li>pgvector ivfflat index — fast approximate nearest neighbour at scale</li>
+          <li>Cohere cohere.rerank() — cross-encoder reranking, not just embedding similarity</li>
+          <li>asyncio / LangGraph async — true parallel execution, not sequential</li>
+          <li>tools=[] parameter in Chat Completions — schema-enforced JSON output</li>
+          <li>Alembic migrations — versioned PostgreSQL schema for audit_logs</li>
+          <li>LANGCHAIN_TRACING_V2=true + LangSmith API key — automatic trace capture</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     TAB 4: TECH EVOLUTION
+══════════════════════════════════════════ -->
+<div class="section" id="tab-tech">
+  <div class="sec-head" style="--c:var(--green)">Technology Evolution</div>
+  <div class="sec-sub">How each technology category evolved across all 4 projects</div>
+
+  <table class="evo-table">
+    <thead>
+      <tr>
+        <th>Category</th>
+        <th style="color:var(--yellow)">WFO Risk · 2022</th>
+        <th style="color:var(--cyan)">FinBot · 2023</th>
+        <th style="color:var(--green)">FinDoc QA · 2023–24</th>
+        <th style="color:var(--purple)">LoanIQ · 2024–25</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="evo-cat">AI Core</td>
+        <td><div class="evo-cell">Scikit-learn<br><strong>Random Forest + LR</strong><br>Classical ML</div></td>
+        <td><div class="evo-cell">OpenAI Chat API<br><strong>GPT-4o raw</strong><br>Prompt engineering</div></td>
+        <td><div class="evo-cell">LangChain<br><strong>RetrievalQA Chain</strong><br>RAG pipeline</div></td>
+        <td><div class="evo-cell">LangGraph<br><strong>6-agent StateGraph</strong><br>Orchestrated agents</div></td>
+      </tr>
+      <tr>
+        <td class="evo-cat">Retrieval</td>
+        <td><div class="evo-cell"><span class="none">None — tabular data</span></div></td>
+        <td><div class="evo-cell"><span class="none">None — parametric knowledge</span></div></td>
+        <td><div class="evo-cell">ChromaDB<br><strong>MMR search</strong><br>Dense vectors only</div></td>
+        <td><div class="evo-cell">pgvector + BM25<br><strong>Hybrid retrieval</strong><br>+ Cohere Rerank</div></td>
+      </tr>
+      <tr>
+        <td class="evo-cat">Vector DB</td>
+        <td><div class="evo-cell"><span class="none">None</span></div></td>
+        <td><div class="evo-cell"><span class="none">None</span></div></td>
+        <td><div class="evo-cell"><strong>ChromaDB</strong><br>Local persistent<br>Free, no infra</div></td>
+        <td><div class="evo-cell"><strong>pgvector</strong><br>ivfflat index<br>PostgreSQL native</div></td>
+      </tr>
+      <tr>
+        <td class="evo-cat">Memory / State</td>
+        <td><div class="evo-cell"><span class="none">Stateless predictions</span></div></td>
+        <td><div class="evo-cell"><strong>In-memory dict</strong><br>UUID sessions<br>History trimming</div></td>
+        <td><div class="evo-cell"><strong>ConversationBufferMemory</strong><br>LangChain managed<br>+ question condensation</div></td>
+        <td><div class="evo-cell"><strong>LangGraph TypedDict state</strong><br>Shared across all agents<br>Conditional routing</div></td>
+      </tr>
+      <tr>
+        <td class="evo-cat">Output Format</td>
+        <td><div class="evo-cell">Float (risk score)<br>+ string category</div></td>
+        <td><div class="evo-cell"><strong>JSON mode</strong><br>response_format<br>Structured intent+answer</div></td>
+        <td><div class="evo-cell">Text answer<br>+ source citations<br>Prompt-enforced format</div></td>
+        <td><div class="evo-cell"><strong>Function calling</strong><br>Schema-enforced JSON<br>Loan decision object</div></td>
+      </tr>
+      <tr>
+        <td class="evo-cat">Evaluation</td>
+        <td><div class="evo-cell">ROC-AUC<br>Confusion matrix<br>5-fold CV</div></td>
+        <td><div class="evo-cell">Manual query testing<br><span class="none">No automated eval</span></div></td>
+        <td><div class="evo-cell">Sample query review<br><span class="none">No automated eval</span></div></td>
+        <td><div class="evo-cell"><strong>RAGAS framework</strong><br>Faithfulness, context precision<br>Retrieval relevance</div></td>
+      </tr>
+      <tr>
+        <td class="evo-cat">Observability</td>
+        <td><div class="evo-cell">structlog JSON logs<br>Basic metrics</div></td>
+        <td><div class="evo-cell">structlog JSON<br>Per-request logging<br>Latency tracking</div></td>
+        <td><div class="evo-cell">structlog JSON<br>Session analytics<br>Query logging</div></td>
+        <td><div class="evo-cell"><strong>LangSmith tracing</strong><br>Per-agent token + latency<br>Full chain visualisation</div></td>
+      </tr>
+      <tr>
+        <td class="evo-cat">Database</td>
+        <td><div class="evo-cell">CSV files<br>Pandas DataFrames</div></td>
+        <td><div class="evo-cell"><span class="none">None — in-memory only</span></div></td>
+        <td><div class="evo-cell">ChromaDB<br>Disk-persisted vectors</div></td>
+        <td><div class="evo-cell"><strong>PostgreSQL + pgvector</strong><br>Alembic migrations<br>ECOA audit_logs table</div></td>
+      </tr>
+      <tr>
+        <td class="evo-cat">Infrastructure</td>
+        <td><div class="evo-cell">Docker<br>Docker Compose<br>FastAPI + Streamlit</div></td>
+        <td><div class="evo-cell">Docker<br>FastAPI only<br>No UI</div></td>
+        <td><div class="evo-cell">Docker Compose<br>FastAPI + Streamlit<br>ChromaDB volume</div></td>
+        <td><div class="evo-cell"><strong>Docker Compose multi-service</strong><br>FastAPI + PostgreSQL + pgvector<br>+ Redis + health checks + Alembic</div></td>
+      </tr>
+      <tr>
+        <td class="evo-cat">PDF Ingestion</td>
+        <td><div class="evo-cell"><span class="none">None</span></div></td>
+        <td><div class="evo-cell"><span class="none">None</span></div></td>
+        <td><div class="evo-cell"><strong>PyMuPDF</strong><br>chunk_size=800, overlap=150<br>MD5 deduplication</div></td>
+        <td><div class="evo-cell"><strong>PyMuPDF</strong><br>chunk_size=512, overlap=50<br>Section-aware metadata</div></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="highlight">
+    <div class="hl-title">📊 Skill Depth Across All Technologies</div>
+    <div class="skill-bars">
+      <div class="skill-bar-item">
+        <div class="sb-top"><span class="sb-name">FastAPI + Pydantic</span><span class="sb-pct">95%</span></div>
+        <div class="sb-track"><div class="sb-fill" style="width:95%;--from:var(--cyan);--to:var(--green)"></div></div>
+      </div>
+      <div class="skill-bar-item">
+        <div class="sb-top"><span class="sb-name">LangChain / LangGraph</span><span class="sb-pct">90%</span></div>
+        <div class="sb-track"><div class="sb-fill" style="width:90%;--from:var(--purple);--to:var(--cyan)"></div></div>
+      </div>
+      <div class="skill-bar-item">
+        <div class="sb-top"><span class="sb-name">OpenAI API + Prompt Engineering</span><span class="sb-pct">92%</span></div>
+        <div class="sb-track"><div class="sb-fill" style="width:92%;--from:var(--green);--to:var(--cyan)"></div></div>
+      </div>
+      <div class="skill-bar-item">
+        <div class="sb-top"><span class="sb-name">RAG Pipeline Design</span><span class="sb-pct">88%</span></div>
+        <div class="sb-track"><div class="sb-fill" style="width:88%;--from:var(--yellow);--to:var(--orange)"></div></div>
+      </div>
+      <div class="skill-bar-item">
+        <div class="sb-top"><span class="sb-name">Vector Databases (pgvector / ChromaDB)</span><span class="sb-pct">85%</span></div>
+        <div class="sb-track"><div class="sb-fill" style="width:85%;--from:var(--pink);--to:var(--purple)"></div></div>
+      </div>
+      <div class="skill-bar-item">
+        <div class="sb-top"><span class="sb-name">Docker + Docker Compose</span><span class="sb-pct">88%</span></div>
+        <div class="sb-track"><div class="sb-fill" style="width:88%;--from:var(--cyan);--to:var(--blue)"></div></div>
+      </div>
+      <div class="skill-bar-item">
+        <div class="sb-top"><span class="sb-name">Scikit-learn / Classical ML</span><span class="sb-pct">80%</span></div>
+        <div class="sb-track"><div class="sb-fill" style="width:80%;--from:var(--yellow);--to:var(--green)"></div></div>
+      </div>
+      <div class="skill-bar-item">
+        <div class="sb-top"><span class="sb-name">PostgreSQL + Alembic</span><span class="sb-pct">78%</span></div>
+        <div class="sb-track"><div class="sb-fill" style="width:78%;--from:var(--orange);--to:var(--yellow)"></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     TAB 5: IMPROVEMENTS
+══════════════════════════════════════════ -->
+<div class="section" id="tab-improvements">
+  <div class="sec-head" style="--c:var(--purple)">What Can Be Fixed & New Improvements</div>
+  <div class="sec-sub">Honest limitations · what to add next · effort vs impact</div>
+
+  <div class="imp-grid">
+
+    <div class="imp-card" style="--c:var(--yellow)">
+      <div class="imp-proj" style="color:var(--yellow)">WFO RISK</div>
+      <div class="imp-title">Hyperparameter Tuning</div>
+      <div class="imp-desc">Used sensible defaults for Random Forest. <strong>GridSearchCV or RandomizedSearchCV</strong> would find optimal max_depth, n_estimators, min_samples_split — likely improving ROC-AUC by 2–4%.</div>
+      <span class="imp-effort imp-easy">EASY · 1 day</span>
+    </div>
+
+    <div class="imp-card" style="--c:var(--yellow)">
+      <div class="imp-proj" style="color:var(--yellow)">WFO RISK</div>
+      <div class="imp-title">SHAP Explainability</div>
+      <div class="imp-desc">Feature importances show global relevance. <strong>SHAP values</strong> give per-prediction explanation — "For this employee, commute contributed +0.15 to risk." Critical for HR to justify interventions.</div>
+      <span class="imp-effort imp-easy">EASY · 2 days</span>
+    </div>
+
+    <div class="imp-card" style="--c:var(--yellow)">
+      <div class="imp-proj" style="color:var(--yellow)">WFO RISK</div>
+      <div class="imp-title">Threshold Optimisation</div>
+      <div class="imp-desc">Default 0.5 threshold isn't optimal. <strong>ROC curve analysis</strong> to find threshold that maximises recall (missing a high-risk employee costs more than a false positive) while keeping precision ≥ 0.6.</div>
+      <span class="imp-effort imp-easy">EASY · 1 day</span>
+    </div>
+
+    <div class="imp-card" style="--c:var(--cyan)">
+      <div class="imp-proj" style="color:var(--cyan)">FINBOT</div>
+      <div class="imp-title">Redis Session Store</div>
+      <div class="imp-desc">Sessions are in-memory — lost on server restart. <strong>Redis</strong> as external session store (serialise history to JSON, set TTL) makes sessions persist across restarts and enables horizontal scaling.</div>
+      <span class="imp-effort imp-easy">EASY · 1 day</span>
+    </div>
+
+    <div class="imp-card" style="--c:var(--cyan)">
+      <div class="imp-proj" style="color:var(--cyan)">FINBOT</div>
+      <div class="imp-title">ConversationSummaryMemory</div>
+      <div class="imp-desc">ConversationBufferMemory stores everything. Very long sessions hit the context limit. <strong>ConversationSummaryMemory</strong> compresses older turns into a summary — enables unlimited conversation length.</div>
+      <span class="imp-effort imp-easy">EASY · 2 days</span>
+    </div>
+
+    <div class="imp-card" style="--c:var(--cyan)">
+      <div class="imp-proj" style="color:var(--cyan)">FINBOT</div>
+      <div class="imp-title">WhatsApp / Slack Integration</div>
+      <div class="imp-desc">FastAPI backend is integration-ready. Adding <strong>Twilio (WhatsApp) or Slack Bolt</strong> webhooks would let bank customers or employees interact via existing messaging apps — no UI adoption needed.</div>
+      <span class="imp-effort imp-med">MEDIUM · 1 week</span>
+    </div>
+
+    <div class="imp-card" style="--c:var(--green)">
+      <div class="imp-proj" style="color:var(--green)">FINDOC QA</div>
+      <div class="imp-title">RAGAS Evaluation</div>
+      <div class="imp-desc">Currently no automated quality measurement. Adding <strong>RAGAS</strong> (faithfulness, context precision, answer relevance) gives quantitative benchmarks — alerts when retrieval quality drops after adding new documents.</div>
+      <span class="imp-effort imp-easy">EASY · 2 days</span>
+    </div>
+
+    <div class="imp-card" style="--c:var(--green)">
+      <div class="imp-proj" style="color:var(--green)">FINDOC QA</div>
+      <div class="imp-title">Hybrid BM25 + Dense Search</div>
+      <div class="imp-desc">ChromaDB only does dense search. Adding <strong>BM25 keyword search</strong> alongside ChromaDB catches exact regulation numbers, document codes, and proper nouns that semantic search misses.</div>
+      <span class="imp-effort imp-med">MEDIUM · 3 days</span>
+    </div>
+
+    <div class="imp-card" style="--c:var(--green)">
+      <div class="imp-proj" style="color:var(--green)">FINDOC QA</div>
+      <div class="imp-title">Migrate to pgvector</div>
+      <div class="imp-desc">ChromaDB is local-only — can't scale to multiple servers. Migrating to <strong>pgvector</strong> (already used in LoanIQ) enables multi-server deployment, SQL metadata queries, and production-grade backup/recovery.</div>
+      <span class="imp-effort imp-med">MEDIUM · 1 week</span>
+    </div>
+
+    <div class="imp-card" style="--c:var(--purple)">
+      <div class="imp-proj" style="color:var(--purple)">LOANIQ</div>
+      <div class="imp-title">LangSmith Alerts</div>
+      <div class="imp-desc">LangSmith currently captures traces manually. Adding <strong>automated alerts</strong> when faithfulness drops below 0.8 or latency exceeds 45s would enable proactive pipeline monitoring without manual dashboard checking.</div>
+      <span class="imp-effort imp-easy">EASY · 1 day</span>
+    </div>
+
+    <div class="imp-card" style="--c:var(--purple)">
+      <div class="imp-proj" style="color:var(--purple)">LOANIQ</div>
+      <div class="imp-title">Human-in-the-Loop for Edge Cases</div>
+      <div class="imp-desc">Pipeline auto-decides all cases. Adding a <strong>review queue</strong> for borderline DTI (40–45%) or complex NRI cases — agent flags for human review instead of auto-deciding — would reduce compliance risk significantly.</div>
+      <span class="imp-effort imp-med">MEDIUM · 1 week</span>
+    </div>
+
+    <div class="imp-card" style="--c:var(--purple)">
+      <div class="imp-proj" style="color:var(--purple)">LOANIQ</div>
+      <div class="imp-title">Fine-tuned Embedding Model</div>
+      <div class="imp-desc">Using OpenAI's generic text-embedding-3-small. <strong>Fine-tuning on banking policy pairs</strong> (query → relevant clause) would improve retrieval precision for domain-specific terminology like "ivfflat", "DTI", "ECOA".</div>
+      <span class="imp-effort imp-hard">ADVANCED · 2 weeks</span>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     TAB 6: BUSINESS IMPACT
+══════════════════════════════════════════ -->
+<div class="section" id="tab-business">
+  <div class="sec-head" style="--c:var(--orange)">How They Help Business Grow & Scale</div>
+  <div class="sec-sub">Real business value · cost savings · scale potential · ROI framing</div>
+
+  <div class="biz-grid">
+
+    <div class="biz-card" style="--c:var(--yellow)">
+      <div class="biz-proj" style="color:var(--yellow)">WFO RISK TRACKER · 2022</div>
+      <div class="biz-title">HR Decision Intelligence</div>
+      <div class="biz-metric">
+        <div class="biz-icon">💰</div>
+        <div class="biz-text"><strong>Cost avoided:</strong> Replacing one mid-level employee costs 50–200% of annual salary. Identifying even 10 high-risk employees early and intervening saves ₹50L–2Cr in rehiring costs.</div>
+      </div>
+      <div class="biz-metric">
+        <div class="biz-icon">⚡</div>
+        <div class="biz-text"><strong>Speed:</strong> HR went from manual employee-by-employee assessment (days) to instant risk scoring of 1,000+ employees in seconds via batch API.</div>
+      </div>
+      <div class="biz-metric">
+        <div class="biz-icon">🎯</div>
+        <div class="biz-text"><strong>Precision:</strong> Targeted interventions (transport allowance for long commuters, childcare support for parents) instead of blanket mandates — higher ROI per HR rupee spent.</div>
+      </div>
+      <div class="biz-scale" style="--c:var(--yellow)">
+        <strong>Scale path:</strong> Add real-time data feed from HRMS → auto-retrain monthly → risk scores update as employee situations change (new child, moved house, new manager).
+      </div>
+    </div>
+
+    <div class="biz-card" style="--c:var(--cyan)">
+      <div class="biz-proj" style="color:var(--cyan)">FINBOT · 2023</div>
+      <div class="biz-title">Customer Service Automation</div>
+      <div class="biz-metric">
+        <div class="biz-icon">📞</div>
+        <div class="biz-text"><strong>Volume deflection:</strong> Banking FAQ chatbots handle 60–80% of inbound customer queries automatically. A bank with 10,000 FAQ calls/month saves 6,000–8,000 agent hours.</div>
+      </div>
+      <div class="biz-metric">
+        <div class="biz-icon">🕐</div>
+        <div class="biz-text"><strong>24/7 availability:</strong> Bot answers instantly at 2am — no staffing costs. Human agents focus on complex/sensitive cases flagged by escalate_to_human=true.</div>
+      </div>
+      <div class="biz-metric">
+        <div class="biz-icon">📊</div>
+        <div class="biz-text"><strong>Analytics:</strong> Intent distribution data reveals which banking topics customers struggle with most — informs product design and documentation improvements.</div>
+      </div>
+      <div class="biz-scale" style="--c:var(--cyan)">
+        <strong>Scale path:</strong> Add WhatsApp + Slack integration → embed in banking app → personalise responses using customer account data → multilingual support.
+      </div>
+    </div>
+
+    <div class="biz-card" style="--c:var(--green)">
+      <div class="biz-proj" style="color:var(--green)">FINDOC QA · 2023–24</div>
+      <div class="biz-title">Compliance Team Productivity</div>
+      <div class="biz-metric">
+        <div class="biz-icon">⏱️</div>
+        <div class="biz-text"><strong>Time saved:</strong> Manual policy document search takes 15–30 minutes per query. FinDoc QA returns answers in under 4 seconds — 95%+ time reduction per query for compliance officers.</div>
+      </div>
+      <div class="biz-metric">
+        <div class="biz-icon">✅</div>
+        <div class="biz-text"><strong>Accuracy:</strong> Source citations with page numbers enable auditors to verify answers instantly — reduces compliance review time and eliminates "where did this come from?" questions.</div>
+      </div>
+      <div class="biz-metric">
+        <div class="biz-icon">📁</div>
+        <div class="biz-text"><strong>Knowledge retention:</strong> Policy knowledge is no longer locked in senior employees' heads — any junior analyst can query the system and get authoritative, cited answers.</div>
+      </div>
+      <div class="biz-scale" style="--c:var(--green)">
+        <strong>Scale path:</strong> Connect to document management system → auto-ingest new RBI circulars → multi-bank deployment → role-based access (only see documents you're authorised for).
+      </div>
+    </div>
+
+    <div class="biz-card" style="--c:var(--purple)">
+      <div class="biz-proj" style="color:var(--purple)">LOANIQ · 2024–25</div>
+      <div class="biz-title">Loan Origination Transformation</div>
+      <div class="biz-metric">
+        <div class="biz-icon">🏦</div>
+        <div class="biz-text"><strong>Decision speed:</strong> Traditional loan eligibility assessment takes 2–5 business days. LoanIQ's multi-agent pipeline completes in ~35 seconds — enabling same-day loan pre-approval at scale.</div>
+      </div>
+      <div class="biz-metric">
+        <div class="biz-icon">📋</div>
+        <div class="biz-text"><strong>Compliance:</strong> Append-only ECOA audit_logs with LangSmith traces provide a complete, immutable decisioning record — satisfies regulatory requirements without manual documentation.</div>
+      </div>
+      <div class="biz-metric">
+        <div class="biz-icon">💡</div>
+        <div class="biz-text"><strong>Counter-offers:</strong> Decision agent generates counter-offers automatically (lower loan amount, different tenure) — turning declines into partial approvals, improving conversion rate.</div>
+      </div>
+      <div class="biz-metric">
+        <div class="biz-icon">📈</div>
+        <div class="biz-text"><strong>Throughput:</strong> A single bank processes thousands of loan applications daily. 35-second automated pre-screening lets underwriters focus only on complex edge cases — 10x throughput improvement.</div>
+      </div>
+      <div class="biz-scale" style="--c:var(--purple)">
+        <strong>Scale path:</strong> Connect to bureau APIs (CIBIL, Experian) → real-time income verification → integrate with LOS (Loan Origination System) → expand to auto, personal, MSME loans → multi-language applicant interface.
+      </div>
+    </div>
+
+  </div>
+
+  <div class="highlight">
+    <div class="hl-title">💼 Combined Business Story — What This Portfolio Proves</div>
+    <div class="hl-text">
+      Together, these 4 projects demonstrate the ability to solve the <strong>full spectrum of AI problems in banking</strong>:<br><br>
+      <strong style="color:var(--yellow)">Structured prediction</strong> (WFO Risk) → <strong style="color:var(--cyan)">Conversational AI</strong> (FinBot) → <strong style="color:var(--green)">Document Intelligence</strong> (FinDoc QA) → <strong style="color:var(--purple)">Agentic Decisioning</strong> (LoanIQ).<br><br>
+      Each solves a different business layer: <strong>HR analytics, customer service, compliance, and core banking operations</strong>. Any BFSI company evaluating AI adoption needs all four layers — this portfolio proves you can build any of them, from scratch, to production quality.
+    </div>
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<footer>
+  <em>Rahul Naik</em> &nbsp;·&nbsp; AI Engineer &nbsp;·&nbsp; Project Evolution & Technical Journey &nbsp;·&nbsp;
+  WFO Risk · FinBot · FinDoc QA · LoanIQ
+</footer>
+
+<script>
+function showTab(name){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  event.target.classList.add('active');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,1488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LoanIQ · Production Architecture Flowchart</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --bg:       #04060c;
+  --bg1:      #070b14;
+  --bg2:      #0b1120;
+  --surface:  #0e1526;
+  --s2:       #111d30;
+  --border:   #162035;
+  --b2:       #1e2e4a;
+
+  /* Layer colours */
+  --api:   #00d4ff;
+  --state: #7c6eff;
+  --a1:    #00ff88;   /* intake */
+  --a2:    #ffb700;   /* ratio  */
+  --a3p:   #ff6b9d;   /* policy (parallel) */
+  --a3c:   #ff4444;   /* compliance (parallel) */
+  --a5:    #ff9f43;   /* underwriting */
+  --a6:    #0be881;   /* decision */
+  --a7:    #4da6ff;   /* audit */
+  --rag:   #bf5af2;   /* rag pipeline */
+  --db:    #ffd166;   /* database */
+
+  --text:  #e8edf5;
+  --muted: #4a6080;
+  --dim:   #2a3a55;
+}
+
+html{font-size:14px;scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Outfit',sans-serif;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+/* ── Animated hex grid background ── */
+.hexgrid{
+  position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100'%3E%3Cpath d='M28 0 L56 16 L56 50 L28 66 L0 50 L0 16Z' fill='none' stroke='%23122040' stroke-width='0.5'/%3E%3C/svg%3E");
+  opacity:.5;
+}
+body::after{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:1;
+  background:radial-gradient(ellipse 80% 50% at 50% 0%,rgba(0,212,255,.04),transparent 60%),
+             radial-gradient(ellipse 60% 40% at 80% 80%,rgba(124,110,255,.04),transparent 60%);
+}
+
+/* ── Scanline effect ── */
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:2;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.06) 2px,rgba(0,0,0,.06) 4px);
+}
+
+/* ══════════════════════════════════════
+   HEADER
+══════════════════════════════════════ */
+header{
+  position:relative;z-index:10;
+  padding:3rem 2rem 2rem;
+  text-align:center;
+  border-bottom:1px solid var(--b2);
+  background:linear-gradient(180deg,rgba(0,212,255,.03) 0%,transparent 100%);
+}
+
+.logo{
+  display:inline-flex;align-items:center;gap:.6rem;
+  background:var(--surface);
+  border:1px solid var(--api);
+  border-radius:6px;
+  padding:.3rem 1rem;
+  margin-bottom:1.2rem;
+}
+.logo-icon{font-size:1.1rem}
+.logo-name{
+  font-family:'Orbitron',sans-serif;
+  font-size:.9rem;font-weight:700;
+  letter-spacing:.2em;
+  background:linear-gradient(135deg,var(--api),var(--rag));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.logo-version{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.58rem;color:var(--muted);letter-spacing:.12em;
+}
+
+h1{
+  font-family:'Orbitron',sans-serif;
+  font-size:clamp(1.4rem,4vw,2.8rem);
+  font-weight:900;letter-spacing:.06em;line-height:1.1;
+  color:var(--text);
+  text-shadow:0 0 40px rgba(0,212,255,.25);
+  margin-bottom:.4rem;
+}
+h1 span{
+  background:linear-gradient(90deg,var(--api) 0%,var(--rag) 50%,var(--a6) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+
+.tagline{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.7rem;color:var(--muted);letter-spacing:.12em;
+  text-transform:uppercase;margin-bottom:1.5rem;
+}
+
+/* stats bar */
+.stats{
+  display:flex;flex-wrap:wrap;justify-content:center;gap:.5rem;
+  margin-bottom:1.4rem;
+}
+.stat{
+  display:flex;align-items:center;gap:.4rem;
+  background:var(--surface);
+  border:1px solid var(--b2);
+  border-radius:4px;
+  padding:.25rem .7rem;
+  font-family:'JetBrains Mono',monospace;
+  font-size:.62rem;color:var(--muted);letter-spacing:.08em;
+}
+.stat strong{color:var(--text);font-weight:600}
+.stat-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+
+.hint{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.6rem;color:var(--muted);letter-spacing:.15em;
+  text-transform:uppercase;
+  animation:pulse 2s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{opacity:.4}50%{opacity:.9}}
+
+/* ══════════════════════════════════════
+   LEGEND BAR
+══════════════════════════════════════ */
+.legend-bar{
+  position:relative;z-index:9;
+  display:flex;flex-wrap:wrap;justify-content:center;gap:.4rem;
+  padding:.9rem 1.5rem;
+  background:var(--bg1);
+  border-bottom:1px solid var(--border);
+}
+.li{
+  display:flex;align-items:center;gap:.35rem;
+  font-family:'JetBrains Mono',monospace;
+  font-size:.58rem;color:var(--muted);letter-spacing:.07em;
+}
+.li-bar{width:16px;height:3px;border-radius:2px;flex-shrink:0}
+
+/* ══════════════════════════════════════
+   MAIN CANVAS
+══════════════════════════════════════ */
+#canvas{
+  position:relative;z-index:5;
+  max-width:1080px;margin:0 auto;
+  padding:2rem 1.2rem 6rem;
+}
+
+.flow{display:flex;flex-direction:column;align-items:center;gap:0}
+
+/* ══════════════════════════════════════
+   SECTION LABELS
+══════════════════════════════════════ */
+.section-label{
+  width:100%;max-width:820px;
+  display:flex;align-items:center;gap:.7rem;
+  margin:1.6rem 0 .7rem;
+}
+.sl-line{flex:1;height:1px;background:var(--b2)}
+.sl-text{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--c,var(--muted));
+  border:1px solid var(--c,var(--b2));
+  padding:.2rem .65rem;border-radius:99px;
+  white-space:nowrap;
+  box-shadow:0 0 8px var(--c,transparent)22;
+}
+
+/* ══════════════════════════════════════
+   CONNECTOR ARROWS
+══════════════════════════════════════ */
+.conn{
+  display:flex;flex-direction:column;align-items:center;
+  position:relative;z-index:2;
+}
+.conn-line{
+  width:2px;height:28px;
+  background:linear-gradient(to bottom,var(--c1,var(--b2)),var(--c2,var(--b2)));
+  opacity:.5;
+}
+.conn-arrow{
+  width:0;height:0;
+  border-left:5px solid transparent;
+  border-right:5px solid transparent;
+  border-top:7px solid var(--c2,var(--b2));
+  opacity:.45;
+}
+
+/* ══════════════════════════════════════
+   MAIN NODE CARD
+══════════════════════════════════════ */
+.node{
+  width:min(620px,96vw);
+  background:var(--surface);
+  border:1.5px solid var(--b2);
+  border-left:3px solid var(--c,var(--b2));
+  border-radius:10px;
+  overflow:hidden;
+  cursor:pointer;
+  position:relative;
+  transition:border-color .22s,box-shadow .22s,transform .18s;
+  opacity:0;transform:translateY(16px);
+  animation:rise .5s ease forwards;
+}
+.node:hover,.node.open{
+  border-color:var(--c,var(--b2));
+  box-shadow:0 0 28px -6px var(--c,transparent),
+             0 0 0 1px color-mix(in srgb,var(--c) 20%,transparent);
+  transform:translateY(-1px);
+}
+
+/* stagger */
+.node:nth-of-type(1){animation-delay:.06s}
+.node:nth-of-type(2){animation-delay:.12s}
+.node:nth-of-type(3){animation-delay:.18s}
+.node:nth-of-type(4){animation-delay:.24s}
+.node:nth-of-type(5){animation-delay:.30s}
+.node:nth-of-type(6){animation-delay:.36s}
+.node:nth-of-type(7){animation-delay:.42s}
+.node:nth-of-type(8){animation-delay:.48s}
+.node:nth-of-type(9){animation-delay:.54s}
+
+@keyframes rise{to{opacity:1;transform:translateY(0)}}
+
+/* node header */
+.nh{
+  display:flex;align-items:center;gap:.8rem;
+  padding:.85rem 1rem;
+}
+.nh-step{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.55rem;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--c,var(--muted));opacity:.75;
+  white-space:nowrap;min-width:64px;
+}
+.nh-icon{
+  width:34px;height:34px;border-radius:8px;
+  background:color-mix(in srgb,var(--c) 10%,var(--surface));
+  border:1px solid color-mix(in srgb,var(--c) 22%,transparent);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1rem;flex-shrink:0;
+}
+.nh-info{flex:1;min-width:0}
+.nh-title{
+  font-size:.86rem;font-weight:700;color:var(--text);
+  letter-spacing:-.01em;line-height:1.25;
+}
+.nh-sub{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.58rem;color:var(--muted);margin-top:.15rem;
+  letter-spacing:.04em;
+}
+.nh-toggle{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.58rem;color:var(--c,var(--muted));
+  display:flex;align-items:center;gap:.22rem;
+  flex-shrink:0;opacity:.6;white-space:nowrap;
+}
+.arrow-icon{display:inline-block;transition:transform .24s}
+.node.open .arrow-icon{transform:rotate(180deg)}
+
+/* ══════════════════════════════════════
+   SUB-PANEL
+══════════════════════════════════════ */
+.panel{
+  display:none;
+  padding:0 .8rem .75rem;
+  animation:fadeIn .26s ease;
+}
+.panel.show{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+
+.divider{height:1px;background:var(--border);margin:0 .3rem .6rem}
+
+/* sub items */
+.si{
+  display:flex;align-items:flex-start;gap:.6rem;
+  padding:.5rem .65rem;border-radius:7px;
+  border:1px solid transparent;
+  margin-bottom:2px;
+  transition:background .16s,border-color .16s,transform .16s;
+  cursor:default;
+}
+.si:hover{
+  background:color-mix(in srgb,var(--c) 5%,var(--s2));
+  border-color:color-mix(in srgb,var(--c) 22%,transparent);
+  transform:translateX(3px);
+}
+.si-bar{
+  width:2px;min-height:100%;align-self:stretch;
+  background:var(--c,var(--b2));border-radius:2px;
+  flex-shrink:0;opacity:.65;
+}
+.si-icon{font-size:.92rem;flex-shrink:0;margin-top:.03rem}
+.si-body{flex:1;min-width:0}
+.si-title{
+  font-size:.73rem;font-weight:700;color:var(--text);
+  letter-spacing:.01em;display:flex;align-items:center;
+  flex-wrap:wrap;gap:.28rem;line-height:1.4;
+}
+.si-desc{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.59rem;color:var(--muted);
+  margin-top:.16rem;line-height:1.6;
+}
+
+/* ══════════════════════════════════════
+   BADGES
+══════════════════════════════════════ */
+.b{
+  display:inline-block;font-family:'JetBrains Mono',monospace;
+  font-size:.5rem;font-weight:500;letter-spacing:.08em;
+  padding:.08rem .34rem;border-radius:3px;border:1px solid;
+  white-space:nowrap;vertical-align:middle;
+}
+.bGET{background:#00d4ff12;color:#00d4ff;border-color:#00d4ff28}
+.bPOST{background:#00ff8812;color:#00ff88;border-color:#00ff8828}
+.bPUT{background:#ffb70012;color:#ffb700;border-color:#ffb70028}
+.bDEL{background:#ff444412;color:#ff4444;border-color:#ff444428}
+.bLLM{background:#bf5af212;color:#bf5af2;border-color:#bf5af228}
+.bRAG{background:#7c6eff12;color:#7c6eff;border-color:#7c6eff28}
+.bDB{background:#ffd16612;color:#ffd166;border-color:#ffd16628}
+.bFREE{background:#0be88112;color:#0be881;border-color:#0be88128}
+.bMATH{background:#ff9f4312;color:#ff9f43;border-color:#ff9f4328}
+.bPARALLEL{background:#ff6b9d12;color:#ff6b9d;border-color:#ff6b9d28}
+.bCONF{background:#ff444412;color:#ff7070;border-color:#ff707028}
+
+/* ══════════════════════════════════════
+   PARALLEL FORK SECTION
+══════════════════════════════════════ */
+.fork-wrapper{
+  width:min(820px,96vw);
+  display:flex;flex-direction:column;align-items:center;
+}
+.fork-label-row{
+  display:flex;align-items:center;gap:.5rem;
+  font-family:'JetBrains Mono',monospace;
+  font-size:.55rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--a3p);opacity:.7;margin:.4rem 0 .5rem;
+}
+.fork-h-line{height:1px;width:55px;background:var(--a3p);opacity:.4}
+
+.fork-row{
+  width:100%;display:flex;gap:1.2rem;
+  align-items:flex-start;justify-content:center;
+  padding:0 .5rem;
+}
+
+.fork-branch{
+  flex:1;min-width:0;
+  display:flex;flex-direction:column;align-items:center;
+  gap:0;
+}
+
+.fork-badge{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.55rem;letter-spacing:.15em;text-transform:uppercase;
+  padding:.18rem .55rem;border-radius:99px;
+  border:1px solid var(--c,var(--b2));
+  color:var(--c,var(--muted));
+  margin-bottom:.4rem;
+  box-shadow:0 0 8px var(--c,transparent)18;
+}
+
+/* smaller parallel node */
+.pnode{
+  width:100%;
+  background:var(--surface);
+  border:1.5px solid var(--b2);
+  border-left:3px solid var(--c,var(--b2));
+  border-radius:9px;
+  overflow:hidden;cursor:pointer;
+  transition:border-color .22s,box-shadow .22s,transform .18s;
+  opacity:0;transform:translateY(12px);
+  animation:rise .5s .35s ease forwards;
+}
+.pnode:hover,.pnode.open{
+  border-color:var(--c,var(--b2));
+  box-shadow:0 0 22px -6px var(--c,transparent);
+  transform:translateY(-1px);
+}
+.pnode .nh{padding:.7rem .85rem}
+.pnode .nh-icon{width:30px;height:30px;font-size:.9rem}
+.pnode .nh-title{font-size:.78rem}
+.pnode .nh-step{font-size:.52rem;min-width:52px}
+
+/* join */
+.join-row{
+  width:min(620px,96vw);display:flex;
+  position:relative;height:22px;margin:-2px 0;
+}
+.join-row::before,.join-row::after{
+  content:'';position:absolute;top:0;
+  width:50%;height:100%;
+  border-bottom:2px solid var(--b2);
+  opacity:.4;
+}
+.join-row::before{left:25%;border-left:2px solid var(--b2)}
+.join-row::after{right:25%;border-right:2px solid var(--b2)}
+
+.join-label{
+  position:absolute;left:50%;transform:translateX(-50%);bottom:-18px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:.5rem;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--a5);opacity:.6;white-space:nowrap;
+}
+
+/* ══════════════════════════════════════
+   RAG PIPELINE BLOCK
+══════════════════════════════════════ */
+.rag-block{
+  width:min(820px,96vw);
+  background:var(--bg1);
+  border:1.5px solid color-mix(in srgb,var(--rag) 30%,var(--b2));
+  border-radius:12px;
+  overflow:hidden;cursor:pointer;
+  transition:border-color .22s,box-shadow .22s;
+  opacity:0;transform:translateY(12px);
+  animation:rise .5s .5s ease forwards;
+}
+.rag-block:hover,.rag-block.open{
+  border-color:var(--rag);
+  box-shadow:0 0 30px -8px var(--rag);
+}
+.rag-header{
+  display:flex;align-items:center;gap:.8rem;
+  padding:.9rem 1.1rem;
+  background:linear-gradient(135deg,color-mix(in srgb,var(--rag) 6%,var(--bg1)),var(--bg1));
+}
+.rag-title-block{flex:1}
+.rag-main-title{
+  font-family:'Orbitron',monospace;
+  font-size:.78rem;font-weight:700;letter-spacing:.12em;color:var(--rag);
+}
+.rag-sub-title{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.6rem;color:var(--muted);letter-spacing:.06em;margin-top:.15rem;
+}
+
+.rag-stages{
+  display:none;padding:.3rem .8rem .9rem;
+  animation:fadeIn .26s ease;
+}
+.rag-stages.show{display:block}
+
+/* stage row with connecting pipe */
+.rag-pipe{
+  display:flex;align-items:stretch;gap:.6rem;
+  position:relative;margin-bottom:3px;
+}
+.rag-pipe-line{
+  width:2px;flex-shrink:0;
+  background:linear-gradient(to bottom,var(--rag)55,var(--rag)00);
+  border-radius:2px;
+  margin-left:11px;
+}
+.rag-pipe:last-child .rag-pipe-line{background:none}
+
+.rag-stage{
+  flex:1;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-left:2px solid var(--rag);
+  border-radius:0 8px 8px 0;
+  padding:.55rem .75rem;
+  transition:background .16s,transform .16s;
+}
+.rag-stage:hover{
+  background:color-mix(in srgb,var(--rag) 5%,var(--surface));
+  transform:translateX(2px);
+}
+.rs-num{
+  font-family:'Orbitron',monospace;
+  font-size:.65rem;letter-spacing:.12em;color:var(--rag);opacity:.75;
+}
+.rs-title{font-size:.73rem;font-weight:700;color:var(--text);margin:.06rem 0}
+.rs-desc{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.58rem;color:var(--muted);line-height:1.6;margin-top:.12rem;
+}
+
+/* ══════════════════════════════════════
+   DB SCHEMA GRID
+══════════════════════════════════════ */
+.db-grid{
+  display:none;padding:.3rem .8rem .9rem;
+  animation:fadeIn .26s ease;
+}
+.db-grid.show{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:.5rem}
+
+.db-table{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-top:2px solid var(--db);
+  border-radius:0 0 8px 8px;
+  padding:.6rem .75rem;
+  transition:background .16s,transform .16s;
+}
+.db-table:hover{
+  background:color-mix(in srgb,var(--db) 5%,var(--surface));
+  transform:translateY(-2px);
+}
+.dt-name{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.65rem;font-weight:500;color:var(--db);letter-spacing:.08em;
+  display:flex;align-items:center;gap:.35rem;
+  margin-bottom:.3rem;
+}
+.dt-fields{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.57rem;color:var(--muted);line-height:1.65;
+}
+.dt-fields strong{color:var(--dim);font-weight:400;display:block;margin-top:.2rem}
+.dt-special{
+  display:inline-block;margin-top:.25rem;
+  font-size:.52rem;padding:.08rem .3rem;
+  border-radius:3px;border:1px solid var(--db)33;
+  background:color-mix(in srgb,var(--db) 8%,transparent);
+  color:var(--db);
+}
+
+/* ══════════════════════════════════════
+   TIMELINE FOOTER GRAPHIC
+══════════════════════════════════════ */
+.timeline{
+  width:min(820px,94vw);
+  margin:2rem auto 0;
+  background:var(--bg1);
+  border:1px solid var(--b2);
+  border-radius:10px;
+  padding:1.2rem 1.4rem;
+}
+.timeline-title{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:1rem;
+}
+.tl-track{
+  display:flex;align-items:center;
+  position:relative;height:36px;
+  gap:0;
+}
+.tl-segment{
+  height:28px;display:flex;align-items:center;justify-content:center;
+  font-family:'JetBrains Mono',monospace;
+  font-size:.55rem;letter-spacing:.06em;
+  color:rgba(0,0,0,.75);font-weight:600;
+  position:relative;overflow:hidden;
+  flex-shrink:0;
+}
+.tl-segment:first-child{border-radius:6px 0 0 6px}
+.tl-segment:last-child{border-radius:0 6px 6px 0}
+.tl-label{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.52rem;color:var(--muted);letter-spacing:.06em;
+  display:flex;justify-content:center;
+  margin-top:.4rem;text-align:center;
+}
+.tl-col{display:flex;flex-direction:column;flex:var(--w,1)}
+
+/* ══════════════════════════════════════
+   FOOTER
+══════════════════════════════════════ */
+footer{
+  text-align:center;
+  padding:1.5rem 1rem;
+  font-family:'JetBrains Mono',monospace;
+  font-size:.6rem;color:var(--muted);letter-spacing:.1em;
+  border-top:1px solid var(--border);
+  position:relative;z-index:5;
+}
+footer em{color:var(--api);font-style:normal}
+
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--b2);border-radius:3px}
+
+@media(max-width:640px){
+  .fork-row{flex-direction:column;align-items:center}
+  .fork-branch{width:min(400px,94vw)}
+  .join-row{display:none}
+  .db-grid.show{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="hexgrid"></div>
+
+<!-- ══════════════════ HEADER ══════════════════ -->
+<header>
+  <div class="logo">
+    <span class="logo-icon">⚡</span>
+    <span class="logo-name">LOANIQ</span>
+    <span class="logo-version">v2.0 · PRODUCTION</span>
+  </div>
+
+  <h1><span>RAG Loan Eligibility Engine</span><br>Architecture Flowchart</h1>
+  <p class="tagline">FastAPI · LangGraph · GPT-4o · pgvector · 8-Stage RAG · 7 Agents</p>
+
+  <div class="stats">
+    <div class="stat"><span class="stat-dot" style="background:var(--a1)"></span><strong>7</strong>&nbsp;LangGraph Agents</div>
+    <div class="stat"><span class="stat-dot" style="background:var(--rag)"></span><strong>8</strong>&nbsp;RAG Pipeline Stages</div>
+    <div class="stat"><span class="stat-dot" style="background:var(--api)"></span><strong>5</strong>&nbsp;REST Endpoints</div>
+    <div class="stat"><span class="stat-dot" style="background:var(--db)"></span><strong>6</strong>&nbsp;PostgreSQL Tables</div>
+    <div class="stat"><span class="stat-dot" style="background:var(--a3p)"></span>Parallel Fan-out · Fan-in</div>
+    <div class="stat"><span class="stat-dot" style="background:var(--a2)"></span>Conditional Routing</div>
+    <div class="stat"><span class="stat-dot" style="background:var(--state)"></span>TypedDict Shared State</div>
+  </div>
+  <p class="hint">▼ &nbsp; click any node to expand all steps</p>
+</header>
+
+<!-- ══════════════════ LEGEND ══════════════════ -->
+<div class="legend-bar">
+  <div class="li"><div class="li-bar" style="background:var(--api)"></div>HTTP / API Layer</div>
+  <div class="li"><div class="li-bar" style="background:var(--state)"></div>Shared State</div>
+  <div class="li"><div class="li-bar" style="background:var(--a1)"></div>IntakeAgent</div>
+  <div class="li"><div class="li-bar" style="background:var(--a2)"></div>RatioAgent</div>
+  <div class="li"><div class="li-bar" style="background:var(--a3p)"></div>PolicyAgent (parallel)</div>
+  <div class="li"><div class="li-bar" style="background:var(--a3c)"></div>ComplianceAgent (parallel)</div>
+  <div class="li"><div class="li-bar" style="background:var(--a5)"></div>UnderwritingAgent</div>
+  <div class="li"><div class="li-bar" style="background:var(--a6)"></div>DecisionAgent</div>
+  <div class="li"><div class="li-bar" style="background:var(--a7)"></div>AuditAgent</div>
+  <div class="li"><div class="li-bar" style="background:var(--rag)"></div>RAG Pipeline</div>
+  <div class="li"><div class="li-bar" style="background:var(--db)"></div>DB / Schema</div>
+</div>
+
+<!-- ══════════════════ CANVAS ══════════════════ -->
+<div id="canvas">
+<div class="flow">
+
+  <!-- ═══════════════════════════════════
+       SECTION 1: HTTP API
+  ═══════════════════════════════════ -->
+  <div class="section-label" style="--c:var(--api)">
+    <div class="sl-line"></div>
+    <div class="sl-text">01 — HTTP API Layer</div>
+    <div class="sl-line"></div>
+  </div>
+
+  <div class="node" style="--c:var(--api)" onclick="toggle(this,'p-api')">
+    <div class="nh">
+      <div class="nh-step">ENTRY</div>
+      <div class="nh-icon">🌐</div>
+      <div class="nh-info">
+        <div class="nh-title">FastAPI Application &amp; REST Endpoints</div>
+        <div class="nh-sub">app/main.py · app/api/v1/endpoints/loans.py · uvicorn</div>
+      </div>
+      <div class="nh-toggle"><i class="arrow-icon">▼</i>&nbsp;6 items</div>
+    </div>
+    <div class="panel" id="p-api">
+      <div class="divider"></div>
+
+      <div class="si"><div class="si-bar"></div><div class="si-icon">🔄</div>
+        <div class="si-body">
+          <div class="si-title">Lifespan context manager</div>
+          <div class="si-desc">asynccontextmanager wraps startup + shutdown. Startup: setup_logging() → configure_langsmith() → check_db_connection() → Base.metadata.create_all(). Shutdown: await engine.dispose(). Server boots on 0.0.0.0:8000.</div>
+        </div>
+      </div>
+
+      <div class="si"><div class="si-bar"></div><div class="si-icon">🔀</div>
+        <div class="si-body">
+          <div class="si-title">CORS + Request-ID Middleware</div>
+          <div class="si-desc">CORSMiddleware allow_origins=["*"] (dev). Every request stamped with uuid4() request_id → logged via structlog + injected into response headers X-Request-ID, X-Process-Time-Ms. Enables distributed tracing.</div>
+        </div>
+      </div>
+
+      <div class="si"><div class="si-bar"></div><div class="si-icon">👤</div>
+        <div class="si-body">
+          <div class="si-title"><span class="b bPOST">POST</span> /api/v1/borrowers — Create Borrower</div>
+          <div class="si-desc">Validates BorrowerCreateSchema (Pydantic). Duplicate email check → 409. INSERT to borrowers table. Returns borrower UUID. PII fields (SSN, DOB) encrypted at rest in production via pgcrypto.</div>
+        </div>
+      </div>
+
+      <div class="si"><div class="si-bar"></div><div class="si-icon">📋</div>
+        <div class="si-body">
+          <div class="si-title"><span class="b bPOST">POST</span> /api/v1/loans/apply — Submit Application</div>
+          <div class="si-desc">Validates LoanApplicationCreateSchema. Checks borrower FK exists. Generates APP-{YYYY}-{id[:6]} application_number. INSERT to loan_applications (status=SUBMITTED). Returns application_id.</div>
+        </div>
+      </div>
+
+      <div class="si"><div class="si-bar"></div><div class="si-icon">⚡</div>
+        <div class="si-body">
+          <div class="si-title"><span class="b bPOST">POST</span> /api/v1/loans/{id}/decide — 🚀 Trigger AI Pipeline</div>
+          <div class="si-desc">Loads application + borrower from DB. Builds initial LoanApplicationState TypedDict. Calls run_loan_pipeline(state). Awaits full async pipeline (~15–55s). Returns: outcome · ratios · compliance · policy_citations · agent_traces · pipeline_metadata.</div>
+        </div>
+      </div>
+
+      <div class="si"><div class="si-bar"></div><div class="si-icon">📊</div>
+        <div class="si-body">
+          <div class="si-title"><span class="b bGET">GET</span> /status &nbsp;<span class="b bGET">GET</span> /decision &nbsp;<span class="b bGET">GET</span> /health</div>
+          <div class="si-desc">/status: DB lookup — returns ApplicationStatus enum. /decision: returns saved LoanDecision with policy_citations JSONB + agent_traces. /health: SELECT 1 → {status, database, version} — used by load balancers.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="conn" style="--c1:var(--api);--c2:var(--state)">
+    <div class="conn-line"></div><div class="conn-arrow"></div>
+  </div>
+
+  <!-- ═══════════════════════════════════
+       SECTION 2: SHARED STATE
+  ═══════════════════════════════════ -->
+  <div class="section-label" style="--c:var(--state)">
+    <div class="sl-line"></div>
+    <div class="sl-text">02 — LangGraph Shared State</div>
+    <div class="sl-line"></div>
+  </div>
+
+  <div class="node" style="--c:var(--state)" onclick="toggle(this,'p-state')">
+    <div class="nh">
+      <div class="nh-step">STATE</div>
+      <div class="nh-icon">🗂️</div>
+      <div class="nh-info">
+        <div class="nh-title">LoanApplicationState — The Relay Baton</div>
+        <div class="nh-sub">app/agents/state/loan_state.py · TypedDict · Custom Reducers</div>
+      </div>
+      <div class="nh-toggle"><i class="arrow-icon">▼</i>&nbsp;5 groups</div>
+    </div>
+    <div class="panel" id="p-state">
+      <div class="divider"></div>
+
+      <div class="si"><div class="si-bar" style="background:var(--state)"></div><div class="si-icon">🪪</div>
+        <div class="si-body">
+          <div class="si-title">Identity &amp; Input fields</div>
+          <div class="si-desc">application_id · session_id · borrower_id · loan_amount · loan_type (CONVENTIONAL/FHA/VA/USDA/HELOAN/HELOC/JUMBO) · loan_purpose · loan_term_years · property_value · property_state · property_type · occupancy_type · credit_score · annual_income · monthly_debt_payments · is_in_flood_zone · existing_mortgage_balance</div>
+        </div>
+      </div>
+
+      <div class="si"><div class="si-bar" style="background:var(--state)"></div><div class="si-icon">📐</div>
+        <div class="si-body">
+          <div class="si-title">Computed ratio fields (filled by RatioAgent)</div>
+          <div class="si-desc">ltv_ratio · ltv_percentage · cltv_ratio · hltv_ratio · front_end_dti · front_end_dti_pct · back_end_dti · back_end_dti_pct · estimated_monthly_payment · estimated_interest_rate · pmi_required · monthly_gross_income</div>
+        </div>
+      </div>
+
+      <div class="si"><div class="si-bar" style="background:var(--state)"></div><div class="si-icon">⚠️</div>
+        <div class="si-body">
+          <div class="si-title"><span class="b bPARALLEL">ANNOTATED</span> Fan-in safe list fields</div>
+          <div class="si-desc">agent_traces: Annotated[list, _dedup_by_started_at] — deduplicates by (agent_name, started_at) to prevent doubling during parallel fan-in. compliance_flags: operator.add. errors: _dedup_strings(). retrieved_policy_chunks: operator.add.</div>
+        </div>
+      </div>
+
+      <div class="si"><div class="si-bar" style="background:var(--state)"></div><div class="si-icon">📦</div>
+        <div class="si-body">
+          <div class="si-title">Output TypedDicts</div>
+          <div class="si-desc">AgentTrace {agent_name, started_at, ended_at, duration_ms, status, output_summary, error} · ComplianceFlag {rule, is_blocking, severity, description, recommendation} · UnderwritingAssessment · FinalDecision</div>
+        </div>
+      </div>
+
+      <div class="si"><div class="si-bar" style="background:var(--state)"></div><div class="si-icon">🔁</div>
+        <div class="si-body">
+          <div class="si-title">Pipeline control fields</div>
+          <div class="si-desc">pipeline_status (running/completed/failed) · has_blocking_compliance_issues · skip_to_decline · processing_started_at · total_processing_ms · errors[] · underwriting_assessment · final_decision</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="conn" style="--c1:var(--state);--c2:var(--a1)">
+    <div class="conn-line"></div><div class="conn-arrow"></div>
+  </div>
+
+  <!-- ═══════════════════════════════════
+       SECTION 3: AGENT PIPELINE
+  ═══════════════════════════════════ -->
+  <div class="section-label" style="--c:var(--a1)">
+    <div class="sl-line"></div>
+    <div class="sl-text">03 — LangGraph Multi-Agent Pipeline</div>
+    <div class="sl-line"></div>
+  </div>
+
+  <!-- AGENT 1: INTAKE -->
+  <div class="node" style="--c:var(--a1)" onclick="toggle(this,'p-intake')">
+    <div class="nh">
+      <div class="nh-step">AGENT 01</div>
+      <div class="nh-icon">🛂</div>
+      <div class="nh-info">
+        <div class="nh-title">IntakeAgent — Front Door Examiner</div>
+        <div class="nh-sub">intake_agent.py · GPT-4o-mini · START node</div>
+      </div>
+      <div class="nh-toggle"><i class="arrow-icon">▼</i>&nbsp;4 steps</div>
+    </div>
+    <div class="panel" id="p-intake">
+      <div class="divider"></div>
+
+      <div class="si"><div class="si-bar"></div><div class="si-icon">✅</div>
+        <div class="si-body">
+          <div class="si-title"><span class="b bMATH">RULES</span> Field-level validation</div>
+          <div class="si-desc">credit_score ∈ [300,850] · annual_income > 0 · property_value > 0 · loan_amount > 0 · loan_type ∈ VALID_LOAN_TYPES · occupancy ∈ VALID_OCCUPANCIES · property_type ∈ VALID_PROPERTY_TYPES · term ∈ [10,15,20,25,30]. Returns errors[] if any fail.</div>
+        </div>
+      </div>
+
+      <div class="si"><div class="si-bar"></div><div class="si-icon">🧮</div>
+        <div class="si-body">
+          <div class="si-title">Derived field computation</div>
+          <div class="si-desc">monthly_gross_income = annual_income / 12. Stored once in state — all downstream agents read it without recomputing. Consistent source of truth.</div>
+        </div>
+      </div>
+
+      <div class="si"><div class="si-bar"></div><div class="si-icon">🤖</div>
+        <div class="si-body">
+          <div class="si-title"><span class="b bLLM">GPT-4o-mini</span> Semantic consistency check</div>
+          <div class="si-desc">Prompt: "Review borrower profile for semantic inconsistencies." temp=0 + response_format=json_object. Returns: data_quality_score · income_plausibility · employment_assessment · flag_anomalies[]. Graceful fallback on LLM error — validation continues without it.</div>
+        </div>
+      </div>
+
+      <div class="si"><div class="si-bar"></div><div class="si-icon">🚦</div>
+        <div class="si-body">
+          <div class="si-title"><span class="b bCONF">CONDITIONAL</span> route_after_intake()</div>
+          <div class="si-desc">LangGraph add_conditional_edges: if len(state.errors) > 0 with critical flags → route to "audit" (fast fail, skip all agents). Otherwise → "ratio_calculation". Critical = missing required field, invalid loan_type, credit_score out of range.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="conn" style="--c1:var(--a1);--c2:var(--a2)">
+    <div class="conn-line"></div><div class="conn-arrow"></div>
+  </div>
+
+  <!-- AGENT 2: RATIO -->
+  <div class="node" style="--c:var(--a2)" onclick="toggle(this,'p-ratio')">
+    <div class="nh">
+      <div class="nh-step">AGENT 02</div>
+      <div class="nh-icon">📐</div>
+      <div class="nh-info">
+        <div class="nh-title">RatioCalculationAgent — The Actuary</div>
+        <div class="nh-sub">ratio_agent.py · Pure Math + GPT-4o narrative · No hallucination possible</div>
+      </div>
+      <div class="nh-toggle"><i class="arrow-icon">▼</i>&nbsp;5 steps</div>
+    </div>
+    <div class="panel" id="p-ratio">
+      <div class="divider"></div>
+
+      <div class="si"><div class="si-bar"></div><div class="si-icon">🏠</div>
+        <div class="si-body">
+          <div class="si-title"><span class="b bMATH">MATH</span> LTV / CLTV / HLTV</div>
+          <div class="si-desc">LTV = loan_amount / property_value. CLTV = (loan + existing_mortgage) / value. HLTV = max HELOC exposure / value. Decimal(10, ROUND_HALF_UP) for precision. All stored as ratio (0.8444) AND percentage (84.44) — downstream agents use both forms.</div>
+        </div>
+      </div>
+
+      <div class="si"><div class="si-bar"></div><div class="si-icon">💵</div>
+        <div class="si-body">
+          <div class="si-title"><span class="b bMATH">MATH</span> Monthly payment + rate estimation</div>
+          <div class="si-desc">M = P[r(1+r)^n] / [(1+r)^n−1]. Rate from base (6.5%) adjusted by: credit_score buckets (LLPA) · loan_type (FHA +0.25%, VA −0.25%, JUMBO +0.5%) · term (15yr −0.75%). PMI added if LTV > 80% CONVENTIONAL.</div>
+        </div>
+      </div>
+
+      <div class="si"><div class="si-bar"></div><div class="si-icon">⚖️</div>
+        <div class="si-body">
+          <div class="si-title"><span class="b bMATH">MATH</span> Front-end + Back-end DTI</div>
+          <div class="si-desc">front_end_dti = monthly_payment / gross_income. back_end_dti = (payment + all_monthly_debts) / gross_income. QM threshold = 43%. Both as decimal and pct. VA/USDA use residual income model instead.</div>
+        </div>
+      </div>
+
+      <div class="si"><div class="si-bar"></div><div class="si-icon">🚩</div>
+        <div class="si-body">
+          <div class="si-title">Eligibility pre-check flags</div>
+          <div class="si-desc">ltv_within_standard_limit (≤80%) · pmi_required (LTV>80% CONV) · dti_within_qm_limit (≤43%) · credit_score_meets_minimum (CONV:620, FHA:580, VA:620, JUMBO:700, USDA:640). Flags stored as booleans in state.</div>
+        </div>
+      </div>
+
+      <div class="si"><div class="si-bar"></div><div class="si-icon">🤖</div>
+        <div class="si-body">
+          <div class="si-title"><span class="b bLLM">GPT-4o</span> Ratio narrative for UnderwritingAgent</div>
+          <div class="si-desc">LLM given all computed numbers. Generates 3–4 sentence ratio_narrative: strengths, concerns, compensating factors. Stored in state — UnderwritingAgent includes it verbatim in its own context. Cross-agent knowledge transfer.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="conn" style="--c1:var(--a2);--c2:var(--a3p)">
+    <div class="conn-line"></div><div class="conn-arrow"></div>
+  </div>
+
+  <!-- PARALLEL SECTION -->
+  <div class="fork-wrapper">
+    <div class="fork-label-row">
+      <div class="fork-h-line"></div>
+      ⬡ &nbsp; PARALLEL FAN-OUT — both agents receive identical state
+      <div class="fork-h-line" style="background:var(--a3c)"></div>
+    </div>
+
+    <div class="fork-row">
+
+      <!-- Branch A: Policy -->
+      <div class="fork-branch">
+        <div class="fork-badge" style="--c:var(--a3p)">AGENT 03A · PARALLEL</div>
+        <div class="pnode" style="--c:var(--a3p)" onclick="toggle(this,'p-policy')">
+          <div class="nh">
+            <div class="nh-step">POLICY</div>
+            <div class="nh-icon">🔍</div>
+            <div class="nh-info">
+              <div class="nh-title">PolicyRetrievalAgent</div>
+              <div class="nh-sub">policy_agent.py · 8-Stage RAG</div>
+            </div>
+            <div class="nh-toggle" style="font-size:.52rem"><i class="arrow-icon">▼</i></div>
+          </div>
+          <div class="panel" id="p-policy">
+            <div class="divider"></div>
+            <div class="si"><div class="si-bar" style="background:var(--a3p)"></div><div class="si-icon">🔤</div>
+              <div class="si-body">
+                <div class="si-title">Build retrieval query</div>
+                <div class="si-desc">f"Eligibility requirements for {loan_type} loan in {state}. LTV {pct}%, credit score {score}, DTI {dti_pct}%." Passed to AdvancedRAGPipeline.run().</div>
+              </div>
+            </div>
+            <div class="si"><div class="si-bar" style="background:var(--a3p)"></div><div class="si-icon">⚡</div>
+              <div class="si-body">
+                <div class="si-title"><span class="b bRAG">RAG</span> Run full 8-stage pipeline</div>
+                <div class="si-desc">Returns RAGResult: answer · citations · confidence · is_answerable · retrieved_chunks[5]. See RAG section below for full detail.</div>
+              </div>
+            </div>
+            <div class="si"><div class="si-bar" style="background:var(--a3p)"></div><div class="si-icon">📥</div>
+              <div class="si-body">
+                <div class="si-title">Store in state</div>
+                <div class="si-desc">retrieved_policy_chunks list appended to state (operator.add). Each chunk: document_title · content · similarity_score · section_title · source index.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Branch B: Compliance -->
+      <div class="fork-branch">
+        <div class="fork-badge" style="--c:var(--a3c)">AGENT 03B · PARALLEL</div>
+        <div class="pnode" style="--c:var(--a3c)" onclick="toggle(this,'p-comp')">
+          <div class="nh">
+            <div class="nh-step">COMPLIANCE</div>
+            <div class="nh-icon">⚖️</div>
+            <div class="nh-info">
+              <div class="nh-title">ComplianceAgent</div>
+              <div class="nh-sub">compliance_agent.py · ECOA·HMDA·ATR·State</div>
+            </div>
+            <div class="nh-toggle" style="font-size:.52rem"><i class="arrow-icon">▼</i></div>
+          </div>
+          <div class="panel" id="p-comp">
+            <div class="divider"></div>
+            <div class="si"><div class="si-bar" style="background:var(--a3c)"></div><div class="si-icon">📋</div>
+              <div class="si-body">
+                <div class="si-title"><span class="b bMATH">RULES</span> Federal compliance checks</div>
+                <div class="si-desc">FHA → PRIMARY or SECOND_HOME only. VA → PRIMARY only. JUMBO → LTV ≤ 80%, credit ≥ 700. HELOC → LTV ≤ 90%. Each violation = ComplianceFlag(is_blocking=True/False, severity, recommendation).</div>
+              </div>
+            </div>
+            <div class="si"><div class="si-bar" style="background:var(--a3c)"></div><div class="si-icon">🗺️</div>
+              <div class="si-body">
+                <div class="si-title">State predatory lending rules</div>
+                <div class="si-desc">STATE_PREDATORY_RULES dict: CA HBOR · NY Banking §6-l · NC HCOA (max 5% points/fees) · GA Fair Lending Act · NM HLPA · MA Predatory Act. Applied if property_state matches.</div>
+              </div>
+            </div>
+            <div class="si"><div class="si-bar" style="background:var(--a3c)"></div><div class="si-icon">🌊</div>
+              <div class="si-body">
+                <div class="si-title">Flood zone + NFIP check</div>
+                <div class="si-desc">If is_in_flood_zone=True → flag NFIP insurance required (is_blocking=False, severity=WARNING). FEMA SFHA zones require flood insurance for all federally backed loans.</div>
+              </div>
+            </div>
+            <div class="si"><div class="si-bar" style="background:var(--a3c)"></div><div class="si-icon">🤖</div>
+              <div class="si-body">
+                <div class="si-title"><span class="b bLLM">GPT-4o</span> ECOA · TILA · RESPA analysis</div>
+                <div class="si-desc">Free-form LLM analysis (no JSON format here — narrative). Checks for disparate impact risk, disclosure requirements, ATR ability-to-repay compliance. Sets has_blocking_compliance_issues boolean in state.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /fork-row -->
+  </div><!-- /fork-wrapper -->
+
+  <!-- JOIN -->
+  <div class="join-row" style="width:min(460px,80vw)">
+    <div class="join-label">fan-in · waits for both agents · dedup reducer runs</div>
+  </div>
+
+  <div class="conn" style="--c1:var(--a3c);--c2:var(--a5);margin-top:28px">
+    <div class="conn-line"></div><div class="conn-arrow"></div>
+  </div>
+
+  <!-- AGENT 5: UNDERWRITING -->
+  <div class="node" style="--c:var(--a5)" onclick="toggle(this,'p-uw')">
+    <div class="nh">
+      <div class="nh-step">AGENT 05</div>
+      <div class="nh-icon">🧠</div>
+      <div class="nh-info">
+        <div class="nh-title">UnderwritingAgent — Senior Underwriter</div>
+        <div class="nh-sub">underwriting_agent.py · GPT-4o · reads ALL prior agent outputs</div>
+      </div>
+      <div class="nh-toggle"><i class="arrow-icon">▼</i>&nbsp;4 steps</div>
+    </div>
+    <div class="panel" id="p-uw">
+      <div class="divider"></div>
+
+      <div class="si"><div class="si-bar"></div><div class="si-icon">📑</div>
+        <div class="si-body">
+          <div class="si-title">Build holistic LLM context</div>
+          <div class="si-desc">Merges: ratio_narrative (from RatioAgent) + policy chunks formatted as "[SOURCE N]: {content}" + compliance_flags summary + eligibility pre-check booleans + full borrower profile. Single comprehensive context string.</div>
+        </div>
+      </div>
+
+      <div class="si"><div class="si-bar"></div><div class="si-icon">🤖</div>
+        <div class="si-body">
+          <div class="si-title"><span class="b bLLM">GPT-4o</span> Holistic risk assessment</div>
+          <div class="si-desc">temp=0 + response_format=json_object. Returns: credit_assessment · income_assessment · ltv_assessment · dti_assessment (each: STRONG/ACCEPTABLE/WEAK/FAIL). strengths[] · weaknesses[] · compensating_factors[]. preliminary_recommendation (APPROVE/DECLINE/MANUAL_REVIEW).</div>
+        </div>
+      </div>
+
+      <div class="si"><div class="si-bar"></div><div class="si-icon">🏅</div>
+        <div class="si-body">
+          <div class="si-title">Overall risk grade A–F</div>
+          <div class="si-desc">overall_risk_grade: A (excellent) → F (decline). Based on weighted combination of all four assessments. confidence float 0–1. Stored as UnderwritingAssessment TypedDict in state.</div>
+        </div>
+      </div>
+
+      <div class="si"><div class="si-bar"></div><div class="si-icon">🚦</div>
+        <div class="si-body">
+          <div class="si-title"><span class="b bCONF">CONDITIONAL</span> should_skip_to_decline()</div>
+          <div class="si-desc">If risk_grade == "F" AND confidence > 0.95 → set skip_to_decline=True → route directly to AuditAgent with outcome=DECLINE. Saves one expensive GPT-4o call on clear declines. Otherwise → DecisionAgent.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="conn" style="--c1:var(--a5);--c2:var(--a6)">
+    <div class="conn-line"></div><div class="conn-arrow"></div>
+  </div>
+
+  <!-- AGENT 6: DECISION -->
+  <div class="node" style="--c:var(--a6)" onclick="toggle(this,'p-dec')">
+    <div class="nh">
+      <div class="nh-step">AGENT 06</div>
+      <div class="nh-icon">⚖️</div>
+      <div class="nh-info">
+        <div class="nh-title">DecisionAgent — Chief Credit Officer</div>
+        <div class="nh-sub">decision_agent.py · GPT-4o · binding + ECOA-compliant output</div>
+      </div>
+      <div class="nh-toggle"><i class="arrow-icon">▼</i>&nbsp;4 steps</div>
+    </div>
+    <div class="panel" id="p-dec">
+      <div class="divider"></div>
+
+      <div class="si"><div class="si-bar"></div><div class="si-icon">📝</div>
+        <div class="si-body">
+          <div class="si-title">Build final decision context</div>
+          <div class="si-desc">Packages ALL prior agent outputs: credit_score + LTV + DTI + risk_grade + preliminary_recommendation + compliance_flags + policy_citations. Asks LLM: outcome · confidence_score · decision_summary · decline_reasons[] · conditions[] · counter_offer_details.</div>
+        </div>
+      </div>
+
+      <div class="si"><div class="si-bar"></div><div class="si-icon">🤖</div>
+        <div class="si-body">
+          <div class="si-title"><span class="b bLLM">GPT-4o</span> Binding decision call</div>
+          <div class="si-desc">temp=0 + response_format=json_object. VALID_OUTCOMES = {APPROVE, DECLINE, COUNTER_OFFER, MANUAL_REVIEW}. Invalid outcome → fallback to MANUAL_REVIEW. decision_summary must be ECOA-compliant adverse action wording for DECLINE.</div>
+        </div>
+      </div>
+
+      <div class="si"><div class="si-bar"></div><div class="si-icon">🛡️</div>
+        <div class="si-body">
+          <div class="si-title">Business rule hard override</div>
+          <div class="si-desc">if has_blocking_compliance_issues == True AND outcome == "APPROVE" → forcibly override to "MANUAL_REVIEW". Adds explanation to decline_reasons. No loan may be approved with unresolved blocking compliance flags. Non-negotiable guard rail.</div>
+        </div>
+      </div>
+
+      <div class="si"><div class="si-bar"></div><div class="si-icon">📦</div>
+        <div class="si-body">
+          <div class="si-title">Write FinalDecision to state</div>
+          <div class="si-desc">FinalDecision TypedDict: outcome · confidence_score · decision_summary · decline_reasons · conditions · counter_offer_details · policy_citations · decision_timestamp · pipeline_status = "completed".</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="conn" style="--c1:var(--a6);--c2:var(--a7)">
+    <div class="conn-line"></div><div class="conn-arrow"></div>
+  </div>
+
+  <!-- AGENT 7: AUDIT -->
+  <div class="node" style="--c:var(--a7)" onclick="toggle(this,'p-audit')">
+    <div class="nh">
+      <div class="nh-step">AGENT 07 · END</div>
+      <div class="nh-icon">🗄️</div>
+      <div class="nh-info">
+        <div class="nh-title">AuditAgent — Record Keeper &amp; Persistence</div>
+        <div class="nh-sub">audit_agent.py · PostgreSQL · append-only audit trail · END node</div>
+      </div>
+      <div class="nh-toggle"><i class="arrow-icon">▼</i>&nbsp;4 steps</div>
+    </div>
+    <div class="panel" id="p-audit">
+      <div class="divider"></div>
+
+      <div class="si"><div class="si-bar"></div><div class="si-icon">💾</div>
+        <div class="si-body">
+          <div class="si-title"><span class="b bDB">INSERT</span> loan_decisions table</div>
+          <div class="si-desc">application_id (FK unique) · outcome (DecisionOutcome enum) · decision_summary · decline_reasons (JSONB) · conditions (JSONB) · counter_offer_details (JSONB) · policy_citations (JSONB) · confidence_score · processing_time_ms · decided_at.</div>
+        </div>
+      </div>
+
+      <div class="si"><div class="si-bar"></div><div class="si-icon">🔄</div>
+        <div class="si-body">
+          <div class="si-title"><span class="b bDB">UPDATE</span> loan_applications status</div>
+          <div class="si-desc">STATUS_MAP: APPROVE → APPROVED · DECLINE → DECLINED · COUNTER_OFFER → COUNTER_OFFERED · MANUAL_REVIEW → MANUAL_REVIEW. Single UPDATE WHERE id = application_id.</div>
+        </div>
+      </div>
+
+      <div class="si"><div class="si-bar"></div><div class="si-icon">📜</div>
+        <div class="si-body">
+          <div class="si-title"><span class="b bDB">INSERT</span> audit_logs — one row per agent</div>
+          <div class="si-desc">Iterates state['agent_traces']. For each: INSERT audit_logs {application_id, actor, event_type, event_data (JSONB), agent_name, duration_ms, status}. APPEND-ONLY — rows never deleted. Regulatory requirement: ECOA adverse action notices must be preserved.</div>
+        </div>
+      </div>
+
+      <div class="si"><div class="si-bar"></div><div class="si-icon">📊</div>
+        <div class="si-body">
+          <div class="si-title">Pipeline report generation</div>
+          <div class="si-desc">Autonomously detects anomalies: unusually long agent times, low confidence scores, unexpected compliance flags. Computes total_processing_ms = sum(trace.duration_ms). Writes pipeline_report summary to state for API response.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════
+       SECTION 4: RAG PIPELINE
+  ═══════════════════════════════════ -->
+  <div class="section-label" style="--c:var(--rag);margin-top:2rem">
+    <div class="sl-line"></div>
+    <div class="sl-text">04 — Advanced RAG Pipeline (called by PolicyRetrievalAgent)</div>
+    <div class="sl-line"></div>
+  </div>
+
+  <div class="rag-block" onclick="toggleRag(this,'rag-stages')">
+    <div class="rag-header">
+      <div class="nh-icon" style="background:color-mix(in srgb,var(--rag) 10%,var(--surface));border-color:color-mix(in srgb,var(--rag) 22%,transparent)">🔮</div>
+      <div class="rag-title-block">
+        <div class="rag-main-title">8-STAGE ADVANCED RAG PIPELINE</div>
+        <div class="rag-sub-title">app/services/rag/ · query_rewriter → hybrid_retriever → reranker → context_builder → generator → output_validator</div>
+      </div>
+      <div id="rag-arr" style="font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--muted);margin-left:auto;display:flex;align-items:center;gap:.22rem;transition:transform .24s">▼ expand</div>
+    </div>
+    <div class="rag-stages" id="rag-stages">
+
+      <div class="rag-pipe">
+        <div class="rag-pipe-line"></div>
+        <div class="rag-stage">
+          <div class="rs-num">STAGE 01</div>
+          <div class="rs-title">QueryRewriter &nbsp;<span class="b bLLM">GPT-4o-mini</span></div>
+          <div class="rs-desc">Rewrites raw agent query for retrieval clarity. Expands into 3 sub-queries (multi-query expansion). Each sub-query hits retrieval independently → broader policy coverage. LangSmith child span created.</div>
+        </div>
+      </div>
+
+      <div class="rag-pipe">
+        <div class="rag-pipe-line"></div>
+        <div class="rag-stage">
+          <div class="rs-num">STAGE 02</div>
+          <div class="rs-title">HybridRetriever &nbsp;<span class="b bFREE">BM25</span>&nbsp;<span class="b bDB">pgvector</span></div>
+          <div class="rs-desc">BM25 keyword search (rank-bm25, in-memory over loaded chunk corpus). Dense vector search (text-embedding-3-small, 1536-dim, cosine similarity via pgvector IVFFlat index). Reciprocal Rank Fusion (RRF) merges both ranked lists → 65 candidates. HYBRID_BM25_WEIGHT = 0.3 (configurable).</div>
+        </div>
+      </div>
+
+      <div class="rag-pipe">
+        <div class="rag-pipe-line"></div>
+        <div class="rag-stage">
+          <div class="rs-num">STAGE 03</div>
+          <div class="rs-title">MMRFilter &nbsp;<span class="b bFREE">numpy</span></div>
+          <div class="rs-desc">Maximum Marginal Relevance. λ=0.5 (MMR_LAMBDA, configurable). Balances relevance vs diversity. Prevents returning 5 nearly-identical chunks about the same policy section. Cosine similarity matrix computed in-memory with numpy. Reduces to TOP_K_CANDIDATES (15).</div>
+        </div>
+      </div>
+
+      <div class="rag-pipe">
+        <div class="rag-pipe-line"></div>
+        <div class="rag-stage">
+          <div class="rs-num">STAGE 04</div>
+          <div class="rs-title">CrossEncoderReranker &nbsp;<span class="b bFREE">LOCAL · FREE</span>&nbsp;<span class="b bMATH">CPU</span></div>
+          <div class="rs-desc">cross-encoder/ms-marco-MiniLM-L-6-v2 via sentence-transformers. Reads BOTH query + chunk together in full attention — far more accurate than cosine similarity alone. Typical scores: −4 to +8. Top 5 chunks selected after reranking. No API cost. Runs on CPU (slow but free).</div>
+        </div>
+      </div>
+
+      <div class="rag-pipe">
+        <div class="rag-pipe-line"></div>
+        <div class="rag-stage">
+          <div class="rs-num">STAGE 05</div>
+          <div class="rs-title">ContextBuilder</div>
+          <div class="rs-desc">Deduplicates near-identical chunks (token-level Jaccard overlap threshold). Token-budget-aware selection (max 3000 tokens). Each chunk formatted: "[SOURCE N: {document_title}, section: {section_title}]\n{content}". Metadata preserved for citation validation downstream.</div>
+        </div>
+      </div>
+
+      <div class="rag-pipe">
+        <div class="rag-pipe-line"></div>
+        <div class="rag-stage">
+          <div class="rs-num">STAGE 06</div>
+          <div class="rs-title">RAGGenerator &nbsp;<span class="b bLLM">GPT-4o</span></div>
+          <div class="rs-desc">System prompt: "You are a mortgage policy expert. Answer ONLY from provided sources. Cite each fact as [SOURCE N]." Returns JSON: answer · citations[{source_index, text}] · confidence (0–1) · is_answerable · reasoning. temp=0 for determinism.</div>
+        </div>
+      </div>
+
+      <div class="rag-pipe">
+        <div class="rag-pipe-line"></div>
+        <div class="rag-stage">
+          <div class="rs-num">STAGE 07</div>
+          <div class="rs-title">OutputValidator &nbsp;<span class="b bCONF">ECOA Guard</span></div>
+          <div class="rs-desc">Citation integrity: all [SOURCE N] refs must match a real chunk index. ECOA word-boundary regex: re.search(r'\b' + term + r'\b', answer, re.IGNORECASE) — checks for protected class mentions (race, religion, national origin, sex, marital status, age, familial status). Confidence threshold check. is_valid + failed_checks[] returned.</div>
+        </div>
+      </div>
+
+      <div class="rag-pipe">
+        <div class="rag-pipe-line" style="background:none"></div>
+        <div class="rag-stage" style="border-left-color:#0be881">
+          <div class="rs-num" style="color:#0be881">RESULT</div>
+          <div class="rs-title">RAGResult dataclass</div>
+          <div class="rs-desc">answer · citations · confidence · is_answerable · is_valid · failed_checks · retrieved_chunks[5] · query_used · processing_stages_ms dict · langsmith_trace_url. Returned to PolicyRetrievalAgent → written to state['retrieved_policy_chunks'].</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════
+       SECTION 5: DATA LAYER
+  ═══════════════════════════════════ -->
+  <div class="section-label" style="--c:var(--db);margin-top:2rem">
+    <div class="sl-line"></div>
+    <div class="sl-text">05 — PostgreSQL Schema · pgvector · JSONB</div>
+    <div class="sl-line"></div>
+  </div>
+
+  <div class="rag-block" style="border-color:color-mix(in srgb,var(--db) 30%,var(--b2))" onclick="toggleRag(this,'db-tables')">
+    <div class="rag-header" style="background:linear-gradient(135deg,color-mix(in srgb,var(--db) 5%,var(--bg1)),var(--bg1))">
+      <div class="nh-icon" style="background:color-mix(in srgb,var(--db) 10%,var(--surface));border-color:color-mix(in srgb,var(--db) 22%,transparent)">🗃️</div>
+      <div class="rag-title-block">
+        <div class="rag-main-title" style="color:var(--db)">6 DATABASE TABLES</div>
+        <div class="rag-sub-title">app/models/models.py · SQLAlchemy ORM · UUID primary keys · JSONB · Vector(1536)</div>
+      </div>
+      <div id="db-arr" style="font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--muted);margin-left:auto;display:flex;align-items:center;gap:.22rem;transition:transform .24s">▼ expand</div>
+    </div>
+    <div class="db-grid" id="db-tables">
+
+      <div class="db-table">
+        <div class="dt-name">👤 borrowers</div>
+        <div class="dt-fields">
+          id (UUID pk) · first_name · last_name · email (unique, idx)
+          · phone · ssn_encrypted · annual_income (Numeric 12,2)
+          · monthly_gross_income · monthly_debt_payments · credit_score
+          · employment_status (enum) · years_employed · current_employer
+          · property_state · created_at
+          <strong>→ has_many: loan_applications</strong>
+          <span class="dt-special">PII encrypted at rest in prod</span>
+        </div>
+      </div>
+
+      <div class="db-table">
+        <div class="dt-name">📋 loan_applications</div>
+        <div class="dt-fields">
+          id (UUID pk) · borrower_id (FK) · application_number
+          · loan_amount · loan_type (enum) · loan_purpose (enum)
+          · loan_term_years · property_value · property_state
+          · property_type (enum) · occupancy_type (enum)
+          · ltv_ratio · front_end_dti · back_end_dti
+          · status (ApplicationStatus enum) · is_in_flood_zone
+          · existing_mortgage_balance · submitted_at · updated_at
+          <strong>→ has_one: loan_decision &nbsp;·&nbsp; has_many: audit_logs</strong>
+        </div>
+      </div>
+
+      <div class="db-table">
+        <div class="dt-name">📑 policy_documents</div>
+        <div class="dt-fields">
+          id (UUID pk) · filename · title · description
+          · applicable_states (JSONB array) · applicable_loan_types (JSONB array)
+          · effective_date · is_active · version · total_chunks
+          · ingested_at · ingested_by
+          <strong>→ has_many: policy_chunks</strong>
+          <span class="dt-special">Source PDFs ingested via scripts/ingest_policies.py</span>
+        </div>
+      </div>
+
+      <div class="db-table">
+        <div class="dt-name">🔮 policy_chunks &nbsp;<span class="b bRAG">Vector(1536)</span></div>
+        <div class="dt-fields">
+          id · document_id (FK) · content (Text) · chunk_index
+          · section_title · page_number
+          · embedding Vector(1536) ← text-embedding-3-small
+          · applicable_states (JSONB) · applicable_loan_types (JSONB)
+          · token_count · created_at
+          <strong>→ belongs_to: policy_document</strong>
+          <span class="dt-special">CREATE INDEX USING ivfflat (embedding vector_cosine_ops) WITH (lists=100)</span>
+        </div>
+      </div>
+
+      <div class="db-table">
+        <div class="dt-name">⚖️ loan_decisions</div>
+        <div class="dt-fields">
+          id · application_id (FK, unique) · outcome (DecisionOutcome enum)
+          · decision_summary (Text) · decline_reasons (JSONB)
+          · conditions (JSONB) · counter_offer_details (JSONB)
+          · policy_citations (JSONB) · underwriting_notes (Text)
+          · compliance_summary (JSONB) · confidence_score
+          · processing_time_ms · decided_at
+          <strong>→ belongs_to: loan_application (1:1)</strong>
+        </div>
+      </div>
+
+      <div class="db-table">
+        <div class="dt-name">📜 audit_logs &nbsp;<span class="b bCONF">APPEND-ONLY</span></div>
+        <div class="dt-fields">
+          id · application_id (FK, idx) · actor (system/user)
+          · event_type · event_data (JSONB) · agent_name
+          · duration_ms · status · ip_address · user_agent
+          · created_at
+          <strong>→ belongs_to: loan_application</strong>
+          <span class="dt-special">Never deleted — ECOA adverse action regulation</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════
+       SECTION 6: INFRA
+  ═══════════════════════════════════ -->
+  <div class="section-label" style="--c:var(--muted);margin-top:2rem">
+    <div class="sl-line"></div>
+    <div class="sl-text">06 — Infrastructure &amp; Configuration</div>
+    <div class="sl-line"></div>
+  </div>
+
+  <div class="node" style="--c:#4a6080" onclick="toggle(this,'p-infra')">
+    <div class="nh">
+      <div class="nh-step">INFRA</div>
+      <div class="nh-icon">🔧</div>
+      <div class="nh-info">
+        <div class="nh-title">Config · Logging · Docker · Migrations · PDF Ingest</div>
+        <div class="nh-sub">app/core/ · docker-compose.yml · alembic/ · scripts/ingest_policies.py</div>
+      </div>
+      <div class="nh-toggle"><i class="arrow-icon">▼</i>&nbsp;5 items</div>
+    </div>
+    <div class="panel" id="p-infra">
+      <div class="divider"></div>
+
+      <div class="si"><div class="si-bar" style="background:#4a6080"></div><div class="si-icon">⚙️</div>
+        <div class="si-body">
+          <div class="si-title">Pydantic Settings (app/core/config.py)</div>
+          <div class="si-desc">BaseSettings reads .env. Key vars: OPENAI_API_KEY · DATABASE_URL (asyncpg) · DATABASE_SYNC_URL (psycopg2, Alembic only) · RERANKER_MODEL · CHUNK_SIZE=512 · CHUNK_OVERLAP=50 · TOP_K_CHUNKS=5 · MMR_LAMBDA=0.5 · HYBRID_BM25_WEIGHT=0.3 · LANGCHAIN_TRACING_V2 · LANGCHAIN_API_KEY.</div>
+        </div>
+      </div>
+
+      <div class="si"><div class="si-bar" style="background:#4a6080"></div><div class="si-icon">📋</div>
+        <div class="si-body">
+          <div class="si-title">structlog JSON Logging (app/core/logging.py)</div>
+          <div class="si-desc">configure_langsmith() suppresses LangSmith 403 spam when no key present. ProcessorFormatter bridges structlog → stdlib logging. JSON renderer in production. ConsoleRenderer(colors=True) in development. Every agent logs structured events with application_id + session_id for tracing.</div>
+        </div>
+      </div>
+
+      <div class="si"><div class="si-bar" style="background:#4a6080"></div><div class="si-icon">🐳</div>
+        <div class="si-body">
+          <div class="si-title">Docker Compose</div>
+          <div class="si-desc">postgres: pgvector/pgvector:pg16 — healthcheck: pg_isready. redis: redis:7-alpine (future caching). api: uvicorn app.main:app --reload. depends_on: postgres condition:service_healthy. scripts/init_db.sql: CREATE EXTENSION IF NOT EXISTS vector; CREATE EXTENSION IF NOT EXISTS pgcrypto;</div>
+        </div>
+      </div>
+
+      <div class="si"><div class="si-bar" style="background:#4a6080"></div><div class="si-icon">📦</div>
+        <div class="si-body">
+          <div class="si-title">Alembic Database Migrations</div>
+          <div class="si-desc">alembic revision --autogenerate -m "description" detects model diff. alembic upgrade head applies. alembic downgrade -1 reverts. alembic/env.py uses DATABASE_SYNC_URL (psycopg2 driver — Alembic does not support asyncpg). compare_type=True detects column type changes.</div>
+        </div>
+      </div>
+
+      <div class="si"><div class="si-bar" style="background:#4a6080"></div><div class="si-icon">📥</div>
+        <div class="si-body">
+          <div class="si-title">PDF Ingestion Script (scripts/ingest_policies.py)</div>
+          <div class="si-desc">PyMuPDF extracts text from policy PDFs. RecursiveCharacterTextSplitter(chunk_size=512, overlap=50). OpenAIEmbeddings(text-embedding-3-small) generates 1536-dim vectors. Batch INSERT policy_chunks with embedding. Reads applicable_states + applicable_loan_types from filename convention or config YAML.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════
+       TIMELINE
+  ═══════════════════════════════════ -->
+  <div class="timeline">
+    <div class="timeline-title">⏱ &nbsp; APPROXIMATE PIPELINE EXECUTION TIMELINE (typical run ~35s)</div>
+    <div class="tl-track">
+      <div class="tl-col" style="--w:1">
+        <div class="tl-segment" style="background:var(--api);width:100%">API</div>
+        <div class="tl-label">~0.3s</div>
+      </div>
+      <div class="tl-col" style="--w:2">
+        <div class="tl-segment" style="background:var(--a1);width:100%">Intake</div>
+        <div class="tl-label">~3s</div>
+      </div>
+      <div class="tl-col" style="--w:2.5">
+        <div class="tl-segment" style="background:var(--a2);width:100%">Ratio</div>
+        <div class="tl-label">~4s</div>
+      </div>
+      <div class="tl-col" style="--w:5">
+        <div class="tl-segment" style="background:linear-gradient(90deg,var(--a3p),var(--a3c));width:100%">Policy + Compliance (parallel)</div>
+        <div class="tl-label">~12s (parallel)</div>
+      </div>
+      <div class="tl-col" style="--w:3">
+        <div class="tl-segment" style="background:var(--a5);width:100%">UW</div>
+        <div class="tl-label">~8s</div>
+      </div>
+      <div class="tl-col" style="--w:3">
+        <div class="tl-segment" style="background:var(--a6);width:100%">Decision</div>
+        <div class="tl-label">~7s</div>
+      </div>
+      <div class="tl-col" style="--w:1.5">
+        <div class="tl-segment" style="background:var(--a7);width:100%">Audit</div>
+        <div class="tl-label">~1s</div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /flow -->
+</div><!-- /canvas -->
+
+<footer>
+  <em>LoanIQ</em> &nbsp;·&nbsp; Production RAG Loan Eligibility Engine &nbsp;·&nbsp;
+  FastAPI + LangGraph + GPT-4o + pgvector + structlog + Alembic &nbsp;·&nbsp;
+  Click any node to explore all steps
+</footer>
+
+<!-- ════════════════ JAVASCRIPT ════════════════ -->
+<script>
+function toggle(el, panelId) {
+  const panel = document.getElementById(panelId);
+  if (!panel) return;
+  const isOpen = el.classList.contains('open');
+
+  // close all nodes
+  document.querySelectorAll('.node.open, .pnode.open').forEach(n => {
+    n.classList.remove('open');
+    const pid = n.getAttribute('onclick')?.match(/'([^']+)'\)/)?.[1];
+    if (pid) { const p = document.getElementById(pid); if(p) p.classList.remove('show'); }
+  });
+
+  if (!isOpen) {
+    el.classList.add('open');
+    panel.classList.add('show');
+    setTimeout(() => panel.scrollIntoView({ behavior:'smooth', block:'nearest' }), 50);
+  }
+}
+
+function toggleRag(el, stagesId) {
+  const stages = document.getElementById(stagesId);
+  const arr = el.querySelector('[id$="-arr"]');
+  const isOpen = el.classList.contains('open');
+  el.classList.toggle('open', !isOpen);
+  stages.classList.toggle('show', !isOpen);
+  if (arr) arr.style.transform = isOpen ? '' : 'rotate(180deg)';
+  if (!isOpen) setTimeout(() => stages.scrollIntoView({ behavior:'smooth', block:'nearest' }), 50);
+}
+
+// Auto-open first node after load
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    const first = document.querySelector('.node');
+    if (first) {
+      const pid = first.getAttribute('onclick')?.match(/'([^']+)'\)/)?.[1];
+      if (pid) toggle(first, pid);
+    }
+  }, 800);
+});
+</script>
+</body>
+</html>
