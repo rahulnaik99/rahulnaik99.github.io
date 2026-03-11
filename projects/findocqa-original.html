@@ -1,6 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <script id="rn-early-theme">
+    (function(){
+      var OVERRIDE="rn-theme-manual", OD=OVERRIDE+"-date";
+      function istHour(){var n=new Date(),u=n.getTime()+n.getTimezoneOffset()*60000,i=new Date(u+19800000);return i.getHours();}
+      function istDate(){var n=new Date(),u=n.getTime()+n.getTimezoneOffset()*60000,i=new Date(u+19800000);return i.getFullYear()+"-"+i.getMonth()+"-"+i.getDate();}
+      var manual=localStorage.getItem(OVERRIDE),day=localStorage.getItem(OD),today=istDate();
+      var theme=(manual&&day===today)?manual:((istHour()>=6&&istHour()<19)?"light":"dark");
+      document.documentElement.setAttribute("data-theme",theme);
+    })();
+  </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FinDoc QA · Project Story & Resume Guide</title>
