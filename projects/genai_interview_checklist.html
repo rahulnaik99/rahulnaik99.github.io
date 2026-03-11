@@ -1,0 +1,1548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gen AI Engineer Interview Checklist</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --surface2: #1a1a24;
+    --border: #2a2a3a;
+    --must: #ff4d6d;
+    --must-dim: #3d1520;
+    --good: #f7b731;
+    --good-dim: #2e2410;
+    --nice: #26de81;
+    --nice-dim: #0d2618;
+    --text: #e8e8f0;
+    --text-dim: #888899;
+    --accent: #7c6bff;
+    --accent2: #ff6b9d;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Background grid */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(124,107,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(124,107,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Header */
+  header {
+    text-align: center;
+    margin-bottom: 48px;
+    animation: fadeDown 0.6s ease;
+  }
+
+  .header-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    display: block;
+  }
+
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(32px, 5vw, 56px);
+    font-weight: 800;
+    line-height: 1.1;
+    background: linear-gradient(135deg, #fff 30%, var(--accent) 70%, var(--accent2) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 16px;
+  }
+
+  .subtitle {
+    color: var(--text-dim);
+    font-size: 13px;
+    letter-spacing: 1px;
+  }
+
+  /* Legend */
+  .legend {
+    display: flex;
+    gap: 24px;
+    justify-content: center;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+    animation: fadeUp 0.6s ease 0.1s both;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .badge {
+    padding: 3px 10px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+
+  .badge-must { background: var(--must-dim); color: var(--must); border: 1px solid var(--must); }
+  .badge-good { background: var(--good-dim); color: var(--good); border: 1px solid var(--good); }
+  .badge-nice { background: var(--nice-dim); color: var(--nice); border: 1px solid var(--nice); }
+
+  /* Progress bar */
+  .progress-bar-container {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 40px;
+    animation: fadeUp 0.6s ease 0.2s both;
+  }
+
+  .progress-label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+
+  .progress-track {
+    background: var(--border);
+    border-radius: 999px;
+    height: 8px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 999px;
+    width: 0%;
+    transition: width 0.5s ease;
+  }
+
+  .progress-count {
+    margin-top: 8px;
+    font-size: 11px;
+    color: var(--accent);
+    text-align: right;
+  }
+
+  /* Section */
+  .section {
+    margin-bottom: 32px;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    animation: fadeUp 0.5s ease both;
+    background: var(--surface);
+  }
+
+  .section:nth-child(1) { animation-delay: 0.1s; }
+  .section:nth-child(2) { animation-delay: 0.15s; }
+  .section:nth-child(3) { animation-delay: 0.2s; }
+  .section:nth-child(4) { animation-delay: 0.25s; }
+  .section:nth-child(5) { animation-delay: 0.3s; }
+  .section:nth-child(6) { animation-delay: 0.35s; }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 24px;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.2s;
+  }
+
+  .section-header:hover { background: #1e1e2c; }
+
+  .section-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--accent);
+    opacity: 0.4;
+    line-height: 1;
+    min-width: 40px;
+  }
+
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: #fff;
+    flex: 1;
+  }
+
+  .section-meta {
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+
+  .section-toggle {
+    color: var(--text-dim);
+    font-size: 18px;
+    transition: transform 0.3s;
+  }
+
+  .section.collapsed .section-toggle { transform: rotate(-90deg); }
+  .section.collapsed .section-body { display: none; }
+
+  .section-body {
+    padding: 0;
+  }
+
+  /* Subsection */
+  .subsection {
+    border-bottom: 1px solid var(--border);
+  }
+  .subsection:last-child { border-bottom: none; }
+
+  .subsection-title {
+    padding: 14px 24px 14px 64px;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    background: rgba(255,255,255,0.02);
+    border-bottom: 1px solid var(--border);
+    font-weight: 600;
+  }
+
+  /* Checklist item */
+  .item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 12px 24px 12px 64px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    transition: background 0.15s;
+    cursor: pointer;
+  }
+
+  .item:last-child { border-bottom: none; }
+  .item:hover { background: rgba(124,107,255,0.04); }
+  .item.checked { opacity: 0.5; }
+  .item.checked .item-text { text-decoration: line-through; }
+
+  .checkbox {
+    width: 18px;
+    height: 18px;
+    border: 1.5px solid var(--border);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+    transition: all 0.2s;
+    background: transparent;
+  }
+
+  .item.checked .checkbox {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+
+  .item.checked .checkbox::after {
+    content: '✓';
+    color: white;
+    font-size: 11px;
+  }
+
+  .item-content {
+    flex: 1;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .item-text {
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.5;
+    flex: 1;
+    min-width: 200px;
+  }
+
+  .item-note {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-top: 3px;
+    line-height: 1.4;
+  }
+
+  .item-badges {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+    flex-wrap: wrap;
+    padding-top: 2px;
+  }
+
+  /* LoanIQ tag */
+  .tag-loaniq {
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    background: rgba(124,107,255,0.15);
+    color: var(--accent);
+    border: 1px solid rgba(124,107,255,0.3);
+  }
+
+  /* Animations */
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Filter bar */
+  .filter-bar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    animation: fadeUp 0.6s ease 0.15s both;
+  }
+
+  .filter-btn {
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-dim);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .filter-btn:hover, .filter-btn.active {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(124,107,255,0.08);
+  }
+
+  .filter-btn.active-must { border-color: var(--must); color: var(--must); background: var(--must-dim); }
+  .filter-btn.active-good { border-color: var(--good); color: var(--good); background: var(--good-dim); }
+  .filter-btn.active-nice { border-color: var(--nice); color: var(--nice); background: var(--nice-dim); }
+
+  /* Footer note */
+  .footer-note {
+    text-align: center;
+    padding: 32px;
+    font-size: 11px;
+    color: var(--text-dim);
+    border-top: 1px solid var(--border);
+    margin-top: 16px;
+  }
+
+  .footer-note span { color: var(--accent); }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .item { padding-left: 24px; }
+    .subsection-title { padding-left: 24px; }
+    .section-num { font-size: 20px; }
+    .section-title { font-size: 15px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <span class="header-tag">// interview prep — 2026</span>
+    <h1>Gen AI Engineer<br>Interview Checklist</h1>
+    <p class="subtitle">built from LoanIQ experience · track your readiness</p>
+  </header>
+
+  <!-- Legend -->
+  <div class="legend">
+    <div class="legend-item"><span class="badge badge-must">MUST</span> Asked in every interview</div>
+    <div class="legend-item"><span class="badge badge-good">GOOD</span> Strong differentiator</div>
+    <div class="legend-item"><span class="badge badge-nice">NICE</span> Bonus points</div>
+    <div class="legend-item"><span class="tag-loaniq">LOANIQ</span> You built this</div>
+  </div>
+
+  <!-- Filter -->
+  <div class="filter-bar">
+    <button class="filter-btn active" data-filter="all">All Topics</button>
+    <button class="filter-btn" data-filter="must">Must Know</button>
+    <button class="filter-btn" data-filter="good">Good to Have</button>
+    <button class="filter-btn" data-filter="nice">Nice to Have</button>
+    <button class="filter-btn" data-filter="loaniq">From LoanIQ</button>
+  </div>
+
+  <!-- Progress -->
+  <div class="progress-bar-container">
+    <div class="progress-label">
+      <span>Overall Readiness</span>
+      <span id="pct">0%</span>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="bar"></div></div>
+    <div class="progress-count" id="count">0 / 0 completed</div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- SECTION 1: AI/ML FOUNDATIONS -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="section" id="s1">
+    <div class="section-header" onclick="toggleSection('s1')">
+      <div class="section-num">01</div>
+      <div class="section-title">AI / ML Foundations & Deep Learning</div>
+      <div class="section-meta">Theory + Architecture</div>
+      <div class="section-toggle">▾</div>
+    </div>
+    <div class="section-body">
+
+      <div class="subsection">
+        <div class="subsection-title">Core ML Concepts</div>
+        <div class="item" onclick="toggle(this)" data-tags="must">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">Supervised vs Unsupervised vs Reinforcement Learning</div><div class="item-note">Be able to explain with real examples. RL used in RLHF for LLMs</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="must">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">Bias-Variance tradeoff, Overfitting, Regularization (L1/L2)</div><div class="item-note">Explain dropout, weight decay in context of neural nets</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="must">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">Loss functions: Cross-entropy, MSE, BCE, Contrastive loss</div><div class="item-note">Contrastive loss used in embedding model training</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="must">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">Gradient Descent variants: SGD, Adam, AdamW, RMSProp</div><div class="item-note">Know why AdamW is default for LLM fine-tuning</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="must">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">Evaluation metrics: F1, Precision, Recall, AUC-ROC, BLEU, ROUGE</div><div class="item-note">BLEU/ROUGE used for LLM output evaluation</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="good">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">Feature engineering, normalization, PCA, dimensionality reduction</div></div>
+            <div class="item-badges"><span class="badge badge-good">GOOD</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Neural Network Architecture</div>
+        <div class="item" onclick="toggle(this)" data-tags="must">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">Backpropagation and chain rule — explain step by step</div><div class="item-note">Extremely common interview question. Must be able to whiteboard this</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="must">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">Activation functions: ReLU, GELU, Sigmoid, Softmax — when to use each</div><div class="item-note">GELU is used in GPT/BERT. Know why not sigmoid for hidden layers</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="must">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">Batch Normalization vs Layer Normalization</div><div class="item-note">Transformers use LayerNorm, not BatchNorm — know why</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="good">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">CNNs: convolution, pooling, receptive field, stride, padding</div></div>
+            <div class="item-badges"><span class="badge badge-good">GOOD</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="good">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">RNNs, LSTMs, GRUs — vanishing gradient problem</div><div class="item-note">Know why Transformers replaced RNNs for sequence modeling</div></div>
+            <div class="item-badges"><span class="badge badge-good">GOOD</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="nice">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">Diffusion models, VAEs, GANs — high level architecture</div></div>
+            <div class="item-badges"><span class="badge badge-nice">NICE</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">LLM Specific Theory</div>
+        <div class="item" onclick="toggle(this)" data-tags="must">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">Pre-training vs Fine-tuning vs RLHF — what each stage does</div><div class="item-note">Know GPT-4 training pipeline at high level</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="must">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">Temperature, Top-K, Top-P (nucleus sampling) — explain the difference</div><div class="item-note">LoanIQ uses temperature=0 for deterministic JSON output</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span><span class="tag-loaniq">LOANIQ</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="must">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">Context window, tokens, tokenization (BPE)</div><div class="item-note">Why context window limits matter for RAG chunk sizing</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span><span class="tag-loaniq">LOANIQ</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="good">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">Quantization: INT8, INT4, QLoRA, GGUF formats</div><div class="item-note">LoanIQ fine-tuning uses QLoRA 4-bit on Llama 3.1</div></div>
+            <div class="item-badges"><span class="badge badge-good">GOOD</span><span class="tag-loaniq">LOANIQ</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="good">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">Parameter-efficient fine-tuning: LoRA, QLoRA, Prefix tuning, Adapters</div><div class="item-note">Know rank (r), alpha, target_modules parameters in LoRA</div></div>
+            <div class="item-badges"><span class="badge badge-good">GOOD</span><span class="tag-loaniq">LOANIQ</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="nice">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">Model merging, speculative decoding, mixture of experts (MoE)</div></div>
+            <div class="item-badges"><span class="badge badge-nice">NICE</span></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- SECTION 2: TRANSFORMER ARCHITECTURE -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="section" id="s2">
+    <div class="section-header" onclick="toggleSection('s2')">
+      <div class="section-num">02</div>
+      <div class="section-title">Transformer Architecture</div>
+      <div class="section-meta">Attention · Positional Encoding · Modern Variants</div>
+      <div class="section-toggle">▾</div>
+    </div>
+    <div class="section-body">
+
+      <div class="subsection">
+        <div class="subsection-title">Attention Mechanism</div>
+        <div class="item" onclick="toggle(this)" data-tags="must">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">Self-attention: Q, K, V matrices — explain the math</div><div class="item-note">Attention(Q,K,V) = softmax(QKᵀ/√dk)V — must know this cold</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="must">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">Multi-head attention — why multiple heads, what each learns</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="must">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">Scaled dot-product — why divide by √dk?</div><div class="item-note">Prevents softmax saturation in high dimensions</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="must">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">Causal masking (decoder) vs bidirectional attention (encoder)</div><div class="item-note">GPT = decoder-only, BERT = encoder-only, T5 = encoder-decoder</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="must">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">Cross-attention — how encoder info flows into decoder</div><div class="item-note">Key concept for RAG: retrieval chunks interact with generation via cross-attention</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span><span class="tag-loaniq">LOANIQ</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="good">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">KV Cache — what it is, why it speeds up inference</div></div>
+            <div class="item-badges"><span class="badge badge-good">GOOD</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="good">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">Flash Attention — memory-efficient attention algorithm</div></div>
+            <div class="item-badges"><span class="badge badge-good">GOOD</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="nice">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">Grouped Query Attention (GQA), Multi-Query Attention (MQA)</div><div class="item-note">Used in Llama 3 and Mistral for faster inference</div></div>
+            <div class="item-badges"><span class="badge badge-nice">NICE</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Architecture Components</div>
+        <div class="item" onclick="toggle(this)" data-tags="must">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">Positional encoding: sinusoidal vs learned vs RoPE</div><div class="item-note">RoPE used in Llama, GPT-NeoX. Know why it handles longer contexts better</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="must">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">Feed-forward network inside transformer block (FFN/MLP)</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="must">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">Pre-LayerNorm vs Post-LayerNorm — stability implications</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="must">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">Residual connections — why critical for deep networks</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="good">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">O(n²) complexity of attention — why long contexts are expensive</div><div class="item-note">Directly explains why RAG chunk size matters in LoanIQ</div></div>
+            <div class="item-badges"><span class="badge badge-good">GOOD</span><span class="tag-loaniq">LOANIQ</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="good">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">BERT vs GPT vs T5 — encoder/decoder differences and use cases</div></div>
+            <div class="item-badges"><span class="badge badge-good">GOOD</span></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- SECTION 3: RAG -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="section" id="s3">
+    <div class="section-header" onclick="toggleSection('s3')">
+      <div class="section-num">03</div>
+      <div class="section-title">RAG — Retrieval Augmented Generation</div>
+      <div class="section-meta">Ingestion · Retrieval · Vector DB · Evaluation</div>
+      <div class="section-toggle">▾</div>
+    </div>
+    <div class="section-body">
+
+      <div class="subsection">
+        <div class="subsection-title">Document Ingestion</div>
+        <div class="item" onclick="toggle(this)" data-tags="must loaniq">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">Chunking strategies: fixed-size, sentence, semantic, recursive</div><div class="item-note">LoanIQ: chunk_size=512, overlap=50. Know why overlap matters</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span><span class="tag-loaniq">LOANIQ</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="must loaniq">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">Embedding models: OpenAI text-embedding-3, Titan, sentence-transformers</div><div class="item-note">LoanIQ uses text-embedding-3-small. Know dimensions, cost tradeoffs</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span><span class="tag-loaniq">LOANIQ</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="must">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">PDF parsing: PyMuPDF, pdfplumber, Unstructured.io — challenges</div><div class="item-note">Tables, images, multi-column layouts are hard. Know the gotchas</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="good">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">Metadata filtering — filtering by state, loan_type, date in retrieval</div><div class="item-note">LoanIQ filters chunks by property_state and loan_type at query time</div></div>
+            <div class="item-badges"><span class="badge badge-good">GOOD</span><span class="tag-loaniq">LOANIQ</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="good">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">Parent-child chunking, document hierarchy preservation</div></div>
+            <div class="item-badges"><span class="badge badge-good">GOOD</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="nice">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">Multimodal ingestion: image + text (tables, charts in PDFs)</div></div>
+            <div class="item-badges"><span class="badge badge-nice">NICE</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Retrieval Techniques</div>
+        <div class="item" onclick="toggle(this)" data-tags="must loaniq">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">Dense retrieval (semantic search) — cosine similarity, dot product</div><div class="item-note">LoanIQ: pgvector dense search with OpenAI embeddings</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span><span class="tag-loaniq">LOANIQ</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="must loaniq">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">Sparse retrieval — BM25, TF-IDF, keyword matching</div><div class="item-note">LoanIQ uses BM25 against candidate pool in memory (fast)</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span><span class="tag-loaniq">LOANIQ</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="must loaniq">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">Hybrid retrieval — combining dense + sparse with RRF</div><div class="item-note">LoanIQ: Reciprocal Rank Fusion to merge BM25 + dense results</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span><span class="tag-loaniq">LOANIQ</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="must loaniq">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">MMR — Maximal Marginal Relevance for diversity</div><div class="item-note">LoanIQ Stage 3: removes redundant chunks, keeps diverse top-5</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span><span class="tag-loaniq">LOANIQ</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="must loaniq">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">Reranking with cross-encoder models</div><div class="item-note">LoanIQ Stage 4: cross-encoder/ms-marco-MiniLM-L-6-v2 reranker</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span><span class="tag-loaniq">LOANIQ</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="must loaniq">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">Query rewriting and expansion — HyDE, multi-query</div><div class="item-note">LoanIQ: QueryRewriter (gemma2:2b) generates 3 query variants</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span><span class="tag-loaniq">LOANIQ</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="good">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">Similarity thresholds — when to return "no relevant results"</div><div class="item-note">LoanIQ: SIMILARITY_THRESHOLD=0.35</div></div>
+            <div class="item-badges"><span class="badge badge-good">GOOD</span><span class="tag-loaniq">LOANIQ</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="nice">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">Graph RAG, RAPTOR, corrective RAG, self-RAG</div></div>
+            <div class="item-badges"><span class="badge badge-nice">NICE</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Vector Databases</div>
+        <div class="item" onclick="toggle(this)" data-tags="must loaniq">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">pgvector — vector similarity search inside PostgreSQL</div><div class="item-note">LoanIQ uses pgvector. Know HNSW vs IVFFlat index types</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span><span class="tag-loaniq">LOANIQ</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="must">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">Pinecone, Weaviate, Chroma, Qdrant — know tradeoffs</div><div class="item-note">Pinecone=managed, Chroma=local dev, Qdrant=self-hosted production</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="must">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">ANN algorithms: HNSW, IVFFlat — approximate vs exact search</div><div class="item-note">HNSW = faster query, IVFFlat = faster build. Know the tradeoff</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="good">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">Cosine vs dot product vs Euclidean — when to use each</div></div>
+            <div class="item-badges"><span class="badge badge-good">GOOD</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">RAG Evaluation</div>
+        <div class="item" onclick="toggle(this)" data-tags="must loaniq">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">Faithfulness — is the answer grounded in retrieved context?</div><div class="item-note">LoanIQ: custom validator + LLM-as-judge for hallucination detection</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span><span class="tag-loaniq">LOANIQ</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="must loaniq">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">RAGAS metrics: faithfulness, answer_relevancy, context_precision, context_recall</div><div class="item-note">LoanIQ has full RAGAS-style evaluation in rag_evaluator.py</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span><span class="tag-loaniq">LOANIQ</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="must">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">LLM-as-judge pattern — using GPT-4 to evaluate GPT-4 outputs</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="good">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">Hallucination detection strategies — NLI models, SelfCheckGPT</div></div>
+            <div class="item-badges"><span class="badge badge-good">GOOD</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Agentic RAG & Orchestration</div>
+        <div class="item" onclick="toggle(this)" data-tags="must loaniq">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">LangGraph — stateful multi-agent pipelines, node/edge/state pattern</div><div class="item-note">LoanIQ core: 7-agent LangGraph pipeline. Know ainvoke(), state merging</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span><span class="tag-loaniq">LOANIQ</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="must">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">LangChain — chains, agents, tools, memory, callbacks</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="must loaniq">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">Multi-agent design patterns: sequential, parallel, supervisor</div><div class="item-note">LoanIQ: sequential pipeline (Intake→Ratio→Policy→Compliance→Underwriting→Decision→Audit)</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span><span class="tag-loaniq">LOANIQ</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="good">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">Tool use / function calling — OpenAI tools API, structured outputs</div><div class="item-note">LoanIQ uses response_format=json_object for structured agent outputs</div></div>
+            <div class="item-badges"><span class="badge badge-good">GOOD</span><span class="tag-loaniq">LOANIQ</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="good">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">LangSmith — tracing, evaluation, dataset management</div><div class="item-note">LoanIQ pushes eval results to LangSmith for visual analysis</div></div>
+            <div class="item-badges"><span class="badge badge-good">GOOD</span><span class="tag-loaniq">LOANIQ</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="nice">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">AutoGen, CrewAI, Semantic Kernel — alternative frameworks</div></div>
+            <div class="item-badges"><span class="badge badge-nice">NICE</span></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- SECTION 4: PYTHON -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="section" id="s4">
+    <div class="section-header" onclick="toggleSection('s4')">
+      <div class="section-num">04</div>
+      <div class="section-title">Python — Libraries, DSA & Data Types</div>
+      <div class="section-meta">Core · AI/ML libs · Async · DSA</div>
+      <div class="section-toggle">▾</div>
+    </div>
+    <div class="section-body">
+
+      <div class="subsection">
+        <div class="subsection-title">Core Python</div>
+        <div class="item" onclick="toggle(this)" data-tags="must">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">async/await, asyncio, event loop, coroutines</div><div class="item-note">LoanIQ entire pipeline is async. Must explain why and how</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span><span class="tag-loaniq">LOANIQ</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="must">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">Decorators, context managers, generators, iterators</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="must">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">Dataclasses, Pydantic models — data validation</div><div class="item-note">LoanIQ uses Pydantic for all request/response validation</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span><span class="tag-loaniq">LOANIQ</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="must">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">Type hints: TypedDict, Optional, Union, Generic, TypeVar</div><div class="item-note">LoanIQ: LoanApplicationState is TypedDict flowing through all agents</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span><span class="tag-loaniq">LOANIQ</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="must">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">Exception handling, custom exceptions, context managers</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="good">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">List/dict/set comprehensions, map/filter/reduce, lambda</div></div>
+            <div class="item-badges"><span class="badge badge-good">GOOD</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="good">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">GIL — Global Interpreter Lock, threading vs multiprocessing</div></div>
+            <div class="item-badges"><span class="badge badge-good">GOOD</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">AI / ML Libraries — Must Know</div>
+        <div class="item" onclick="toggle(this)" data-tags="must">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">OpenAI Python SDK — chat.completions, embeddings, async client</div><div class="item-note">LoanIQ: AsyncOpenAI for all GPT-4o calls</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span><span class="tag-loaniq">LOANIQ</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="must">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">LangChain — LLMChain, ChatPromptTemplate, StrOutputParser, LCEL</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="must">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">LangGraph — StateGraph, add_node, add_edge, compile, ainvoke</div><div class="item-note">LoanIQ: entire pipeline is LangGraph. Must demo this</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span><span class="tag-loaniq">LOANIQ</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="must">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">FastAPI — routers, Depends, async endpoints, middleware, lifespan</div><div class="item-note">LoanIQ backend is FastAPI. Know Depends() injection pattern cold</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span><span class="tag-loaniq">LOANIQ</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="must">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">SQLAlchemy async — AsyncSession, select, execute, scalar_one_or_none</div><div class="item-note">LoanIQ: async SQLAlchemy for all DB operations</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span><span class="tag-loaniq">LOANIQ</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="must">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">NumPy — arrays, broadcasting, dot product, cosine similarity</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="must">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">Pandas — DataFrames, groupby, merge, apply, read_csv</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="good">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">HuggingFace Transformers — pipeline, AutoModel, AutoTokenizer</div><div class="item-note">LoanIQ: cross-encoder reranker uses sentence-transformers</div></div>
+            <div class="item-badges"><span class="badge badge-good">GOOD</span><span class="tag-loaniq">LOANIQ</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="good">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">boto3 — AWS SDK: Bedrock, S3, IAM interactions</div><div class="item-note">LoanIQ prod: all Bedrock calls via boto3 Converse API</div></div>
+            <div class="item-badges"><span class="badge badge-good">GOOD</span><span class="tag-loaniq">LOANIQ</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="good">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">PyTorch basics — tensors, autograd, model.forward(), DataLoader</div></div>
+            <div class="item-badges"><span class="badge badge-good">GOOD</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="good">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">Unsloth + PEFT — QLoRA fine-tuning, LoraConfig, SFTTrainer</div><div class="item-note">LoanIQ fine-tuning script uses Unsloth for Llama 3.1</div></div>
+            <div class="item-badges"><span class="badge badge-good">GOOD</span><span class="tag-loaniq">LOANIQ</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="good">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">structlog / logging — structured logging, log levels, JSON format</div><div class="item-note">LoanIQ: structlog with agent-level context in every log line</div></div>
+            <div class="item-badges"><span class="badge badge-good">GOOD</span><span class="tag-loaniq">LOANIQ</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="nice">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">RAGAS, DeepEval — RAG evaluation frameworks</div></div>
+            <div class="item-badges"><span class="badge badge-nice">NICE</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">DSA for AI Interviews</div>
+        <div class="item" onclick="toggle(this)" data-tags="must">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">Arrays, HashMaps, Sets — O(1) lookup, collision handling</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="must">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">Heaps / Priority Queues — top-K problems (top K chunks in retrieval)</div><div class="item-note">Directly applicable to RAG — finding top-K similar embeddings</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span><span class="tag-loaniq">LOANIQ</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="must">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">Sliding window, two pointers — string/array manipulation</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="must">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">BFS/DFS on graphs — relevant for agentic graph traversal</div><div class="item-note">LangGraph is literally a graph. BFS/DFS = traversal order</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="good">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">Dynamic programming — memoization, tabulation</div></div>
+            <div class="item-badges"><span class="badge badge-good">GOOD</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="good">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">Tries — efficient prefix matching, used in tokenizers</div></div>
+            <div class="item-badges"><span class="badge badge-good">GOOD</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="good">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">Time/space complexity analysis — Big O for every solution</div></div>
+            <div class="item-badges"><span class="badge badge-good">GOOD</span></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- SECTION 5: DOCKER & CLOUD -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="section" id="s5">
+    <div class="section-header" onclick="toggleSection('s5')">
+      <div class="section-num">05</div>
+      <div class="section-title">Docker & Cloud</div>
+      <div class="section-meta">Containers · AWS Bedrock · MLOps</div>
+      <div class="section-toggle">▾</div>
+    </div>
+    <div class="section-body">
+
+      <div class="subsection">
+        <div class="subsection-title">Docker</div>
+        <div class="item" onclick="toggle(this)" data-tags="must">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">Dockerfile: FROM, RUN, COPY, ENV, EXPOSE, CMD, ENTRYPOINT</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="must">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">docker-compose: services, volumes, networks, depends_on</div><div class="item-note">LoanIQ uses compose for postgres + redis + app</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span><span class="tag-loaniq">LOANIQ</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="must">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">Image layers, build cache, multi-stage builds</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="good">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">Container networking, port mapping, volume mounts</div></div>
+            <div class="item-badges"><span class="badge badge-good">GOOD</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="nice">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">Kubernetes basics — pods, deployments, services, HPA</div></div>
+            <div class="item-badges"><span class="badge badge-nice">NICE</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">AWS for Gen AI</div>
+        <div class="item" onclick="toggle(this)" data-tags="must loaniq">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">AWS Bedrock — Converse API, model IDs, regions, auto-invocation</div><div class="item-note">LoanIQ prod: Claude Sonnet/Haiku, Llama 3.1 via Bedrock</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span><span class="tag-loaniq">LOANIQ</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="must loaniq">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">IAM — roles, policies, least privilege, Bedrock permissions</div><div class="item-note">LoanIQ: IAM policy for bedrock:InvokeModel scoped to specific models</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span><span class="tag-loaniq">LOANIQ</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="must">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">AWS CLI — configure, profiles, credential chain</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="good">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">EC2 + RDS — deploy FastAPI on t2.micro, PostgreSQL on RDS</div><div class="item-note">LoanIQ deployment option B from the guide</div></div>
+            <div class="item-badges"><span class="badge badge-good">GOOD</span><span class="tag-loaniq">LOANIQ</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="good">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">S3 — object storage, presigned URLs, lifecycle policies</div></div>
+            <div class="item-badges"><span class="badge badge-good">GOOD</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="good">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">Lambda + API Gateway — serverless AI endpoints</div></div>
+            <div class="item-badges"><span class="badge badge-good">GOOD</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="nice">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">SageMaker — training jobs, endpoints, model registry</div></div>
+            <div class="item-badges"><span class="badge badge-nice">NICE</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="nice">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">CloudWatch — logging, metrics, alarms for AI pipelines</div></div>
+            <div class="item-badges"><span class="badge badge-nice">NICE</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">MLOps & Deployment</div>
+        <div class="item" onclick="toggle(this)" data-tags="good loaniq">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">Ollama — local LLM serving, Modelfile, REST API</div><div class="item-note">LoanIQ dev: Ollama serves Llama 3.1 + gemma2 locally</div></div>
+            <div class="item-badges"><span class="badge badge-good">GOOD</span><span class="tag-loaniq">LOANIQ</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="good">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">HuggingFace Hub — push/pull models, datasets, spaces</div><div class="item-note">LoanIQ fine-tuned model pushed to HF after training</div></div>
+            <div class="item-badges"><span class="badge badge-good">GOOD</span><span class="tag-loaniq">LOANIQ</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="good">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">CI/CD basics — GitHub Actions for model/API deployment</div></div>
+            <div class="item-badges"><span class="badge badge-good">GOOD</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="nice">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">vLLM, TGI (Text Generation Inference) — production LLM serving</div></div>
+            <div class="item-badges"><span class="badge badge-nice">NICE</span></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- SECTION 6: PROJECT — LOANIQ -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="section" id="s6">
+    <div class="section-header" onclick="toggleSection('s6')">
+      <div class="section-num">06</div>
+      <div class="section-title">Project — LoanIQ Deep Dive</div>
+      <div class="section-meta">What to say · How to explain · What they'll ask</div>
+      <div class="section-toggle">▾</div>
+    </div>
+    <div class="section-body">
+
+      <div class="subsection">
+        <div class="subsection-title">Elevator Pitch (30 seconds)</div>
+        <div class="item" onclick="toggle(this)" data-tags="must loaniq">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">One-line summary: "Agentic RAG system for mortgage loan underwriting with 7 AI agents"</div><div class="item-note">Practice saying this naturally. Start every project explanation here</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span><span class="tag-loaniq">LOANIQ</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="must loaniq">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">Know the full pipeline cold: Intake→Ratio→Policy→Compliance→Underwriting→Decision→Audit</div><div class="item-note">Draw it on a whiteboard without hesitation</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span><span class="tag-loaniq">LOANIQ</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Technical Decisions — Be Ready to Defend</div>
+        <div class="item" onclick="toggle(this)" data-tags="must loaniq">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">Why LangGraph over plain LangChain?</div><div class="item-note">Stateful, conditional edges, auditability, each agent returns only changed fields</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span><span class="tag-loaniq">LOANIQ</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="must loaniq">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">Why hybrid retrieval (Dense + BM25 + RRF)?</div><div class="item-note">Dense catches meaning, BM25 catches exact terms like "DTI 43%". RRF merges fairly</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span><span class="tag-loaniq">LOANIQ</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="must loaniq">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">Why different models for different agents?</div><div class="item-note">Cost optimization: Llama free, Haiku cheap for PII, Sonnet for complex decisions</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span><span class="tag-loaniq">LOANIQ</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="must loaniq">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">Why AWS Bedrock for Compliance + Underwriting + Decision agents?</div><div class="item-note">PII data never leaves AWS VPC — regulatory compliance requirement</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span><span class="tag-loaniq">LOANIQ</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="must loaniq">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">Why pgvector instead of Pinecone?</div><div class="item-note">Single DB for vectors + metadata + app data. Simpler ops, metadata filtering built-in</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span><span class="tag-loaniq">LOANIQ</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="good loaniq">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">Why fine-tune Llama 3.1 for RatioAgent?</div><div class="item-note">$0 marginal cost per call vs $0.005 GPT-4o. Narrative quality 87% of GPT-4o</div></div>
+            <div class="item-badges"><span class="badge badge-good">GOOD</span><span class="tag-loaniq">LOANIQ</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="good loaniq">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">How do you handle LLM failures gracefully?</div><div class="item-note">Fallback defaults in every agent — pipeline never crashes, errors propagate in state</div></div>
+            <div class="item-badges"><span class="badge badge-good">GOOD</span><span class="tag-loaniq">LOANIQ</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Metrics & Results — Know Your Numbers</div>
+        <div class="item" onclick="toggle(this)" data-tags="must loaniq">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">Cost per pipeline run: ~$0.03–0.05 in dev (OpenAI only)</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span><span class="tag-loaniq">LOANIQ</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="must loaniq">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">Pipeline latency: ~20–30 seconds end-to-end (7 agents)</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span><span class="tag-loaniq">LOANIQ</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="must loaniq">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">RAG evaluation: faithfulness, answer_relevancy, context_recall scores</div><div class="item-note">Run evaluation and know your actual numbers before interview</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span><span class="tag-loaniq">LOANIQ</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="good loaniq">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">Bedrock cost savings vs OpenAI: ~60-70% cheaper for PII agents</div></div>
+            <div class="item-badges"><span class="badge badge-good">GOOD</span><span class="tag-loaniq">LOANIQ</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Common Interview Questions From This Project</div>
+        <div class="item" onclick="toggle(this)" data-tags="must loaniq">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">"Explain your RAG pipeline end to end" — all 7 stages</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span><span class="tag-loaniq">LOANIQ</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="must loaniq">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">"How do you prevent hallucinations?" — Stage 7 validator + faithfulness scoring</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span><span class="tag-loaniq">LOANIQ</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="must loaniq">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">"How do you evaluate LLM outputs?" — RAGAS metrics, LLM-as-judge, F1</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span><span class="tag-loaniq">LOANIQ</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="must loaniq">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">"How do you handle state in multi-agent systems?" — LangGraph TypedDict state</div></div>
+            <div class="item-badges"><span class="badge badge-must">MUST</span><span class="tag-loaniq">LOANIQ</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="good loaniq">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">"How would you scale this to 1000 concurrent users?" — async, queue, horizontal scaling</div></div>
+            <div class="item-badges"><span class="badge badge-good">GOOD</span><span class="tag-loaniq">LOANIQ</span></div>
+          </div>
+        </div>
+        <div class="item" onclick="toggle(this)" data-tags="good loaniq">
+          <div class="checkbox"></div>
+          <div class="item-content">
+            <div><div class="item-text">"What would you improve?" — streaming responses, caching, parallel agents</div></div>
+            <div class="item-badges"><span class="badge badge-good">GOOD</span><span class="tag-loaniq">LOANIQ</span></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="footer-note">
+    Built from <span>LoanIQ v3</span> hands-on experience · Check off as you master each topic · Focus on <span>MUST</span> items first
+  </div>
+
+</div>
+
+<script>
+  // Toggle individual item
+  function toggle(el) {
+    el.classList.toggle('checked');
+    updateProgress();
+    saveState();
+  }
+
+  // Toggle section collapse
+  function toggleSection(id) {
+    document.getElementById(id).classList.toggle('collapsed');
+  }
+
+  // Filter
+  let activeFilter = 'all';
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const f = this.dataset.filter;
+      activeFilter = f;
+
+      document.querySelectorAll('.filter-btn').forEach(b => {
+        b.classList.remove('active', 'active-must', 'active-good', 'active-nice');
+      });
+
+      if (f === 'must') this.classList.add('active-must');
+      else if (f === 'good') this.classList.add('active-good');
+      else if (f === 'nice') this.classList.add('active-nice');
+      else this.classList.add('active');
+
+      applyFilter(f);
+    });
+  });
+
+  function applyFilter(f) {
+    document.querySelectorAll('.item').forEach(item => {
+      const tags = item.dataset.tags || '';
+      if (f === 'all') {
+        item.style.display = '';
+      } else if (f === 'loaniq') {
+        item.style.display = tags.includes('loaniq') ? '' : 'none';
+      } else {
+        item.style.display = tags.includes(f) ? '' : 'none';
+      }
+    });
+  }
+
+  // Progress
+  function updateProgress() {
+    const all = document.querySelectorAll('.item');
+    const done = document.querySelectorAll('.item.checked');
+    const pct = all.length ? Math.round((done.length / all.length) * 100) : 0;
+    document.getElementById('bar').style.width = pct + '%';
+    document.getElementById('pct').textContent = pct + '%';
+    document.getElementById('count').textContent = `${done.length} / ${all.length} completed`;
+  }
+
+  // Persist state
+  function saveState() {
+    const state = [];
+    document.querySelectorAll('.item').forEach((item, i) => {
+      if (item.classList.contains('checked')) state.push(i);
+    });
+    try { localStorage.setItem('loaniq_checklist', JSON.stringify(state)); } catch(e) {}
+  }
+
+  function loadState() {
+    try {
+      const state = JSON.parse(localStorage.getItem('loaniq_checklist') || '[]');
+      const items = document.querySelectorAll('.item');
+      state.forEach(i => { if (items[i]) items[i].classList.add('checked'); });
+    } catch(e) {}
+    updateProgress();
+  }
+
+  loadState();
+</script>
+</body>
+</html>
