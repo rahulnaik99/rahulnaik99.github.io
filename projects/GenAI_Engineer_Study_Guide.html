@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gen AI Engineer — Complete Study Guide</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #ffffff;
+    color: #1a1a2e;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    line-height: 1.6;
+    padding: 2rem 1rem;
+  }
+  .container { max-width: 920px; margin: 0 auto; }
+  h1 { font-size: 1.9rem; font-weight: 800; color: #0a0a1a; margin-bottom: 0.2rem; }
+  .subtitle { color: #6b7280; font-size: 0.88rem; margin-bottom: 1.5rem; }
+  .legend { display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 0.35rem; color: #6b7280; font-size: 0.75rem; }
+  .tag { display: inline-block; font-size: 0.62rem; padding: 0.1rem 0.42rem; border-radius: 4px; font-weight: 700; margin-left: 0.35rem; vertical-align: middle; }
+  .tag-must { background: #fee2e2; color: #dc2626; }
+  .tag-good { background: #dbeafe; color: #2563eb; }
+  .tag-nice { background: #d1fae5; color: #059669; }
+
+  /* category nav */
+  .cat-nav { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 2rem; }
+  .cat-btn {
+    font-size: 0.72rem; font-weight: 600; padding: 0.35rem 0.9rem;
+    border-radius: 99px; border: 1.5px solid #e5e7eb;
+    background: #fff; color: #6b7280; cursor: pointer;
+    transition: all 0.15s; white-space: nowrap;
+  }
+  .cat-btn:hover, .cat-btn.active { border-color: currentColor; }
+
+  .category { margin-bottom: 3rem; }
+  .category-title {
+    font-size: 0.65rem; font-weight: 800; letter-spacing: 0.12em;
+    text-transform: uppercase; color: #9ca3af;
+    margin-bottom: 1rem; padding-bottom: 0.5rem;
+    border-bottom: 1.5px solid #f3f4f6;
+  }
+
+  .module { margin-bottom: 0.75rem; border: 1px solid #e5e7eb; border-radius: 10px; overflow: hidden; }
+  .module-header {
+    padding: 0.9rem 1.25rem; display: flex; align-items: center; gap: 0.85rem;
+    background: #f9fafb; border-bottom: 1px solid transparent;
+    cursor: pointer; user-select: none; transition: background 0.15s;
+  }
+  .module-header:hover { background: #f3f4f6; }
+  .module.open .module-header { border-bottom-color: #e5e7eb; }
+  .module-num {
+    width: 28px; height: 28px; border-radius: 7px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 0.78rem; flex-shrink: 0;
+  }
+  .module-title { font-size: 0.97rem; font-weight: 700; color: #111827; flex: 1; }
+  .module-meta { display: flex; align-items: center; gap: 0.5rem; }
+  .module-count { font-size: 0.7rem; color: #9ca3af; background: #e5e7eb; padding: 0.15rem 0.55rem; border-radius: 99px; }
+  .chevron { color: #9ca3af; font-size: 0.75rem; transition: transform 0.2s; flex-shrink: 0; }
+  .module.open .chevron { transform: rotate(180deg); }
+
+  .module-body { display: none; padding: 1.1rem 1.25rem; background: #fff; }
+  .module.open .module-body { display: block; }
+
+  .section { margin-bottom: 1.3rem; }
+  .section:last-child { margin-bottom: 0; }
+  .section-title {
+    font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.08em; color: #6b7280; margin-bottom: 0.5rem;
+    padding-bottom: 0.35rem; border-bottom: 1px solid #f3f4f6;
+  }
+  .topics { list-style: none; }
+  .topics li {
+    padding: 0.28rem 0; font-size: 0.86rem; color: #374151;
+    display: flex; align-items: flex-start; gap: 0.45rem; line-height: 1.45;
+  }
+  .topics li::before { content: '→'; color: #d1d5db; flex-shrink: 0; font-size: 0.72rem; margin-top: 0.18rem; }
+
+  /* accent colors per domain */
+  .rag    .module-header { border-left: 3px solid #7c3aed; }
+  .rag    .module-num    { background: #ede9fe; color: #7c3aed; }
+  .lc     .module-header { border-left: 3px solid #2563eb; }
+  .lc     .module-num    { background: #dbeafe; color: #2563eb; }
+  .lg     .module-header { border-left: 3px solid #0891b2; }
+  .lg     .module-num    { background: #cffafe; color: #0891b2; }
+  .ft     .module-header { border-left: 3px solid #d97706; }
+  .ft     .module-num    { background: #fef3c7; color: #d97706; }
+  .ml     .module-header { border-left: 3px solid #059669; }
+  .ml     .module-num    { background: #d1fae5; color: #059669; }
+  .tr     .module-header { border-left: 3px solid #db2777; }
+  .tr     .module-num    { background: #fce7f3; color: #db2777; }
+  .dk     .module-header { border-left: 3px solid #6366f1; }
+  .dk     .module-num    { background: #e0e7ff; color: #6366f1; }
+  .aws    .module-header { border-left: 3px solid #ea580c; }
+  .aws    .module-num    { background: #ffedd5; color: #ea580c; }
+  .py     .module-header { border-left: 3px solid #16a34a; }
+  .py     .module-num    { background: #dcfce7; color: #16a34a; }
+  .sys    .module-header { border-left: 3px solid #9333ea; }
+  .sys    .module-num    { background: #f3e8ff; color: #9333ea; }
+
+  @media(max-width:600px) { .cat-nav { gap: 0.35rem; } .cat-btn { font-size: 0.68rem; padding: 0.28rem 0.7rem; } }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>Gen AI Engineer — Complete Study Guide</h1>
+<p class="subtitle">3+ years experience level · Interview prep · Click modules to expand</p>
+
+<div class="legend">
+  <div class="legend-item"><span class="tag tag-must">MUST</span> Know cold — will definitely come up</div>
+  <div class="legend-item"><span class="tag tag-good">GOOD</span> Strong signal — shows depth</div>
+  <div class="legend-item"><span class="tag tag-nice">NICE</span> Bonus — senior-level differentiator</div>
+</div>
+
+<div class="cat-nav">
+  <button class="cat-btn active" onclick="showAll(this)">All</button>
+  <button class="cat-btn" onclick="filterCat('rag',this)">RAG</button>
+  <button class="cat-btn" onclick="filterCat('lc',this)">LangChain</button>
+  <button class="cat-btn" onclick="filterCat('lg',this)">LangGraph</button>
+  <button class="cat-btn" onclick="filterCat('ft',this)">Fine-Tuning</button>
+  <button class="cat-btn" onclick="filterCat('ml',this)">ML Concepts</button>
+  <button class="cat-btn" onclick="filterCat('tr',this)">Transformers</button>
+  <button class="cat-btn" onclick="filterCat('dk',this)">Docker</button>
+  <button class="cat-btn" onclick="filterCat('aws',this)">AWS Bedrock</button>
+  <button class="cat-btn" onclick="filterCat('py',this)">Python</button>
+  <button class="cat-btn" onclick="filterCat('sys',this)">System Design</button>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ RAG ══ -->
+<div class="category" data-cat="rag">
+<div class="category-title">RAG — Retrieval Augmented Generation</div>
+
+<div class="module rag">
+  <div class="module-header" onclick="tog(this)">
+    <div class="module-num">1</div>
+    <div class="module-title">Ingestion Pipeline</div>
+    <div class="module-meta"><div class="module-count">7 topics</div></div>
+    <div class="chevron">▼</div>
+  </div>
+  <div class="module-body">
+    <div class="section"><div class="section-title">Document Loading</div><ul class="topics">
+      <li>pypdf vs pdfplumber vs pymupdf — speed, accuracy, table handling differences<span class="tag tag-must">MUST</span></li>
+      <li>Per-page extraction vs full-doc — why page number matters for citations<span class="tag tag-must">MUST</span></li>
+      <li>Scanned PDFs — OCR with Tesseract, AWS Textract, Azure DI<span class="tag tag-good">GOOD</span></li>
+      <li>Word, HTML, Markdown, CSV loaders<span class="tag tag-good">GOOD</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">Text Cleaning</div><ul class="topics">
+      <li>Removing headers, footers, page numbers from PDF extraction<span class="tag tag-good">GOOD</span></li>
+      <li>Fixing hyphenated line breaks — PDF wrapping artifact<span class="tag tag-good">GOOD</span></li>
+      <li>Normalizing whitespace, unicode, special characters<span class="tag tag-good">GOOD</span></li>
+      <li>Table extraction strategies — markdown vs skip vs separate pipeline<span class="tag tag-nice">NICE</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">Chunking Strategies</div><ul class="topics">
+      <li>Fixed-size chunking — word-based vs character-based<span class="tag tag-must">MUST</span></li>
+      <li>Sliding window with overlap — why overlap, how to set size<span class="tag tag-must">MUST</span></li>
+      <li>Sentence-aware chunking — respects sentence boundaries<span class="tag tag-good">GOOD</span></li>
+      <li>Recursive character splitting — LangChain default<span class="tag tag-good">GOOD</span></li>
+      <li>Semantic chunking — split on embedding similarity shift<span class="tag tag-good">GOOD</span></li>
+      <li>Parent-child chunking — small for retrieval, large for context<span class="tag tag-good">GOOD</span></li>
+      <li>Late chunking — embed full doc first, chunk embeddings after<span class="tag tag-nice">NICE</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">Metadata Preservation</div><ul class="topics">
+      <li>Page number, section, subsection — essential for accurate citations<span class="tag tag-must">MUST</span></li>
+      <li>Character offsets (char_start, char_end) in original doc<span class="tag tag-good">GOOD</span></li>
+      <li>Word count, token estimate per chunk<span class="tag tag-good">GOOD</span></li>
+      <li>Section header detection using regex patterns<span class="tag tag-must">MUST</span></li>
+      <li>Metadata stored separately, not mixed into chunk text<span class="tag tag-must">MUST</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">Embedding Models</div><ul class="topics">
+      <li>What an embedding is — 1536 floats capturing semantic meaning<span class="tag tag-must">MUST</span></li>
+      <li>text-embedding-3-small (1536d) vs large (3072d) — cost/quality tradeoff<span class="tag tag-must">MUST</span></li>
+      <li>Open source — BGE-M3, E5-large, GTE, Nomic-embed-text<span class="tag tag-good">GOOD</span></li>
+      <li>Batching API calls — rate limits, cost reduction<span class="tag tag-must">MUST</span></li>
+      <li>Local vs API embeddings — privacy, latency, cost<span class="tag tag-good">GOOD</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">Vector Stores</div><ul class="topics">
+      <li>pgvector — PostgreSQL extension, vector(1536) column type<span class="tag tag-must">MUST</span></li>
+      <li>Pinecone, Weaviate, Qdrant, Chroma — managed vs self-hosted tradeoffs<span class="tag tag-good">GOOD</span></li>
+      <li>FAISS — in-memory, no persistence, good for prototypes<span class="tag tag-good">GOOD</span></li>
+      <li>HNSW index — graph-based ANN, how it navigates to nearest neighbors<span class="tag tag-good">GOOD</span></li>
+      <li>Cosine similarity vs dot product vs L2 — when to use each<span class="tag tag-must">MUST</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">Idempotency & Versioning</div><ul class="topics">
+      <li>Check for duplicate ingestion before storing — safe to re-run<span class="tag tag-must">MUST</span></li>
+      <li>Hash-based change detection — re-ingest only changed docs<span class="tag tag-good">GOOD</span></li>
+      <li>Soft delete vs hard delete of stale chunks<span class="tag tag-nice">NICE</span></li>
+    </ul></div>
+  </div>
+</div>
+
+<div class="module rag">
+  <div class="module-header" onclick="tog(this)">
+    <div class="module-num">2</div>
+    <div class="module-title">Retrieval Pipeline</div>
+    <div class="module-meta"><div class="module-count">8 topics</div></div>
+    <div class="chevron">▼</div>
+  </div>
+  <div class="module-body">
+    <div class="section"><div class="section-title">Dense Retrieval</div><ul class="topics">
+      <li>Embed query → cosine similarity search in pgvector<span class="tag tag-must">MUST</span></li>
+      <li>Bi-encoder — query and doc encoded separately, fast but less precise<span class="tag tag-must">MUST</span></li>
+      <li>pgvector operator &lt;=&gt; cosine distance = 1 − similarity<span class="tag tag-must">MUST</span></li>
+      <li>Top-K — how K affects recall vs precision tradeoff<span class="tag tag-must">MUST</span></li>
+      <li>Similarity threshold — filter out low-confidence chunks<span class="tag tag-good">GOOD</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">Sparse Retrieval — BM25</div><ul class="topics">
+      <li>BM25 formula — TF × IDF with document length normalization<span class="tag tag-must">MUST</span></li>
+      <li>TF — how often term appears in doc<span class="tag tag-must">MUST</span></li>
+      <li>IDF — rare terms score higher than common terms<span class="tag tag-must">MUST</span></li>
+      <li>BM25 saturates TF — avoids keyword spam unlike TF-IDF<span class="tag tag-good">GOOD</span></li>
+      <li>When sparse beats dense — exact numbers, codes, names, acronyms<span class="tag tag-must">MUST</span></li>
+      <li>rank_bm25 Python library — BM25Okapi implementation<span class="tag tag-good">GOOD</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">RRF Fusion</div><ul class="topics">
+      <li>Reciprocal Rank Fusion formula — 1 / (k + rank)<span class="tag tag-must">MUST</span></li>
+      <li>k=60 standard — dampens effect of top positions<span class="tag tag-must">MUST</span></li>
+      <li>Why RRF over weighted sum — no per-dataset tuning needed<span class="tag tag-must">MUST</span></li>
+      <li>Deduplication before fusion — keep best score per chunk_id<span class="tag tag-good">GOOD</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">Query Rewriting</div><ul class="topics">
+      <li>Multi-query expansion — generate N variations, run all, merge results<span class="tag tag-must">MUST</span></li>
+      <li>HyDE — generate hypothetical answer, embed that instead of question<span class="tag tag-good">GOOD</span></li>
+      <li>Step-back prompting — abstract the question before retrieving<span class="tag tag-good">GOOD</span></li>
+      <li>Query decomposition — break into sub-questions for complex queries<span class="tag tag-good">GOOD</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">MMR</div><ul class="topics">
+      <li>Maximal Marginal Relevance — removes redundant chunks<span class="tag tag-must">MUST</span></li>
+      <li>Formula: λ × relevance − (1−λ) × max_sim_to_selected<span class="tag tag-must">MUST</span></li>
+      <li>λ=0.7 — 70% relevance, 30% diversity<span class="tag tag-must">MUST</span></li>
+      <li>Greedy iterative selection — pick best, remove, repeat<span class="tag tag-good">GOOD</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">Reranking</div><ul class="topics">
+      <li>Cross-encoder reads query + chunk together — far more accurate than bi-encoder<span class="tag tag-must">MUST</span></li>
+      <li>ms-marco-MiniLM-L-6-v2 — standard open source reranker<span class="tag tag-must">MUST</span></li>
+      <li>Why rerank only top 5-10 — cross-encoder too slow for full corpus<span class="tag tag-must">MUST</span></li>
+      <li>Cohere reranker — managed API option<span class="tag tag-good">GOOD</span></li>
+      <li>ColBERT — late interaction, token-level matching<span class="tag tag-nice">NICE</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">Advanced Techniques</div><ul class="topics">
+      <li>Contextual retrieval — prepend chunk with doc-level summary before embedding<span class="tag tag-good">GOOD</span></li>
+      <li>Self-querying — LLM generates metadata filter from natural language<span class="tag tag-good">GOOD</span></li>
+      <li>GraphRAG — knowledge graph + vector retrieval combined<span class="tag tag-nice">NICE</span></li>
+      <li>RAPTOR — recursive summarization tree for multi-level retrieval<span class="tag tag-nice">NICE</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">Retrieval Metrics</div><ul class="topics">
+      <li>Precision@K — of top K retrieved, how many are relevant<span class="tag tag-must">MUST</span></li>
+      <li>Recall@K — of all relevant, how many retrieved<span class="tag tag-must">MUST</span></li>
+      <li>MRR — Mean Reciprocal Rank — position of first relevant result<span class="tag tag-good">GOOD</span></li>
+      <li>NDCG — position-weighted graded relevance<span class="tag tag-good">GOOD</span></li>
+      <li>Hit Rate — did at least one relevant chunk appear in top K<span class="tag tag-good">GOOD</span></li>
+    </ul></div>
+  </div>
+</div>
+
+<div class="module rag">
+  <div class="module-header" onclick="tog(this)">
+    <div class="module-num">3</div>
+    <div class="module-title">Generation & RAGAS Evaluation</div>
+    <div class="module-meta"><div class="module-count">6 topics</div></div>
+    <div class="chevron">▼</div>
+  </div>
+  <div class="module-body">
+    <div class="section"><div class="section-title">Prompt Construction</div><ul class="topics">
+      <li>System prompt grounding — "only answer from provided context"<span class="tag tag-must">MUST</span></li>
+      <li>How to inject retrieved chunks — format, ordering, separators<span class="tag tag-must">MUST</span></li>
+      <li>Lost in the middle problem — LLMs miss info in middle of context<span class="tag tag-must">MUST</span></li>
+      <li>Citation instruction in prompt — ask LLM to reference sources<span class="tag tag-must">MUST</span></li>
+      <li>Fallback when no relevant chunks found<span class="tag tag-good">GOOD</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">Hallucination Prevention</div><ul class="topics">
+      <li>Post-generation validation — check answer claims against context<span class="tag tag-must">MUST</span></li>
+      <li>NLI-based detection — entailment vs contradiction classification<span class="tag tag-good">GOOD</span></li>
+      <li>Self-consistency — generate multiple answers, check agreement<span class="tag tag-nice">NICE</span></li>
+      <li>Abstaining when context is insufficient<span class="tag tag-good">GOOD</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">RAGAS — Faithfulness</div><ul class="topics">
+      <li>Does answer only use retrieved context — nothing invented<span class="tag tag-must">MUST</span></li>
+      <li>Decompose answer into atomic claims → check each vs context<span class="tag tag-must">MUST</span></li>
+      <li>LLM-as-judge scores each claim — score 0 to 1<span class="tag tag-must">MUST</span></li>
+      <li>Low faithfulness = hallucination — how to fix<span class="tag tag-must">MUST</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">RAGAS — Answer Relevancy</div><ul class="topics">
+      <li>Does answer actually address the question asked<span class="tag tag-must">MUST</span></li>
+      <li>Reverse generation — generate questions from answer, compare to original<span class="tag tag-must">MUST</span></li>
+      <li>Cosine similarity between generated and original questions<span class="tag tag-good">GOOD</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">RAGAS — Context Precision & Recall</div><ul class="topics">
+      <li>Context Precision — are retrieved chunks relevant to the question<span class="tag tag-must">MUST</span></li>
+      <li>Context Recall — did retrieval find all info needed to answer<span class="tag tag-must">MUST</span></li>
+      <li>Low precision → fix retrieval (too many noisy chunks)<span class="tag tag-must">MUST</span></li>
+      <li>Low recall → fix chunking or increase K<span class="tag tag-must">MUST</span></li>
+      <li>Requires ground truth answers for recall measurement<span class="tag tag-good">GOOD</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">Eval Dataset</div><ul class="topics">
+      <li>Building eval dataset — question + ground truth + context triplets<span class="tag tag-must">MUST</span></li>
+      <li>Synthetic generation using LLM — RAGAS testset generator<span class="tag tag-good">GOOD</span></li>
+      <li>How to interpret scores — what each low metric means to fix<span class="tag tag-must">MUST</span></li>
+    </ul></div>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ LANGCHAIN ══ -->
+<div class="category" data-cat="lc">
+<div class="category-title">LangChain</div>
+
+<div class="module lc">
+  <div class="module-header" onclick="tog(this)">
+    <div class="module-num">1</div>
+    <div class="module-title">Core Concepts</div>
+    <div class="module-meta"><div class="module-count">6 topics</div></div>
+    <div class="chevron">▼</div>
+  </div>
+  <div class="module-body">
+    <div class="section"><div class="section-title">Chains</div><ul class="topics">
+      <li>What a chain is — sequence of calls (LLM, tool, retriever)<span class="tag tag-must">MUST</span></li>
+      <li>LLMChain — prompt + LLM, simplest chain<span class="tag tag-must">MUST</span></li>
+      <li>SequentialChain — output of one chain becomes input of next<span class="tag tag-good">GOOD</span></li>
+      <li>LCEL — LangChain Expression Language — pipe operator |<span class="tag tag-must">MUST</span></li>
+      <li>Runnable interface — invoke, batch, stream, ainvoke<span class="tag tag-must">MUST</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">Prompt Templates</div><ul class="topics">
+      <li>ChatPromptTemplate — system + human + ai message templates<span class="tag tag-must">MUST</span></li>
+      <li>PromptTemplate — single string with {variables}<span class="tag tag-must">MUST</span></li>
+      <li>FewShotPromptTemplate — inject examples automatically<span class="tag tag-good">GOOD</span></li>
+      <li>MessagesPlaceholder — inject conversation history<span class="tag tag-good">GOOD</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">Output Parsers</div><ul class="topics">
+      <li>StrOutputParser — raw string from LLM<span class="tag tag-must">MUST</span></li>
+      <li>PydanticOutputParser — structured output with validation<span class="tag tag-must">MUST</span></li>
+      <li>JsonOutputParser — parse JSON response<span class="tag tag-good">GOOD</span></li>
+      <li>CommaSeparatedListOutputParser<span class="tag tag-nice">NICE</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">Retrievers</div><ul class="topics">
+      <li>VectorStoreRetriever — wraps any vector store<span class="tag tag-must">MUST</span></li>
+      <li>MultiQueryRetriever — auto-generates query variations<span class="tag tag-must">MUST</span></li>
+      <li>ContextualCompressionRetriever — compress docs after retrieval<span class="tag tag-good">GOOD</span></li>
+      <li>SelfQueryRetriever — LLM generates metadata filter<span class="tag tag-good">GOOD</span></li>
+      <li>EnsembleRetriever — combine dense + sparse retrievers<span class="tag tag-must">MUST</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">Memory</div><ul class="topics">
+      <li>ConversationBufferMemory — full history in context<span class="tag tag-must">MUST</span></li>
+      <li>ConversationSummaryMemory — summarize old turns<span class="tag tag-good">GOOD</span></li>
+      <li>ConversationBufferWindowMemory — last N turns only<span class="tag tag-good">GOOD</span></li>
+      <li>VectorStoreRetrieverMemory — retrieve relevant past turns<span class="tag tag-nice">NICE</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">Document Loaders & Splitters</div><ul class="topics">
+      <li>PyPDFLoader, TextLoader, WebBaseLoader<span class="tag tag-must">MUST</span></li>
+      <li>RecursiveCharacterTextSplitter — default, splits on \n\n then \n then space<span class="tag tag-must">MUST</span></li>
+      <li>TokenTextSplitter — splits by actual token count<span class="tag tag-good">GOOD</span></li>
+      <li>chunk_size and chunk_overlap parameters<span class="tag tag-must">MUST</span></li>
+    </ul></div>
+  </div>
+</div>
+
+<div class="module lc">
+  <div class="module-header" onclick="tog(this)">
+    <div class="module-num">2</div>
+    <div class="module-title">Agents & Tools</div>
+    <div class="module-meta"><div class="module-count">4 topics</div></div>
+    <div class="chevron">▼</div>
+  </div>
+  <div class="module-body">
+    <div class="section"><div class="section-title">Tools</div><ul class="topics">
+      <li>@tool decorator — turn any Python function into a tool<span class="tag tag-must">MUST</span></li>
+      <li>Tool schema — name, description, args_schema (Pydantic)<span class="tag tag-must">MUST</span></li>
+      <li>StructuredTool — multi-input tools<span class="tag tag-good">GOOD</span></li>
+      <li>Built-in tools — DuckDuckGo, Wikipedia, Python REPL<span class="tag tag-good">GOOD</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">Agent Types</div><ul class="topics">
+      <li>ReAct agent — Reason + Act loop (think → tool → observe → repeat)<span class="tag tag-must">MUST</span></li>
+      <li>OpenAI tools agent — uses function calling<span class="tag tag-must">MUST</span></li>
+      <li>Structured chat agent — handles multi-input tools<span class="tag tag-good">GOOD</span></li>
+      <li>create_react_agent vs AgentExecutor<span class="tag tag-must">MUST</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">AgentExecutor</div><ul class="topics">
+      <li>max_iterations — prevent infinite loops<span class="tag tag-must">MUST</span></li>
+      <li>handle_parsing_errors — graceful recovery<span class="tag tag-good">GOOD</span></li>
+      <li>verbose=True — see thought/action/observation chain<span class="tag tag-must">MUST</span></li>
+      <li>return_intermediate_steps — get full trace<span class="tag tag-good">GOOD</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">Callbacks & Tracing</div><ul class="topics">
+      <li>LangSmith — tracing, evaluation, dataset management<span class="tag tag-must">MUST</span></li>
+      <li>LANGCHAIN_TRACING_V2=true env var<span class="tag tag-must">MUST</span></li>
+      <li>Custom callbacks — BaseCallbackHandler<span class="tag tag-good">GOOD</span></li>
+      <li>Token usage tracking per chain<span class="tag tag-good">GOOD</span></li>
+    </ul></div>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ LANGGRAPH ══ -->
+<div class="category" data-cat="lg">
+<div class="category-title">LangGraph</div>
+
+<div class="module lg">
+  <div class="module-header" onclick="tog(this)">
+    <div class="module-num">1</div>
+    <div class="module-title">Core Concepts</div>
+    <div class="module-meta"><div class="module-count">5 topics</div></div>
+    <div class="chevron">▼</div>
+  </div>
+  <div class="module-body">
+    <div class="section"><div class="section-title">State & Graph</div><ul class="topics">
+      <li>StateGraph — graph where nodes read and write shared state<span class="tag tag-must">MUST</span></li>
+      <li>TypedDict state schema — every field typed, agents only modify their fields<span class="tag tag-must">MUST</span></li>
+      <li>Nodes — Python async functions that receive state, return partial state<span class="tag tag-must">MUST</span></li>
+      <li>Edges — connections between nodes<span class="tag tag-must">MUST</span></li>
+      <li>Conditional edges — route based on state value<span class="tag tag-must">MUST</span></li>
+      <li>START and END special nodes<span class="tag tag-must">MUST</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">State Management</div><ul class="topics">
+      <li>Why agents return only changed fields — LangGraph merges with existing state<span class="tag tag-must">MUST</span></li>
+      <li>Annotated fields — Reducer functions for lists (append vs replace)<span class="tag tag-good">GOOD</span></li>
+      <li>State persistence — checkpointers (MemorySaver, SqliteSaver)<span class="tag tag-good">GOOD</span></li>
+      <li>Thread IDs — separate conversations in same graph<span class="tag tag-good">GOOD</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">Graph Compilation & Execution</div><ul class="topics">
+      <li>graph.compile() — validates graph, returns runnable<span class="tag tag-must">MUST</span></li>
+      <li>ainvoke() — async run full graph, returns final state<span class="tag tag-must">MUST</span></li>
+      <li>astream() — stream state updates node by node<span class="tag tag-good">GOOD</span></li>
+      <li>astream_events() — fine-grained event streaming<span class="tag tag-nice">NICE</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">Conditional Routing</div><ul class="topics">
+      <li>add_conditional_edges — route based on return value of function<span class="tag tag-must">MUST</span></li>
+      <li>Router function pattern — reads state, returns next node name<span class="tag tag-must">MUST</span></li>
+      <li>Hard stops — compliance FAIL routes directly to END<span class="tag tag-must">MUST</span></li>
+      <li>Map-reduce pattern — fan out to parallel nodes<span class="tag tag-nice">NICE</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">Why LangGraph over LangChain Agents</div><ul class="topics">
+      <li>Stateful — state persists across all nodes automatically<span class="tag tag-must">MUST</span></li>
+      <li>Controllable — you define exact flow, not LLM<span class="tag tag-must">MUST</span></li>
+      <li>Conditional edges — complex branching logic<span class="tag tag-must">MUST</span></li>
+      <li>Debuggable — inspect state at every node<span class="tag tag-must">MUST</span></li>
+      <li>Human-in-the-loop — pause and wait for approval<span class="tag tag-good">GOOD</span></li>
+    </ul></div>
+  </div>
+</div>
+
+<div class="module lg">
+  <div class="module-header" onclick="tog(this)">
+    <div class="module-num">2</div>
+    <div class="module-title">Multi-Agent Patterns</div>
+    <div class="module-meta"><div class="module-count">4 topics</div></div>
+    <div class="chevron">▼</div>
+  </div>
+  <div class="module-body">
+    <div class="section"><div class="section-title">Agent Design Patterns</div><ul class="topics">
+      <li>Sequential pipeline — each agent passes state to next<span class="tag tag-must">MUST</span></li>
+      <li>Supervisor pattern — orchestrator routes to specialist agents<span class="tag tag-good">GOOD</span></li>
+      <li>Hierarchical agents — agents with sub-agents<span class="tag tag-nice">NICE</span></li>
+      <li>Each agent returns only its fields — clean separation<span class="tag tag-must">MUST</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">Error Handling</div><ul class="topics">
+      <li>try/except in nodes — catch LLM failures, set fallback state<span class="tag tag-must">MUST</span></li>
+      <li>Retry logic — retry LLM call on timeout or rate limit<span class="tag tag-good">GOOD</span></li>
+      <li>Fallback verdicts — if agent fails, pipeline continues safely<span class="tag tag-must">MUST</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">Observability</div><ul class="topics">
+      <li>LangSmith integration — trace every node execution<span class="tag tag-must">MUST</span></li>
+      <li>agent_traces field in state — store reasoning per agent<span class="tag tag-must">MUST</span></li>
+      <li>Token counting per agent — cost tracking<span class="tag tag-good">GOOD</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">LoanIQ Architecture</div><ul class="topics">
+      <li>7 nodes: Intake→Ratio→Policy→Compliance→Underwriting→Decision→Audit<span class="tag tag-must">MUST</span></li>
+      <li>Conditional edges after Compliance — FAIL routes to END<span class="tag tag-must">MUST</span></li>
+      <li>Each agent uses different LLM — cost optimization<span class="tag tag-must">MUST</span></li>
+      <li>State carries full loan + all verdicts through pipeline<span class="tag tag-must">MUST</span></li>
+    </ul></div>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ FINE-TUNING ══ -->
+<div class="category" data-cat="ft">
+<div class="category-title">Fine-Tuning</div>
+
+<div class="module ft">
+  <div class="module-header" onclick="tog(this)">
+    <div class="module-num">1</div>
+    <div class="module-title">LoRA & QLoRA</div>
+    <div class="module-meta"><div class="module-count">5 topics</div></div>
+    <div class="chevron">▼</div>
+  </div>
+  <div class="module-body">
+    <div class="section"><div class="section-title">Why Fine-Tune</div><ul class="topics">
+      <li>Domain-specific language — mortgage terms, medical, legal<span class="tag tag-must">MUST</span></li>
+      <li>Output style control — underwriter narrative format<span class="tag tag-must">MUST</span></li>
+      <li>Cost reduction — fine-tuned 8B &gt; GPT-4o quality at $0 per call<span class="tag tag-must">MUST</span></li>
+      <li>Latency — local model, no API round trip<span class="tag tag-good">GOOD</span></li>
+      <li>Privacy — no data sent to OpenAI<span class="tag tag-good">GOOD</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">Full Fine-Tuning vs LoRA</div><ul class="topics">
+      <li>Full fine-tuning — updates all weights, needs 80GB+ GPU, impractical<span class="tag tag-must">MUST</span></li>
+      <li>LoRA — freeze base weights, add small A×B adapter matrices<span class="tag tag-must">MUST</span></li>
+      <li>Output = W·x + scale × A·B·x — tiny delta on frozen weights<span class="tag tag-must">MUST</span></li>
+      <li>Only 0.1% of params trained — fits on consumer GPU<span class="tag tag-must">MUST</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">QLoRA Specifics</div><ul class="topics">
+      <li>Q = quantize base model to 4-bit — 8B model goes from 16GB to 4GB<span class="tag tag-must">MUST</span></li>
+      <li>LoRA adapters trained in 16-bit on top of 4-bit base<span class="tag tag-must">MUST</span></li>
+      <li>NF4 quantization — normal float 4, optimal for normally distributed weights<span class="tag tag-good">GOOD</span></li>
+      <li>Double quantization — quantize the quantization constants too<span class="tag tag-nice">NICE</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">Key Hyperparameters</div><ul class="topics">
+      <li>r (rank) — size of A,B matrices. r=16 sweet spot for 8B<span class="tag tag-must">MUST</span></li>
+      <li>lora_alpha — scale = alpha/r. Keep equal to r<span class="tag tag-must">MUST</span></li>
+      <li>target_modules — q_proj, k_proj, v_proj, o_proj, gate/up/down_proj<span class="tag tag-must">MUST</span></li>
+      <li>lora_dropout — 0 is optimal with QLoRA<span class="tag tag-good">GOOD</span></li>
+      <li>learning_rate — 2e-4 standard for LoRA<span class="tag tag-good">GOOD</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">Training Setup</div><ul class="topics">
+      <li>Unsloth — optimized for consumer GPUs, 2x faster than HuggingFace<span class="tag tag-must">MUST</span></li>
+      <li>SFTTrainer from TRL — supervised fine-tuning<span class="tag tag-must">MUST</span></li>
+      <li>Alpaca prompt format — instruction / input / output<span class="tag tag-must">MUST</span></li>
+      <li>gradient_accumulation_steps — simulate larger batch on small GPU<span class="tag tag-must">MUST</span></li>
+      <li>gradient_checkpointing — trade compute for memory<span class="tag tag-good">GOOD</span></li>
+      <li>adamw_8bit — 8-bit Adam optimizer saves VRAM<span class="tag tag-good">GOOD</span></li>
+    </ul></div>
+  </div>
+</div>
+
+<div class="module ft">
+  <div class="module-header" onclick="tog(this)">
+    <div class="module-num">2</div>
+    <div class="module-title">Training Data & Deployment</div>
+    <div class="module-meta"><div class="module-count">4 topics</div></div>
+    <div class="chevron">▼</div>
+  </div>
+  <div class="module-body">
+    <div class="section"><div class="section-title">Training Data Generation</div><ul class="topics">
+      <li>Teacher-student — GPT-4o generates gold labels, Llama learns from them<span class="tag tag-must">MUST</span></li>
+      <li>500 examples minimum for meaningful domain adaptation<span class="tag tag-good">GOOD</span></li>
+      <li>Edge case coverage — borderline scenarios, not just easy cases<span class="tag tag-must">MUST</span></li>
+      <li>Alpaca format — instruction + input + output JSON<span class="tag tag-must">MUST</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">Evaluation</div><ul class="topics">
+      <li>Training loss curve — should decrease steadily, target &lt;0.5<span class="tag tag-must">MUST</span></li>
+      <li>LLM-as-judge — GPT-4o scores fine-tuned output vs reference<span class="tag tag-must">MUST</span></li>
+      <li>Perplexity — how surprised model is by test data<span class="tag tag-good">GOOD</span></li>
+      <li>Catastrophic forgetting — model forgets general knowledge<span class="tag tag-good">GOOD</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">Model Formats</div><ul class="topics">
+      <li>safetensors — LoRA adapter weights (~50MB)<span class="tag tag-must">MUST</span></li>
+      <li>Merged 16-bit — adapter merged into base model, full standalone<span class="tag tag-must">MUST</span></li>
+      <li>GGUF — format for llama.cpp and Ollama, quantized<span class="tag tag-must">MUST</span></li>
+      <li>Q4_K_M — 4-bit quantization, best quality/size ratio<span class="tag tag-must">MUST</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">Deployment via Ollama</div><ul class="topics">
+      <li>Modelfile — FROM gguf_path + SYSTEM + PARAMETER<span class="tag tag-must">MUST</span></li>
+      <li>ollama create model_name -f Modelfile<span class="tag tag-must">MUST</span></li>
+      <li>HuggingFace Hub — push merged model, pull in Ollama<span class="tag tag-good">GOOD</span></li>
+      <li>OpenAI-compatible API — Ollama serves at /v1/chat/completions<span class="tag tag-must">MUST</span></li>
+    </ul></div>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ ML CONCEPTS ══ -->
+<div class="category" data-cat="ml">
+<div class="category-title">ML Concepts</div>
+
+<div class="module ml">
+  <div class="module-header" onclick="tog(this)">
+    <div class="module-num">1</div>
+    <div class="module-title">Fundamentals</div>
+    <div class="module-meta"><div class="module-count">5 topics</div></div>
+    <div class="chevron">▼</div>
+  </div>
+  <div class="module-body">
+    <div class="section"><div class="section-title">Training Basics</div><ul class="topics">
+      <li>Loss function — measures how wrong predictions are<span class="tag tag-must">MUST</span></li>
+      <li>Cross-entropy loss — for classification and language modeling<span class="tag tag-must">MUST</span></li>
+      <li>Backpropagation — chain rule, gradients flow backward<span class="tag tag-must">MUST</span></li>
+      <li>Gradient descent — step in direction of negative gradient<span class="tag tag-must">MUST</span></li>
+      <li>Learning rate — step size, too high diverges, too low slow<span class="tag tag-must">MUST</span></li>
+      <li>Batch vs SGD vs mini-batch — tradeoffs<span class="tag tag-good">GOOD</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">Optimizers</div><ul class="topics">
+      <li>SGD — basic gradient descent with momentum<span class="tag tag-good">GOOD</span></li>
+      <li>Adam — adaptive learning rates per parameter<span class="tag tag-must">MUST</span></li>
+      <li>AdamW — Adam + weight decay decoupled<span class="tag tag-must">MUST</span></li>
+      <li>8-bit Adam — quantized optimizer states, saves GPU memory<span class="tag tag-good">GOOD</span></li>
+      <li>LR schedulers — linear warmup, cosine decay<span class="tag tag-good">GOOD</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">Overfitting & Regularization</div><ul class="topics">
+      <li>Overfitting — memorizes training data, fails on new data<span class="tag tag-must">MUST</span></li>
+      <li>Dropout — randomly zero neurons during training<span class="tag tag-must">MUST</span></li>
+      <li>Weight decay (L2) — penalizes large weights<span class="tag tag-must">MUST</span></li>
+      <li>Early stopping — stop when validation loss stops improving<span class="tag tag-must">MUST</span></li>
+      <li>Data augmentation — increase effective dataset size<span class="tag tag-good">GOOD</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">Evaluation Metrics</div><ul class="topics">
+      <li>Accuracy, Precision, Recall, F1 — and when each matters<span class="tag tag-must">MUST</span></li>
+      <li>Confusion matrix — TP, FP, TN, FN<span class="tag tag-must">MUST</span></li>
+      <li>ROC-AUC — model discrimination ability<span class="tag tag-good">GOOD</span></li>
+      <li>Perplexity — LLM metric, lower = better predictions<span class="tag tag-must">MUST</span></li>
+      <li>BLEU, ROUGE — text generation metrics<span class="tag tag-good">GOOD</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">Bias & Variance</div><ul class="topics">
+      <li>High bias (underfitting) — model too simple, poor on train+test<span class="tag tag-must">MUST</span></li>
+      <li>High variance (overfitting) — great on train, poor on test<span class="tag tag-must">MUST</span></li>
+      <li>Bias-variance tradeoff — can't minimize both simultaneously<span class="tag tag-must">MUST</span></li>
+      <li>How to diagnose from learning curves<span class="tag tag-good">GOOD</span></li>
+    </ul></div>
+  </div>
+</div>
+
+<div class="module ml">
+  <div class="module-header" onclick="tog(this)">
+    <div class="module-num">2</div>
+    <div class="module-title">LLM-Specific ML</div>
+    <div class="module-meta"><div class="module-count">5 topics</div></div>
+    <div class="chevron">▼</div>
+  </div>
+  <div class="module-body">
+    <div class="section"><div class="section-title">Pre-training</div><ul class="topics">
+      <li>Next token prediction — model predicts token N+1 given N tokens<span class="tag tag-must">MUST</span></li>
+      <li>Causal language modeling — autoregressive, left-to-right<span class="tag tag-must">MUST</span></li>
+      <li>Masked language modeling — BERT style, predict masked tokens<span class="tag tag-good">GOOD</span></li>
+      <li>Training data scale — GPT-4 trained on trillions of tokens<span class="tag tag-good">GOOD</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">RLHF</div><ul class="topics">
+      <li>Reinforcement Learning from Human Feedback — how ChatGPT was aligned<span class="tag tag-must">MUST</span></li>
+      <li>SFT — supervised fine-tuning on human demonstrations first<span class="tag tag-must">MUST</span></li>
+      <li>Reward model — trained on human preference rankings<span class="tag tag-good">GOOD</span></li>
+      <li>PPO — Proximal Policy Optimization, updates LLM with reward signal<span class="tag tag-good">GOOD</span></li>
+      <li>DPO — Direct Preference Optimization, simpler alternative to PPO<span class="tag tag-good">GOOD</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">Inference</div><ul class="topics">
+      <li>Temperature — controls randomness. 0=deterministic, 2=chaotic<span class="tag tag-must">MUST</span></li>
+      <li>Top-p (nucleus) sampling — sample from top p% probability mass<span class="tag tag-must">MUST</span></li>
+      <li>Top-k sampling — sample from top k tokens only<span class="tag tag-good">GOOD</span></li>
+      <li>Greedy decoding — always pick highest prob token<span class="tag tag-good">GOOD</span></li>
+      <li>Beam search — keep top N sequences at each step<span class="tag tag-good">GOOD</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">Context & Memory</div><ul class="topics">
+      <li>Context window — max tokens model can attend to<span class="tag tag-must">MUST</span></li>
+      <li>KV cache — stores key/value matrices to avoid recomputation<span class="tag tag-must">MUST</span></li>
+      <li>Long context — RoPE scaling, sliding window attention<span class="tag tag-good">GOOD</span></li>
+      <li>Context length vs quality — long context degrades "lost in middle"<span class="tag tag-must">MUST</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">Quantization</div><ul class="topics">
+      <li>FP32 → FP16 → INT8 → INT4 — precision vs size tradeoff<span class="tag tag-must">MUST</span></li>
+      <li>GPTQ — post-training quantization with calibration dataset<span class="tag tag-good">GOOD</span></li>
+      <li>GGUF Q4_K_M — llama.cpp format, best quality at 4-bit<span class="tag tag-must">MUST</span></li>
+      <li>Quality degradation at INT4 — some tasks affected more<span class="tag tag-good">GOOD</span></li>
+    </ul></div>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ TRANSFORMERS ══ -->
+<div class="category" data-cat="tr">
+<div class="category-title">Transformer Architecture</div>
+
+<div class="module tr">
+  <div class="module-header" onclick="tog(this)">
+    <div class="module-num">1</div>
+    <div class="module-title">Attention Mechanism</div>
+    <div class="module-meta"><div class="module-count">5 topics</div></div>
+    <div class="chevron">▼</div>
+  </div>
+  <div class="module-body">
+    <div class="section"><div class="section-title">Self-Attention</div><ul class="topics">
+      <li>Q, K, V — Query, Key, Value projections from input<span class="tag tag-must">MUST</span></li>
+      <li>Attention formula — softmax(QK^T / √d_k) × V<span class="tag tag-must">MUST</span></li>
+      <li>√d_k scaling — prevents dot products from getting too large<span class="tag tag-must">MUST</span></li>
+      <li>Attention score — how much each token attends to every other<span class="tag tag-must">MUST</span></li>
+      <li>Causal masking — future tokens masked in decoder<span class="tag tag-must">MUST</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">Multi-Head Attention</div><ul class="topics">
+      <li>Why multiple heads — each head learns different relationships<span class="tag tag-must">MUST</span></li>
+      <li>h heads × d_head dimensions = d_model total<span class="tag tag-must">MUST</span></li>
+      <li>Heads concatenated then projected back to d_model<span class="tag tag-good">GOOD</span></li>
+      <li>GQA — Grouped Query Attention, fewer KV heads, faster inference<span class="tag tag-good">GOOD</span></li>
+      <li>MQA — Multi-Query Attention, single KV head shared<span class="tag tag-nice">NICE</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">Positional Encoding</div><ul class="topics">
+      <li>Why needed — attention has no sense of token order<span class="tag tag-must">MUST</span></li>
+      <li>Sinusoidal — original Transformer, fixed frequencies<span class="tag tag-good">GOOD</span></li>
+      <li>Learned positional embeddings — BERT approach<span class="tag tag-good">GOOD</span></li>
+      <li>RoPE — Rotary Positional Embedding, used in Llama<span class="tag tag-must">MUST</span></li>
+      <li>RoPE extends context — rotate Q,K vectors by position angle<span class="tag tag-good">GOOD</span></li>
+      <li>ALiBi — linear bias on attention scores<span class="tag tag-nice">NICE</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">KV Cache</div><ul class="topics">
+      <li>Stores K,V matrices from previous tokens — avoid recompute<span class="tag tag-must">MUST</span></li>
+      <li>Critical for fast autoregressive generation<span class="tag tag-must">MUST</span></li>
+      <li>Memory grows linearly with context length<span class="tag tag-must">MUST</span></li>
+      <li>PagedAttention — vLLM, manages KV cache like OS memory pages<span class="tag tag-good">GOOD</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">Attention Variants</div><ul class="topics">
+      <li>Flash Attention — IO-aware, fused CUDA kernel, much faster<span class="tag tag-must">MUST</span></li>
+      <li>Flash Attention 2 — better parallelism, ~2x faster<span class="tag tag-good">GOOD</span></li>
+      <li>Sliding window attention — Mistral, each token attends to local window<span class="tag tag-good">GOOD</span></li>
+      <li>Sparse attention — attend to subset of tokens<span class="tag tag-nice">NICE</span></li>
+    </ul></div>
+  </div>
+</div>
+
+<div class="module tr">
+  <div class="module-header" onclick="tog(this)">
+    <div class="module-num">2</div>
+    <div class="module-title">Architecture Details</div>
+    <div class="module-meta"><div class="module-count">4 topics</div></div>
+    <div class="chevron">▼</div>
+  </div>
+  <div class="module-body">
+    <div class="section"><div class="section-title">Transformer Block</div><ul class="topics">
+      <li>Multi-head attention → Add & Norm → FFN → Add & Norm<span class="tag tag-must">MUST</span></li>
+      <li>Residual connections — add input to output, stabilize training<span class="tag tag-must">MUST</span></li>
+      <li>Layer normalization — normalize across features, not batch<span class="tag tag-must">MUST</span></li>
+      <li>Pre-norm vs post-norm — modern LLMs use pre-norm (RMSNorm)<span class="tag tag-good">GOOD</span></li>
+      <li>RMSNorm — simpler than LayerNorm, no mean subtraction<span class="tag tag-good">GOOD</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">Feed-Forward Network</div><ul class="topics">
+      <li>FFN expands then contracts — d_model → 4×d_model → d_model<span class="tag tag-must">MUST</span></li>
+      <li>Activation functions — ReLU, GELU, SiLU (Llama uses SiLU)<span class="tag tag-must">MUST</span></li>
+      <li>SwiGLU — gated FFN, better than standard, used in Llama<span class="tag tag-good">GOOD</span></li>
+      <li>MoE — Mixture of Experts, sparse activation per token<span class="tag tag-good">GOOD</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">Encoder vs Decoder</div><ul class="topics">
+      <li>Encoder-only (BERT) — bidirectional, good for classification/embeddings<span class="tag tag-must">MUST</span></li>
+      <li>Decoder-only (GPT, Llama) — autoregressive, good for generation<span class="tag tag-must">MUST</span></li>
+      <li>Encoder-decoder (T5, BART) — good for seq2seq tasks<span class="tag tag-good">GOOD</span></li>
+      <li>Why LLMs are decoder-only — generation is primary task<span class="tag tag-must">MUST</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">Tokenization</div><ul class="topics">
+      <li>BPE — Byte-Pair Encoding, merge frequent pairs iteratively<span class="tag tag-must">MUST</span></li>
+      <li>SentencePiece — language-agnostic BPE<span class="tag tag-good">GOOD</span></li>
+      <li>Vocab size — GPT-4 ~100k, Llama ~32k tokens<span class="tag tag-good">GOOD</span></li>
+      <li>Tokenization affects cost — 1 token ≈ 0.75 words<span class="tag tag-must">MUST</span></li>
+      <li>Special tokens — BOS, EOS, PAD, system prompt delimiters<span class="tag tag-must">MUST</span></li>
+    </ul></div>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ DOCKER ══ -->
+<div class="category" data-cat="dk">
+<div class="category-title">Docker</div>
+
+<div class="module dk">
+  <div class="module-header" onclick="tog(this)">
+    <div class="module-num">1</div>
+    <div class="module-title">Docker Fundamentals</div>
+    <div class="module-meta"><div class="module-count">5 topics</div></div>
+    <div class="chevron">▼</div>
+  </div>
+  <div class="module-body">
+    <div class="section"><div class="section-title">Core Concepts</div><ul class="topics">
+      <li>Image — read-only template with app + deps, built from Dockerfile<span class="tag tag-must">MUST</span></li>
+      <li>Container — running instance of an image<span class="tag tag-must">MUST</span></li>
+      <li>Dockerfile — instructions to build image layer by layer<span class="tag tag-must">MUST</span></li>
+      <li>Layer caching — unchanged layers reuse cache, speeds builds<span class="tag tag-must">MUST</span></li>
+      <li>Docker Hub vs ECR vs GHCR — image registries<span class="tag tag-good">GOOD</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">Dockerfile Best Practices</div><ul class="topics">
+      <li>Multi-stage builds — separate build and runtime stages, smaller final image<span class="tag tag-must">MUST</span></li>
+      <li>Copy requirements first, then code — maximize layer cache hits<span class="tag tag-must">MUST</span></li>
+      <li>Non-root user — security best practice<span class="tag tag-good">GOOD</span></li>
+      <li>.dockerignore — exclude __pycache__, .env, .git<span class="tag tag-must">MUST</span></li>
+      <li>ENTRYPOINT vs CMD — entrypoint fixed, CMD overridable<span class="tag tag-good">GOOD</span></li>
+      <li>ENV vs ARG — ENV runtime, ARG build-time only<span class="tag tag-good">GOOD</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">Docker Compose</div><ul class="topics">
+      <li>services, networks, volumes — three main sections<span class="tag tag-must">MUST</span></li>
+      <li>depends_on — start order, but not health check<span class="tag tag-must">MUST</span></li>
+      <li>healthcheck — wait for postgres to be ready<span class="tag tag-must">MUST</span></li>
+      <li>volumes — persist data beyond container lifetime<span class="tag tag-must">MUST</span></li>
+      <li>environment and env_file — pass secrets<span class="tag tag-must">MUST</span></li>
+      <li>networks — isolate services, custom bridge networks<span class="tag tag-good">GOOD</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">Common Commands</div><ul class="topics">
+      <li>docker build -t name . | docker run | docker ps | docker logs<span class="tag tag-must">MUST</span></li>
+      <li>docker exec -it container bash — get shell inside container<span class="tag tag-must">MUST</span></li>
+      <li>docker compose up -d | down | logs | restart<span class="tag tag-must">MUST</span></li>
+      <li>docker images | docker rmi | docker system prune<span class="tag tag-good">GOOD</span></li>
+      <li>docker inspect — get full container metadata<span class="tag tag-good">GOOD</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">Networking</div><ul class="topics">
+      <li>Port mapping -p host:container — expose container port<span class="tag tag-must">MUST</span></li>
+      <li>Container DNS — containers talk by service name in compose<span class="tag tag-must">MUST</span></li>
+      <li>Bridge network — default, isolated from host<span class="tag tag-good">GOOD</span></li>
+      <li>Host network — container shares host network, no isolation<span class="tag tag-good">GOOD</span></li>
+    </ul></div>
+  </div>
+</div>
+
+<div class="module dk">
+  <div class="module-header" onclick="tog(this)">
+    <div class="module-num">2</div>
+    <div class="module-title">Docker for ML/AI</div>
+    <div class="module-meta"><div class="module-count">3 topics</div></div>
+    <div class="chevron">▼</div>
+  </div>
+  <div class="module-body">
+    <div class="section"><div class="section-title">GPU in Docker</div><ul class="topics">
+      <li>nvidia-docker runtime — expose GPU to container<span class="tag tag-good">GOOD</span></li>
+      <li>--gpus all flag — pass all GPUs to container<span class="tag tag-good">GOOD</span></li>
+      <li>CUDA base images — nvidia/cuda:12.1-runtime-ubuntu22.04<span class="tag tag-good">GOOD</span></li>
+      <li>CUDA version must match host driver<span class="tag tag-must">MUST</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">FastAPI + PostgreSQL Stack</div><ul class="topics">
+      <li>pgvector/pgvector:pg16 — official image with pgvector pre-installed<span class="tag tag-must">MUST</span></li>
+      <li>Wait-for-postgres pattern in entrypoint<span class="tag tag-must">MUST</span></li>
+      <li>Environment variables for DB credentials<span class="tag tag-must">MUST</span></li>
+      <li>Volume mount for postgres data persistence<span class="tag tag-must">MUST</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">Production Patterns</div><ul class="topics">
+      <li>Health endpoints — /health in FastAPI, Docker healthcheck hits it<span class="tag tag-must">MUST</span></li>
+      <li>Secrets management — never bake secrets into image<span class="tag tag-must">MUST</span></li>
+      <li>Image size optimization — python:3.11-slim base, no dev deps<span class="tag tag-good">GOOD</span></li>
+      <li>Restart policies — always, on-failure, unless-stopped<span class="tag tag-good">GOOD</span></li>
+    </ul></div>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ AWS BEDROCK ══ -->
+<div class="category" data-cat="aws">
+<div class="category-title">AWS Bedrock</div>
+
+<div class="module aws">
+  <div class="module-header" onclick="tog(this)">
+    <div class="module-num">1</div>
+    <div class="module-title">Bedrock Fundamentals</div>
+    <div class="module-meta"><div class="module-count">5 topics</div></div>
+    <div class="chevron">▼</div>
+  </div>
+  <div class="module-body">
+    <div class="section"><div class="section-title">What Bedrock Is</div><ul class="topics">
+      <li>Managed LLM service — access foundation models via API in AWS<span class="tag tag-must">MUST</span></li>
+      <li>No model hosting needed — serverless inference<span class="tag tag-must">MUST</span></li>
+      <li>Data stays in AWS VPC — key for compliance/PII<span class="tag tag-must">MUST</span></li>
+      <li>Pay per token — no idle GPU cost<span class="tag tag-good">GOOD</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">Available Models</div><ul class="topics">
+      <li>Anthropic Claude — Haiku (cheap/fast), Sonnet (balanced), Opus (best)<span class="tag tag-must">MUST</span></li>
+      <li>Meta Llama 3.1 8B, 70B, 405B<span class="tag tag-must">MUST</span></li>
+      <li>Amazon Titan — embeddings, text models<span class="tag tag-good">GOOD</span></li>
+      <li>Mistral, Cohere, AI21 — also available<span class="tag tag-good">GOOD</span></li>
+      <li>Model IDs — anthropic.claude-3-5-sonnet-20241022-v2:0<span class="tag tag-must">MUST</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">Invoking Models</div><ul class="topics">
+      <li>boto3 bedrock-runtime client — invoke_model, converse<span class="tag tag-must">MUST</span></li>
+      <li>converse API — unified interface for all models<span class="tag tag-must">MUST</span></li>
+      <li>InvokeModel — model-specific request/response format<span class="tag tag-good">GOOD</span></li>
+      <li>Streaming — invoke_model_with_response_stream<span class="tag tag-good">GOOD</span></li>
+      <li>LangChain BedrockChat — thin wrapper over boto3<span class="tag tag-good">GOOD</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">IAM & Permissions</div><ul class="topics">
+      <li>bedrock:InvokeModel — permission needed per model<span class="tag tag-must">MUST</span></li>
+      <li>IAM role vs access key — role preferred in AWS services<span class="tag tag-must">MUST</span></li>
+      <li>Model access — enable per model in console (Anthropic needs agreement)<span class="tag tag-must">MUST</span></li>
+      <li>SCPs — Service Control Policies for org-level governance<span class="tag tag-good">GOOD</span></li>
+      <li>Resource-based policies — restrict which models can be called<span class="tag tag-nice">NICE</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">Why Bedrock for PII Agents</div><ul class="topics">
+      <li>Data never leaves AWS — no OpenAI data sharing<span class="tag tag-must">MUST</span></li>
+      <li>VPC endpoints — traffic stays within private network<span class="tag tag-must">MUST</span></li>
+      <li>CloudWatch logging — full audit trail<span class="tag tag-good">GOOD</span></li>
+      <li>Bedrock Guardrails — content filtering, PII redaction<span class="tag tag-good">GOOD</span></li>
+    </ul></div>
+  </div>
+</div>
+
+<div class="module aws">
+  <div class="module-header" onclick="tog(this)">
+    <div class="module-num">2</div>
+    <div class="module-title">AWS Ecosystem for Gen AI</div>
+    <div class="module-meta"><div class="module-count">4 topics</div></div>
+    <div class="chevron">▼</div>
+  </div>
+  <div class="module-body">
+    <div class="section"><div class="section-title">Supporting Services</div><ul class="topics">
+      <li>S3 — store training data, model artifacts, policy PDFs<span class="tag tag-must">MUST</span></li>
+      <li>RDS PostgreSQL + pgvector — managed vector store<span class="tag tag-good">GOOD</span></li>
+      <li>ECR — store Docker images<span class="tag tag-good">GOOD</span></li>
+      <li>ECS/Fargate — run containers serverlessly<span class="tag tag-good">GOOD</span></li>
+      <li>Lambda — serverless functions for lightweight inference<span class="tag tag-good">GOOD</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">Bedrock Knowledge Bases</div><ul class="topics">
+      <li>Managed RAG — upload docs, Bedrock handles chunking + embedding + retrieval<span class="tag tag-good">GOOD</span></li>
+      <li>Supports S3, Confluence, SharePoint as sources<span class="tag tag-good">GOOD</span></li>
+      <li>When to use vs custom RAG — managed vs control tradeoff<span class="tag tag-must">MUST</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">Bedrock Agents</div><ul class="topics">
+      <li>Managed agent framework — action groups, knowledge bases<span class="tag tag-good">GOOD</span></li>
+      <li>Action groups — Lambda functions as tools<span class="tag tag-good">GOOD</span></li>
+      <li>When to use vs LangGraph — managed vs custom<span class="tag tag-must">MUST</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">Cost Management</div><ul class="topics">
+      <li>On-demand pricing — per input + output token<span class="tag tag-must">MUST</span></li>
+      <li>Provisioned throughput — reserved capacity, lower per-token cost<span class="tag tag-good">GOOD</span></li>
+      <li>Model selection for cost — Haiku for simple tasks, Sonnet for complex<span class="tag tag-must">MUST</span></li>
+      <li>CloudWatch cost alarms — alert on spend<span class="tag tag-good">GOOD</span></li>
+    </ul></div>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ PYTHON ══ -->
+<div class="category" data-cat="py">
+<div class="category-title">Python for Gen AI</div>
+
+<div class="module py">
+  <div class="module-header" onclick="tog(this)">
+    <div class="module-num">1</div>
+    <div class="module-title">Async Python</div>
+    <div class="module-meta"><div class="module-count">4 topics</div></div>
+    <div class="chevron">▼</div>
+  </div>
+  <div class="module-body">
+    <div class="section"><div class="section-title">async/await</div><ul class="topics">
+      <li>async def — coroutine function, returns coroutine object<span class="tag tag-must">MUST</span></li>
+      <li>await — suspend coroutine until awaitable completes<span class="tag tag-must">MUST</span></li>
+      <li>asyncio.run() — entry point to run async code<span class="tag tag-must">MUST</span></li>
+      <li>Why async — LLM/DB calls are I/O bound, don't block thread<span class="tag tag-must">MUST</span></li>
+      <li>async for, async with — async iteration and context managers<span class="tag tag-good">GOOD</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">Concurrency Patterns</div><ul class="topics">
+      <li>asyncio.gather() — run multiple coroutines concurrently<span class="tag tag-must">MUST</span></li>
+      <li>asyncio.create_task() — schedule coroutine without awaiting<span class="tag tag-good">GOOD</span></li>
+      <li>asyncio.Semaphore — limit concurrent requests to API<span class="tag tag-good">GOOD</span></li>
+      <li>asyncio.timeout() / asyncio.wait_for() — add timeout to coroutine<span class="tag tag-good">GOOD</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">FastAPI Async</div><ul class="topics">
+      <li>async def endpoints — don't block server on LLM calls<span class="tag tag-must">MUST</span></li>
+      <li>Depends() — dependency injection, called before each endpoint<span class="tag tag-must">MUST</span></li>
+      <li>Background tasks — run after response returned<span class="tag tag-good">GOOD</span></li>
+      <li>StreamingResponse — stream LLM output token by token<span class="tag tag-good">GOOD</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">AsyncSession SQLAlchemy</div><ul class="topics">
+      <li>AsyncSession — non-blocking DB operations<span class="tag tag-must">MUST</span></li>
+      <li>async with AsyncSessionLocal() as db — session lifecycle<span class="tag tag-must">MUST</span></li>
+      <li>await db.execute() — run queries<span class="tag tag-must">MUST</span></li>
+      <li>await db.commit() / rollback() — transaction control<span class="tag tag-must">MUST</span></li>
+    </ul></div>
+  </div>
+</div>
+
+<div class="module py">
+  <div class="module-header" onclick="tog(this)">
+    <div class="module-num">2</div>
+    <div class="module-title">Pydantic & Data Modeling</div>
+    <div class="module-meta"><div class="module-count">3 topics</div></div>
+    <div class="chevron">▼</div>
+  </div>
+  <div class="module-body">
+    <div class="section"><div class="section-title">Pydantic v2 Basics</div><ul class="topics">
+      <li>BaseModel — define schema with type annotations<span class="tag tag-must">MUST</span></li>
+      <li>Field() — default values, validation, description<span class="tag tag-must">MUST</span></li>
+      <li>model_validator — cross-field validation<span class="tag tag-good">GOOD</span></li>
+      <li>@field_validator — per-field custom validation<span class="tag tag-good">GOOD</span></li>
+      <li>model.model_dump() — to dict. model_dump_json() — to JSON<span class="tag tag-must">MUST</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">Pydantic Settings</div><ul class="topics">
+      <li>BaseSettings — reads from .env automatically<span class="tag tag-must">MUST</span></li>
+      <li>SettingsConfigDict — env_file, case_sensitive<span class="tag tag-must">MUST</span></li>
+      <li>@lru_cache on get_settings() — singleton pattern<span class="tag tag-must">MUST</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">FastAPI Integration</div><ul class="topics">
+      <li>Request body — Pydantic model as parameter<span class="tag tag-must">MUST</span></li>
+      <li>Response model — validate and serialize output<span class="tag tag-must">MUST</span></li>
+      <li>HTTPException — raise with status_code and detail<span class="tag tag-must">MUST</span></li>
+      <li>status codes — 200, 201, 400, 404, 422, 500<span class="tag tag-must">MUST</span></li>
+    </ul></div>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ SYSTEM DESIGN ══ -->
+<div class="category" data-cat="sys">
+<div class="category-title">System Design for Gen AI</div>
+
+<div class="module sys">
+  <div class="module-header" onclick="tog(this)">
+    <div class="module-num">1</div>
+    <div class="module-title">Common Interview Questions</div>
+    <div class="module-meta"><div class="module-count">4 topics</div></div>
+    <div class="chevron">▼</div>
+  </div>
+  <div class="module-body">
+    <div class="section"><div class="section-title">Design a RAG System</div><ul class="topics">
+      <li>Ingestion pipeline — loader → cleaner → chunker → embedder → vector store<span class="tag tag-must">MUST</span></li>
+      <li>Retrieval — query rewrite → dense + sparse → RRF → MMR → rerank<span class="tag tag-must">MUST</span></li>
+      <li>Generation — prompt construction → LLM → citation extraction<span class="tag tag-must">MUST</span></li>
+      <li>Evaluation — RAGAS metrics, eval dataset, monitoring<span class="tag tag-must">MUST</span></li>
+      <li>Scale concerns — caching, async, horizontal scaling<span class="tag tag-good">GOOD</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">Design a Multi-Agent System</div><ul class="topics">
+      <li>State schema — what flows between agents<span class="tag tag-must">MUST</span></li>
+      <li>Agent responsibilities — single responsibility per agent<span class="tag tag-must">MUST</span></li>
+      <li>Routing logic — conditional edges on verdict fields<span class="tag tag-must">MUST</span></li>
+      <li>Error handling — fallback verdicts, pipeline continues<span class="tag tag-must">MUST</span></li>
+      <li>Observability — traces, token counts, latency per agent<span class="tag tag-must">MUST</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">Cost Optimization</div><ul class="topics">
+      <li>Route different agents to different models — cost vs quality<span class="tag tag-must">MUST</span></li>
+      <li>Cache LLM responses for identical inputs<span class="tag tag-good">GOOD</span></li>
+      <li>Use local models for cheap tasks — Ollama + Llama<span class="tag tag-must">MUST</span></li>
+      <li>Prompt compression — reduce tokens sent to expensive models<span class="tag tag-good">GOOD</span></li>
+      <li>Batch API — OpenAI batch for non-realtime, 50% cheaper<span class="tag tag-nice">NICE</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">Failure Modes & Mitigations</div><ul class="topics">
+      <li>LLM timeout — retry with exponential backoff<span class="tag tag-must">MUST</span></li>
+      <li>Wrong chunks retrieved — improve chunking, increase K<span class="tag tag-must">MUST</span></li>
+      <li>Hallucination — post-generation validation, faithfulness check<span class="tag tag-must">MUST</span></li>
+      <li>Prompt injection — sanitize user input in RAG queries<span class="tag tag-good">GOOD</span></li>
+      <li>Context length exceeded — summarize or truncate chunks<span class="tag tag-good">GOOD</span></li>
+      <li>DB connection pool exhausted — tune pool_size, max_overflow<span class="tag tag-good">GOOD</span></li>
+    </ul></div>
+  </div>
+</div>
+
+<div class="module sys">
+  <div class="module-header" onclick="tog(this)">
+    <div class="module-num">2</div>
+    <div class="module-title">LoanIQ — Your Project Answers</div>
+    <div class="module-meta"><div class="module-count">4 topics</div></div>
+    <div class="chevron">▼</div>
+  </div>
+  <div class="module-body">
+    <div class="section"><div class="section-title">Elevator Pitch</div><ul class="topics">
+      <li>"LoanIQ is a mortgage loan decisioning system using 7 LangGraph agents"<span class="tag tag-must">MUST</span></li>
+      <li>"Each agent specializes — Intake validates, Ratio computes, Policy checks RAG"<span class="tag tag-must">MUST</span></li>
+      <li>"RAG pipeline: hybrid retrieval + RRF + MMR + cross-encoder reranking"<span class="tag tag-must">MUST</span></li>
+      <li>"Models routed by cost — Llama locally, Sonnet for complex, Haiku for PII"<span class="tag tag-must">MUST</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">Key Technical Decisions to Defend</div><ul class="topics">
+      <li>Why LangGraph — stateful, conditional edges, debuggable vs LangChain<span class="tag tag-must">MUST</span></li>
+      <li>Why hybrid retrieval — dense misses exact terms, BM25 catches them<span class="tag tag-must">MUST</span></li>
+      <li>Why pgvector — single DB for vectors + app data, no extra infra<span class="tag tag-must">MUST</span></li>
+      <li>Why QLoRA — fits on consumer GPU, $0 inference vs GPT-4o<span class="tag tag-must">MUST</span></li>
+      <li>Why Bedrock for PII agents — data never leaves AWS VPC<span class="tag tag-must">MUST</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">Metrics to Know</div><ul class="topics">
+      <li>RAGAS faithfulness, relevancy, context precision, context recall<span class="tag tag-must">MUST</span></li>
+      <li>Fine-tuned model score vs GPT-4o baseline<span class="tag tag-must">MUST</span></li>
+      <li>Pipeline latency — total and per agent<span class="tag tag-good">GOOD</span></li>
+      <li>Cost per decision — token count × model price<span class="tag tag-good">GOOD</span></li>
+    </ul></div>
+    <div class="section"><div class="section-title">Common Interview Questions on LoanIQ</div><ul class="topics">
+      <li>"How do you handle hallucinations?" → Stage 7 validator + faithfulness scoring<span class="tag tag-must">MUST</span></li>
+      <li>"What breaks at scale?" → BM25 in-memory, reranker latency, DB connections<span class="tag tag-must">MUST</span></li>
+      <li>"How do you evaluate the pipeline?" → RAGAS + LLM-as-judge + human review<span class="tag tag-must">MUST</span></li>
+      <li>"Why not just use Bedrock Knowledge Bases?" → control, custom retrieval, cost<span class="tag tag-must">MUST</span></li>
+      <li>"How would you improve it?" → GraphRAG, streaming, fine-tune embeddings<span class="tag tag-good">GOOD</span></li>
+    </ul></div>
+  </div>
+</div>
+</div>
+
+</div><!-- /container -->
+
+<script>
+function tog(header) {
+  header.parentElement.classList.toggle('open');
+}
+function filterCat(cat, btn) {
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.category').forEach(c => {
+    c.style.display = c.dataset.cat === cat ? '' : 'none';
+  });
+}
+function showAll(btn) {
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.category').forEach(c => c.style.display = '');
+}
+
+// color the cat buttons
+const colors = {rag:'#7c3aed',lc:'#2563eb',lg:'#0891b2',ft:'#d97706',ml:'#059669',tr:'#db2777',dk:'#6366f1',aws:'#ea580c',py:'#16a34a',sys:'#9333ea'};
+document.querySelectorAll('.cat-btn[onclick*="filterCat"]').forEach(btn => {
+  const m = btn.getAttribute('onclick').match(/'(\w+)'/);
+  if(m && colors[m[1]]) {
+    btn.style.color = colors[m[1]];
+    btn.addEventListener('mouseenter', () => btn.style.background = colors[m[1]] + '12');
+    btn.addEventListener('mouseleave', () => { if(!btn.classList.contains('active')) btn.style.background = ''; });
+  }
+});
+</script>
+</body>
+</html>
