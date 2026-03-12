@@ -1,958 +1,380 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
+
 <head>
-  <script id="rn-early-theme">
-    (function(){
-      var OVERRIDE="rn-theme-manual", OD=OVERRIDE+"-date";
-      function istHour(){var n=new Date(),u=n.getTime()+n.getTimezoneOffset()*60000,i=new Date(u+19800000);return i.getHours();}
-      function istDate(){var n=new Date(),u=n.getTime()+n.getTimezoneOffset()*60000,i=new Date(u+19800000);return i.getFullYear()+"-"+i.getMonth()+"-"+i.getDate();}
-      var manual=localStorage.getItem(OVERRIDE),day=localStorage.getItem(OD),today=istDate();
-      var theme=(manual&&day===today)?manual:((istHour()>=6&&istHour()<19)?"light":"dark");
-      document.documentElement.setAttribute("data-theme",theme);
-    })();
-  </script>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Rahul Naik · AI/ML Engineer</title>
-<meta name="description" content="Portfolio of Rahul Naik — building intelligent financial systems with Gen AI, LLMs, and RAG pipelines.">
+
+<meta name="description" content="Portfolio of Rahul Naik — building intelligent financial systems with GenAI, LLMs, and RAG pipelines.">
+
 <link rel="stylesheet" href="assets/css/theme.css">
+
 <style>
 
-/* ── PAGE LAYOUT ── */
-.page-wrap {
-  position: relative; z-index: 5;
-  padding-top: 60px;
-}
-
-/* ── HERO ── */
-.hero {
-  min-height: 100vh;
-  display: flex; flex-direction: column;
-  justify-content: center; align-items: center;
-  text-align: center;
-  padding: 6rem 2rem 4rem;
-  position: relative;
-}
-
-.hero-eyebrow {
-  font-family: var(--font-mono);
-  font-size: 0.6rem;
-  letter-spacing: 0.25em;
-  text-transform: uppercase;
-  color: var(--cyan);
-  margin-bottom: 1.5rem;
-  opacity: 0;
-  animation: fadeUp 0.8s 0.2s forwards;
-  display: flex; align-items: center; gap: 0.6rem;
-}
-
-.hero-eyebrow::before,
-.hero-eyebrow::after {
-  content: '';
-  display: block;
-  height: 1px;
-  width: 40px;
-  background: var(--cyan);
-  opacity: 0.4;
-}
-
-.hero-name {
-  font-family: var(--font-display);
-  font-size: clamp(2.8rem, 8vw, 7rem);
-  font-weight: 800;
-  line-height: 0.95;
-  letter-spacing: -0.02em;
-  color: var(--text);
-  margin-bottom: 0.3rem;
-  opacity: 0;
-  animation: fadeUp 0.8s 0.35s forwards;
-}
-
-.hero-title {
-  font-family: var(--font-display);
-  font-size: clamp(1rem, 2.5vw, 1.8rem);
-  font-weight: 600;
-  background: linear-gradient(90deg, var(--cyan), var(--purple), var(--green));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin-bottom: 1.5rem;
-  opacity: 0;
-  animation: fadeUp 0.8s 0.5s forwards;
-}
-
-.hero-desc {
-  max-width: 580px;
-  font-size: 1rem;
-  line-height: 1.75;
-  color: var(--text2);
-  margin: 0 auto 2.5rem;
-  opacity: 0;
-  animation: fadeUp 0.8s 0.65s forwards;
-}
+/* ---------- BASE ---------- */
 
-.hero-cta {
-  display: flex; gap: 1rem; flex-wrap: wrap;
-  justify-content: center;
-  opacity: 0;
-  animation: fadeUp 0.8s 0.8s forwards;
+body{
+margin:0;
+font-family:system-ui;
+background:#0b0f1a;
+color:white;
 }
 
-.btn {
-  font-family: var(--font-mono);
-  font-size: 0.6rem;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  text-decoration: none;
-  padding: 0.7rem 1.6rem;
-  border-radius: 6px;
-  border: 1px solid;
-  transition: all 0.2s;
-  cursor: pointer;
+a{
+text-decoration:none;
+color:inherit;
 }
 
-.btn-primary {
-  background: var(--cyan);
-  border-color: var(--cyan);
-  color: #04060c;
-}
-.btn-primary:hover {
-  background: transparent;
-  color: var(--cyan);
-  box-shadow: 0 0 20px rgba(0,212,255,0.2);
-}
-
-.btn-ghost {
-  background: transparent;
-  border-color: var(--b2);
-  color: var(--muted);
-}
-.btn-ghost:hover {
-  border-color: var(--cyan);
-  color: var(--cyan);
-}
-
-/* ── STATS BAR ── */
-.stats-bar {
-  position: relative; z-index: 5;
-  display: flex; justify-content: center; flex-wrap: wrap;
-  gap: 0; border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
-  background: var(--bg1);
-}
+/* ---------- NAV ---------- */
 
-.stat-item {
-  flex: 1; min-width: 140px;
-  padding: 1.4rem 1rem;
-  text-align: center;
-  border-right: 1px solid var(--border);
-  opacity: 0;
-  animation: fadeIn 0.6s forwards;
-}
+.site-nav{
+position:fixed;
+top:0;
+left:0;
+right:0;
 
-.stat-item:last-child { border-right: none; }
-
-.stat-num {
-  font-family: var(--font-display);
-  font-size: 1.8rem;
-  font-weight: 800;
-  color: var(--cyan);
-  line-height: 1;
-  margin-bottom: 0.3rem;
-}
+height:64px;
 
-.stat-label {
-  font-family: var(--font-mono);
-  font-size: 0.52rem;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
+display:flex;
+align-items:center;
+justify-content:space-between;
 
-/* ── SECTION HEADER ── */
-.section-header {
-  text-align: center;
-  padding: 5rem 2rem 3rem;
-}
+padding:0 2rem;
 
-.section-eyebrow {
-  font-family: var(--font-mono);
-  font-size: 0.58rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--cyan);
-  margin-bottom: 0.8rem;
-  display: flex; align-items: center; justify-content: center; gap: 0.6rem;
-}
+background:rgba(10,12,18,0.85);
+backdrop-filter:blur(12px);
 
-.section-eyebrow::before,
-.section-eyebrow::after {
-  content: '';
-  width: 30px; height: 1px;
-  background: var(--cyan); opacity: 0.4;
-}
+border-bottom:1px solid rgba(255,255,255,0.05);
 
-.section-title {
-  font-family: var(--font-display);
-  font-size: clamp(1.6rem, 4vw, 2.8rem);
-  font-weight: 800;
-  color: var(--text);
-  letter-spacing: -0.01em;
+z-index:999;
 }
 
-/* ── PROJECTS GRID ── */
-.projects-section {
-  position: relative; z-index: 5;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 1.5rem 6rem;
+.nav-logo{
+font-weight:700;
+letter-spacing:.1em;
 }
 
-.projects-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-  gap: 1.5rem;
+.nav-links{
+display:flex;
+gap:1.5rem;
 }
 
-/* Featured project spans 2 cols */
-.project-card.featured {
-  grid-column: span 2;
+.nav-links a{
+font-size:.85rem;
+opacity:.8;
 }
 
-@media (max-width: 900px) {
-  .project-card.featured { grid-column: span 1; }
+.nav-links a:hover{
+opacity:1;
 }
 
-/* ── PROJECT CARD ── */
-.project-card {
-  background: var(--card-bg);
-  border: 1px solid var(--b2);
-  border-radius: 16px;
-  padding: 0;
-  overflow: hidden;
-  text-decoration: none;
-  display: flex; flex-direction: column;
-  transition: transform 0.3s ease, border-color 0.3s, box-shadow 0.3s;
-  position: relative;
-  opacity: 0;
-  animation: fadeUp 0.7s forwards;
-}
+/* ---------- HAMBURGER ---------- */
 
-.project-card:hover {
-  transform: translateY(-6px);
-  border-color: var(--accent, var(--cyan));
-  box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 0 1px var(--accent, var(--cyan));
+.hamburger{
+display:none;
+flex-direction:column;
+cursor:pointer;
+gap:5px;
 }
 
-[data-theme="light"] .project-card:hover {
-  box-shadow: 0 12px 40px rgba(0,0,0,0.12), 0 0 0 1px var(--accent, var(--cyan));
+.hamburger span{
+width:24px;
+height:2px;
+background:white;
+transition:.3s;
 }
 
-.card-banner {
-  height: 6px;
-  background: linear-gradient(90deg, var(--accent, var(--cyan)), var(--accent2, var(--purple)));
-}
+/* ---------- MOBILE NAV ---------- */
 
-.card-body {
-  padding: 1.8rem 1.8rem 1.4rem;
-  flex: 1;
-  display: flex; flex-direction: column;
-}
+@media(max-width:768px){
 
-.card-badge {
-  font-family: var(--font-mono);
-  font-size: 0.5rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--accent, var(--cyan));
-  background: rgba(0,212,255,0.07);
-  border: 1px solid var(--accent, var(--cyan));
-  border-radius: 3px;
-  padding: 0.15rem 0.5rem;
-  display: inline-block;
-  margin-bottom: 1rem;
-  opacity: 0.85;
+.hamburger{
+display:flex;
 }
 
-.card-title {
-  font-family: var(--font-display);
-  font-size: 1.35rem;
-  font-weight: 700;
-  color: var(--text);
-  margin-bottom: 0.6rem;
-  line-height: 1.2;
-}
+.nav-links{
 
-.card-subtitle {
-  font-family: var(--font-mono);
-  font-size: 0.58rem;
-  color: var(--accent, var(--cyan));
-  letter-spacing: 0.08em;
-  margin-bottom: 1rem;
-  opacity: 0.8;
-}
+position:fixed;
+top:0;
+right:-100%;
 
-.card-desc {
-  font-size: 0.88rem;
-  line-height: 1.7;
-  color: var(--text2);
-  flex: 1;
-  margin-bottom: 1.4rem;
-}
+height:100vh;
+width:260px;
 
-.card-metrics {
-  display: flex; gap: 1rem; flex-wrap: wrap;
-  margin-bottom: 1.2rem;
-}
+background:rgba(10,12,18,0.95);
+backdrop-filter:blur(16px);
 
-.metric {
-  display: flex; flex-direction: column; gap: 0.1rem;
-}
+flex-direction:column;
 
-.metric-val {
-  font-family: var(--font-display);
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: var(--accent, var(--cyan));
-}
+justify-content:center;
+align-items:flex-start;
 
-.metric-label {
-  font-family: var(--font-mono);
-  font-size: 0.5rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
+padding:2rem;
+gap:1.6rem;
 
-.card-tags {
-  display: flex; flex-wrap: wrap; gap: 0.3rem;
-  margin-bottom: 1.4rem;
-}
+transition:right .35s ease;
 
-.card-footer {
-  display: flex; align-items: center; justify-content: space-between;
-  padding-top: 1rem;
-  border-top: 1px solid var(--border);
+border-left:1px solid rgba(255,255,255,.05);
 }
 
-.card-link-label {
-  font-family: var(--font-mono);
-  font-size: 0.58rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--accent, var(--cyan));
+.nav-links.open{
+right:0;
 }
 
-.card-arrow {
-  width: 28px; height: 28px;
-  border-radius: 50%;
-  border: 1px solid var(--accent, var(--cyan));
-  display: flex; align-items: center; justify-content: center;
-  color: var(--accent, var(--cyan));
-  font-size: 0.8rem;
-  transition: background 0.2s, transform 0.2s;
 }
 
-.project-card:hover .card-arrow {
-  background: var(--accent, var(--cyan));
-  color: #04060c;
-  transform: translateX(3px);
-}
+/* hamburger animation */
 
-/* ── SKILLS / ABOUT SECTION ── */
-.about-section {
-  position: relative; z-index: 5;
-  background: var(--bg1);
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
-  padding: 5rem 2rem;
+.hamburger.active span:nth-child(1){
+transform:rotate(45deg) translateY(7px);
 }
 
-.about-inner {
-  max-width: 1100px;
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 4rem;
-  align-items: start;
+.hamburger.active span:nth-child(2){
+opacity:0;
 }
 
-@media (max-width: 768px) {
-  .about-inner { grid-template-columns: 1fr; gap: 2.5rem; }
+.hamburger.active span:nth-child(3){
+transform:rotate(-45deg) translateY(-7px);
 }
 
-.about-bio h2 {
-  font-family: var(--font-display);
-  font-size: 1.8rem;
-  font-weight: 800;
-  color: var(--text);
-  margin-bottom: 1.2rem;
-  letter-spacing: -0.01em;
-}
+/* ---------- HERO ---------- */
 
-.about-bio p {
-  font-size: 0.95rem;
-  line-height: 1.8;
-  color: var(--text2);
-  margin-bottom: 1rem;
-}
+.hero{
 
-.skills-title {
-  font-family: var(--font-mono);
-  font-size: 0.58rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--cyan);
-  margin-bottom: 1.5rem;
-}
+height:100vh;
 
-.skill-group {
-  margin-bottom: 1.5rem;
-}
+display:flex;
+flex-direction:column;
 
-.skill-group-label {
-  font-family: var(--font-mono);
-  font-size: 0.55rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 0.5rem;
-}
+align-items:center;
+justify-content:center;
 
-.skill-pills {
-  display: flex; flex-wrap: wrap; gap: 0.4rem;
-}
+text-align:center;
 
-.skill-pill {
-  font-family: var(--font-mono);
-  font-size: 0.6rem;
-  padding: 0.3rem 0.7rem;
-  border-radius: 4px;
-  border: 1px solid var(--b2);
-  color: var(--text2);
-  background: var(--surface);
-  transition: all 0.2s;
-}
+padding:2rem;
 
-.skill-pill:hover {
-  border-color: var(--cyan);
-  color: var(--cyan);
 }
 
-/* ── EVOLUTION SECTION ── */
-.evolution-section {
-  position: relative; z-index: 5;
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 5rem 2rem 6rem;
+.hero h1{
+font-size:clamp(3rem,8vw,6rem);
+margin:0;
 }
 
-.evolution-link-card {
-  background: var(--card-bg);
-  border: 1px solid var(--b2);
-  border-radius: 16px;
-  padding: 2.5rem;
-  display: flex; align-items: center; justify-content: space-between; gap: 2rem;
-  text-decoration: none;
-  transition: all 0.3s;
+.hero p{
+max-width:550px;
+opacity:.7;
 }
 
-.evolution-link-card:hover {
-  border-color: var(--yellow);
-  box-shadow: 0 0 40px rgba(255,183,0,0.1);
-}
+/* ---------- BUTTONS ---------- */
 
-.evolution-link-card .evo-text h3 {
-  font-family: var(--font-display);
-  font-size: 1.4rem;
-  font-weight: 700;
-  color: var(--text);
-  margin-bottom: 0.5rem;
-}
+.btn{
 
-.evolution-link-card .evo-text p {
-  font-size: 0.88rem;
-  color: var(--text2);
-  line-height: 1.6;
-}
+border:1px solid #00d4ff;
+padding:.7rem 1.4rem;
 
-.evo-icon {
-  font-size: 3rem;
-  flex-shrink: 0;
-  opacity: 0.7;
-}
+border-radius:6px;
 
-/* ── CONTACT SECTION ── */
-.contact-section {
-  position: relative; z-index: 5;
-  text-align: center;
-  padding: 5rem 2rem 6rem;
-  background: var(--bg1);
-  border-top: 1px solid var(--border);
-}
+font-size:.8rem;
 
-.contact-section h2 {
-  font-family: var(--font-display);
-  font-size: clamp(1.6rem, 4vw, 2.8rem);
-  font-weight: 800;
-  color: var(--text);
-  margin-bottom: 1rem;
-}
+margin-top:1rem;
 
-.contact-section p {
-  font-size: 0.95rem;
-  color: var(--text2);
-  margin-bottom: 2rem;
-  max-width: 480px;
-  margin-left: auto;
-  margin-right: auto;
-  line-height: 1.7;
+display:inline-block;
 }
 
-.contact-links {
-  display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;
+.btn:hover{
+background:#00d4ff;
+color:black;
 }
 
-/* ── ANIMATIONS ── */
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(24px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
+/* ---------- SECTION ---------- */
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
+.section{
 
-.stat-item:nth-child(1) { animation-delay: 0.9s; }
-.stat-item:nth-child(2) { animation-delay: 1.0s; }
-.stat-item:nth-child(3) { animation-delay: 1.1s; }
-.stat-item:nth-child(4) { animation-delay: 1.2s; }
-
-.project-card:nth-child(1) { animation-delay: 0.1s; }
-.project-card:nth-child(2) { animation-delay: 0.2s; }
-.project-card:nth-child(3) { animation-delay: 0.3s; }
-.project-card:nth-child(4) { animation-delay: 0.4s; }
-.project-card:nth-child(5) { animation-delay: 0.5s; }
-
-/* ── HERO PARTICLES (pure CSS) ── */
-.particles {
-  position: absolute; inset: 0; overflow: hidden; pointer-events: none;
-}
+padding:6rem 2rem;
+text-align:center;
 
-.particle {
-  position: absolute;
-  border-radius: 50%;
-  opacity: 0;
-  animation: particleFloat linear infinite;
 }
 
-@keyframes particleFloat {
-  0%   { opacity: 0; transform: translateY(0) scale(1); }
-  10%  { opacity: 0.6; }
-  90%  { opacity: 0.2; }
-  100% { opacity: 0; transform: translateY(-80vh) scale(0.5); }
+.section h2{
+font-size:2rem;
+margin-bottom:1rem;
 }
 
 </style>
+
 </head>
+
 <body>
 
-<div class="hexgrid"></div>
-<div class="glow-overlay" style="background:radial-gradient(ellipse 70% 50% at 20% 20%,rgba(0,212,255,0.04),transparent),radial-gradient(ellipse 60% 40% at 80% 80%,rgba(191,90,242,0.04),transparent)"></div>
 
-<!-- ── NAV ── -->
+<!-- NAVBAR -->
+
 <nav class="site-nav">
-  <a class="nav-logo" href="index.html">
-    <span class="dot"></span>
-    RN
-  </a>
 
-  <div class="hamburger" id="hamburger" aria-label="Menu">
-    <span></span><span></span><span></span>
-  </div>
+<a class="nav-logo" href="#">RN</a>
 
-  <div class="nav-links" id="nav-links">
-    <a href="index.html" class="active">Home</a>
-    <a href="#projects">Projects</a>
-    <a href="#about">About</a>
-    <a href="projects/project-evolution.html">Journey</a>
-    <a href="projects/genai_interview_checklist.html">Checklist</a>
-    <a href="projects/GenAI_Engineer_Study_Guide.html">Study Guide</a>
-    <a href="#contact">Contact</a>
-  </div>
+<div class="hamburger" id="hamburger">
 
-  <div class="nav-right">
-    <div class="theme-toggle" id="themeToggle" role="button" aria-label="Toggle theme">
-      <div class="toggle-track"><div class="toggle-thumb"></div></div>
-      <span class="theme-label">LIGHT</span>
-    </div>
-  </div>
+<span></span>
+<span></span>
+<span></span>
+
+</div>
+
+<div class="nav-links" id="nav-links">
+
+<a href="#">Home</a>
+<a href="#projects">Projects</a>
+<a href="#about">About</a>
+<a href="projects/project-evolution.html">Journey</a>
+<a href="projects/genai_interview_checklist.html">Checklist</a>
+<a href="projects/GenAI_Engineer_Study_Guide.html">Study Guide</a>
+<a href="#contact">Contact</a>
+
+</div>
+
 </nav>
 
-<!-- ── PAGE WRAP ── -->
-<div class="page-wrap">
 
-  <!-- ── HERO ── -->
-  <section class="hero">
-    <div class="particles" id="particles"></div>
 
-    <div class="hero-eyebrow">AI / ML Engineer & Financial Systems Architect</div>
+<!-- HERO -->
 
-    <h1 class="hero-name">Rahul<br>Naik</h1>
+<section class="hero">
 
-    <div class="hero-title">Building Intelligent Financial Systems</div>
+<h1>Rahul Naik</h1>
 
-    <p class="hero-desc">
-      Specialising in Gen AI, LLMs, and RAG pipelines that solve real-world 
-      financial problems — from automated loan decisioning to document intelligence 
-      and workforce risk analytics.
-    </p>
+<p>
 
-    <div class="hero-cta">
-      <a href="#projects" class="btn btn-primary">View Projects</a>
-      <a href="projects/project-evolution.html" class="btn btn-ghost">Technical Journey</a>
-    </div>
-  </section>
+Building intelligent financial systems with  
+Gen AI, LLMs and RAG pipelines.
 
-  <!-- ── STATS ── -->
-  <div class="stats-bar">
-    <div class="stat-item">
-      <div class="stat-num">4+</div>
-      <div class="stat-label">AI Projects</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-num" style="color:var(--green)">95%</div>
-      <div class="stat-label">LoanIQ Accuracy</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-num" style="color:var(--purple)">40%</div>
-      <div class="stat-label">Time Saved (FinDoc)</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-num" style="color:var(--yellow)">RAG</div>
-      <div class="stat-label">+ LLM Architecture</div>
-    </div>
-  </div>
+</p>
 
-  <!-- ── PROJECTS ── -->
-  <div id="projects">
-    <div class="section-header">
-      <div class="section-eyebrow">Featured Work</div>
-      <h2 class="section-title">AI Projects</h2>
-    </div>
+<a class="btn" href="#projects">View Projects</a>
 
-    <div class="projects-section">
-      <div class="projects-grid">
+</section>
 
-        <!-- LoanIQ — FEATURED -->
-        <a href="projects/loaniq.html" class="project-card featured" style="--accent:#00d4ff;--accent2:#bf5af2;animation-delay:0.1s">
-          <div class="card-banner"></div>
-          <div class="card-body">
-            <span class="card-badge" style="--accent:#00d4ff;background:rgba(0,212,255,0.07);border-color:#00d4ff;color:#00d4ff">FEATURED · GEN AI</span>
-            <div class="card-title">LoanIQ</div>
-            <div class="card-subtitle" style="color:#00d4ff">Intelligent Loan Processing System</div>
-            <p class="card-desc">
-              Production-grade multi-agent AI system that automates end-to-end loan origination — 
-              from document intake and ratio analysis to policy compliance, underwriting, and final 
-              decisioning. Built with parallel agent execution, RAG pipelines, and a full audit trail.
-            </p>
-            <div class="card-metrics">
-              <div class="metric">
-                <span class="metric-val" style="color:#00d4ff">95%</span>
-                <span class="metric-label">Decision accuracy</span>
-              </div>
-              <div class="metric">
-                <span class="metric-val" style="color:#00ff88">7</span>
-                <span class="metric-label">Specialized agents</span>
-              </div>
-              <div class="metric">
-                <span class="metric-val" style="color:#bf5af2">RAG</span>
-                <span class="metric-label">Policy lookup</span>
-              </div>
-              <div class="metric">
-                <span class="metric-val" style="color:#ffb700">Real-time</span>
-                <span class="metric-label">Processing</span>
-              </div>
-            </div>
-            <div class="card-tags">
-              <span class="tag">LangChain</span>
-              <span class="tag">Claude API</span>
-              <span class="tag">FastAPI</span>
-              <span class="tag">RAG</span>
-              <span class="tag">Vector DB</span>
-              <span class="tag">Multi-Agent</span>
-            </div>
-            <div class="card-footer">
-              <span class="card-link-label" style="color:#00d4ff">View Architecture →</span>
-              <div class="card-arrow" style="border-color:#00d4ff;color:#00d4ff">→</div>
-            </div>
-          </div>
-        </a>
 
-        <!-- FinDoc QA -->
-        <a href="projects/findocqa.html" class="project-card" style="--accent:#bf5af2;--accent2:#00d4ff;animation-delay:0.2s">
-          <div class="card-banner" style="background:linear-gradient(90deg,#bf5af2,#00d4ff)"></div>
-          <div class="card-body">
-            <span class="card-badge" style="background:rgba(191,90,242,0.07);border-color:#bf5af2;color:#bf5af2">NLP · DOCUMENT AI</span>
-            <div class="card-title">FinDoc QA</div>
-            <div class="card-subtitle" style="color:#bf5af2">Financial Document Intelligence</div>
-            <p class="card-desc">
-              RAG-powered system for extracting and answering questions from complex financial 
-              documents — annual reports, contracts, regulatory filings — with citation-level accuracy 
-              and hybrid semantic + keyword retrieval.
-            </p>
-            <div class="card-metrics">
-              <div class="metric">
-                <span class="metric-val" style="color:#bf5af2">40%</span>
-                <span class="metric-label">Time saved</span>
-              </div>
-              <div class="metric">
-                <span class="metric-val" style="color:#00d4ff">Hybrid</span>
-                <span class="metric-label">Retrieval</span>
-              </div>
-            </div>
-            <div class="card-tags">
-              <span class="tag">RAG</span>
-              <span class="tag">LlamaIndex</span>
-              <span class="tag">OpenAI</span>
-              <span class="tag">Pinecone</span>
-            </div>
-            <div class="card-footer">
-              <span class="card-link-label" style="color:#bf5af2">Explore Project</span>
-              <div class="card-arrow" style="border-color:#bf5af2;color:#bf5af2">→</div>
-            </div>
-          </div>
-        </a>
 
-        <!-- FinBot -->
-        <a href="projects/finbot.html" class="project-card" style="--accent:#00ff88;--accent2:#4da6ff;animation-delay:0.3s">
-          <div class="card-banner" style="background:linear-gradient(90deg,#00ff88,#4da6ff)"></div>
-          <div class="card-body">
-            <span class="card-badge" style="background:rgba(0,255,136,0.07);border-color:#00ff88;color:#00ff88">CONVERSATIONAL AI</span>
-            <div class="card-title">FinBot</div>
-            <div class="card-subtitle" style="color:#00ff88">AI Financial Advisor Chatbot</div>
-            <p class="card-desc">
-              Conversational financial assistant that leverages LLMs with tool-use for real-time 
-              market data, portfolio analysis, and personalised financial guidance — all with 
-              explainable reasoning and compliance guardrails.
-            </p>
-            <div class="card-metrics">
-              <div class="metric">
-                <span class="metric-val" style="color:#00ff88">Live</span>
-                <span class="metric-label">Market data</span>
-              </div>
-              <div class="metric">
-                <span class="metric-val" style="color:#4da6ff">Safe</span>
-                <span class="metric-label">Guardrails</span>
-              </div>
-            </div>
-            <div class="card-tags">
-              <span class="tag">LLM Tools</span>
-              <span class="tag">Streamlit</span>
-              <span class="tag">GPT-4</span>
-              <span class="tag">APIs</span>
-            </div>
-            <div class="card-footer">
-              <span class="card-link-label" style="color:#00ff88">Explore Project</span>
-              <div class="card-arrow" style="border-color:#00ff88;color:#00ff88">→</div>
-            </div>
-          </div>
-        </a>
+<!-- PROJECTS -->
 
-        <!-- WFO Risk -->
-        <a href="projects/wfo-risk.html" class="project-card" style="--accent:#ffb700;--accent2:#ff6b9d;animation-delay:0.4s">
-          <div class="card-banner" style="background:linear-gradient(90deg,#ffb700,#ff6b9d)"></div>
-          <div class="card-body">
-            <span class="card-badge" style="background:rgba(255,183,0,0.07);border-color:#ffb700;color:#ffb700">RISK ANALYTICS</span>
-            <div class="card-title">WFO Risk</div>
-            <div class="card-subtitle" style="color:#ffb700">Workforce Obligation Risk Engine</div>
-            <p class="card-desc">
-              AI-driven workforce and financial obligation risk assessment system combining 
-              predictive modelling, anomaly detection, and automated reporting for enterprise 
-              risk management teams.
-            </p>
-            <div class="card-metrics">
-              <div class="metric">
-                <span class="metric-val" style="color:#ffb700">Predictive</span>
-                <span class="metric-label">Risk scoring</span>
-              </div>
-              <div class="metric">
-                <span class="metric-val" style="color:#ff6b9d">Auto</span>
-                <span class="metric-label">Reporting</span>
-              </div>
-            </div>
-            <div class="card-tags">
-              <span class="tag">ML</span>
-              <span class="tag">Anomaly Detection</span>
-              <span class="tag">Python</span>
-              <span class="tag">Tableau</span>
-            </div>
-            <div class="card-footer">
-              <span class="card-link-label" style="color:#ffb700">Explore Project</span>
-              <div class="card-arrow" style="border-color:#ffb700;color:#ffb700">→</div>
-            </div>
-          </div>
-        </a>
+<section id="projects" class="section">
 
-      </div>
-    </div>
-  </div>
+<h2>Projects</h2>
 
-  <!-- ── ABOUT ── -->
-  <section class="about-section" id="about">
-    <div class="about-inner">
-      <div class="about-bio">
-        <h2>Building the future of <span class="gradient-text">Financial AI</span></h2>
-        <p>
-          I'm a software engineer specialising in Generative AI and financial systems — 
-          bridging the gap between cutting-edge LLM research and production-grade applications 
-          that solve real business problems.
-        </p>
-        <p>
-          My work spans multi-agent orchestration, RAG pipelines, document intelligence, 
-          and risk analytics — always focused on accuracy, auditability, and real-world impact.
-        </p>
-        <div style="margin-top:1.5rem">
-          <a href="projects/project-evolution.html" class="btn btn-ghost" style="font-size:0.6rem">
-            View Full Technical Journey →
-          </a>
-        </div>
-      </div>
+<p>
 
-      <div class="about-skills">
-        <div class="skills-title">// Core Expertise</div>
+LoanIQ · FinDoc QA · FinBot · WFO Risk
 
-        <div class="skill-group">
-          <div class="skill-group-label">AI / LLM Stack</div>
-          <div class="skill-pills">
-            <span class="skill-pill">LangChain</span>
-            <span class="skill-pill">LlamaIndex</span>
-            <span class="skill-pill">OpenAI API</span>
-            <span class="skill-pill">Claude API</span>
-            <span class="skill-pill">RAG</span>
-            <span class="skill-pill">Vector DBs</span>
-            <span class="skill-pill">Prompt Eng.</span>
-          </div>
-        </div>
+</p>
 
-        <div class="skill-group">
-          <div class="skill-group-label">Backend / APIs</div>
-          <div class="skill-pills">
-            <span class="skill-pill">Python</span>
-            <span class="skill-pill">FastAPI</span>
-            <span class="skill-pill">PostgreSQL</span>
-            <span class="skill-pill">Redis</span>
-            <span class="skill-pill">Docker</span>
-          </div>
-        </div>
+</section>
 
-        <div class="skill-group">
-          <div class="skill-group-label">ML / Data</div>
-          <div class="skill-pills">
-            <span class="skill-pill">scikit-learn</span>
-            <span class="skill-pill">Pandas</span>
-            <span class="skill-pill">Pinecone</span>
-            <span class="skill-pill">FAISS</span>
-            <span class="skill-pill">Hugging Face</span>
-          </div>
-        </div>
 
-        <div class="skill-group">
-          <div class="skill-group-label">Domain</div>
-          <div class="skill-pills">
-            <span class="skill-pill">FinTech</span>
-            <span class="skill-pill">Loan Origination</span>
-            <span class="skill-pill">Compliance AI</span>
-            <span class="skill-pill">Risk Analytics</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
 
-  <!-- ── EVOLUTION LINK ── -->
-  <div class="evolution-section">
-    <div class="section-header" style="padding-top:0">
-      <div class="section-eyebrow" style="justify-content:flex-start;--cyan:#ffb700">Technical Journey</div>
-      <h2 class="section-title" style="text-align:left">From concept to production</h2>
-    </div>
-    <a href="projects/project-evolution.html" class="evolution-link-card">
-      <div class="evo-text">
-        <h3>Project Evolution & Technical Story</h3>
-        <p>
-          Deep dive into the technical decisions, architecture evolution, problem-solving process, 
-          and lessons learned across all four AI projects — told chronologically.
-        </p>
-      </div>
-      <div class="evo-icon">🗺️</div>
-    </a>
-  </div>
+<!-- ABOUT -->
 
-  <!-- ── CONTACT ── -->
-  <section class="contact-section" id="contact">
-    <h2>Let's build something <span class="gradient-text">intelligent</span></h2>
-    <p>Open to AI/ML engineering roles, collaborations, and interesting problems in financial technology.</p>
-    <div class="contact-links">
-      <a href="mailto:rahulnaik99@outlook.com" class="btn btn-primary">Get in Touch</a>
-      <a href="https://www.linkedin.com/in/rahul-naik-ai/" target="_blank" rel="noopener" class="btn btn-ghost">LinkedIn</a>
-    </div>
-  </section>
+<section id="about" class="section">
 
-  <!-- ── FOOTER ── -->
-  <footer class="site-footer">
-    <p>© 2025 Rahul Naik · Built with care · Hosted on GitHub Pages</p>
-    <p style="margin-top:0.4rem">
-      <a href="index.html">Home</a> · 
-      <a href="#projects">Projects</a> · 
-      <a href="projects/project-evolution.html">Journey</a>
-    </p>
-  </footer>
+<h2>About</h2>
 
-</div><!-- end page-wrap -->
+<p>
 
-<script src="assets/js/main.js"></script>
+AI / ML Engineer focused on financial AI systems.
+
+</p>
+
+</section>
+
+
+
+<!-- CONTACT -->
+
+<section id="contact" class="section">
+
+<h2>Contact</h2>
+
+<p>
+
+rahulnaik99@outlook.com
+
+</p>
+
+</section>
+
+
+
+<!-- FOOTER -->
+
+<footer style="text-align:center;padding:2rem;opacity:.5">
+
+© 2025 Rahul Naik
+
+</footer>
+
+
+
+<!-- SCRIPTS -->
+
 <script>
-// ── PARTICLES ──
-(function() {
-  const container = document.getElementById('particles');
-  if (!container) return;
-  const colors = ['#00d4ff','#00ff88','#bf5af2','#ffb700','#ff6b9d'];
-  for (let i = 0; i < 18; i++) {
-    const p = document.createElement('div');
-    p.className = 'particle';
-    const size = Math.random() * 3 + 1;
-    const x = Math.random() * 100;
-    const dur = Math.random() * 12 + 8;
-    const delay = Math.random() * 10;
-    const color = colors[Math.floor(Math.random() * colors.length)];
-    p.style.cssText = `
-      left:${x}%;bottom:${Math.random()*20}%;
-      width:${size}px;height:${size}px;
-      background:${color};
-      box-shadow:0 0 ${size*3}px ${color};
-      animation-duration:${dur}s;
-      animation-delay:${delay}s;
-    `;
-    container.appendChild(p);
-  }
-})();
 
-// ── HAMBURGER ──
-document.getElementById('hamburger').addEventListener('click', function() {
-  document.getElementById('nav-links').classList.toggle('open');
-});
+/* ---------- MOBILE NAV ---------- */
 
-// ── SMOOTH ANCHOR SCROLL ──
-document.querySelectorAll('a[href^="#"]').forEach(a => {
-  a.addEventListener('click', function(e) {
-    const target = document.querySelector(this.getAttribute('href'));
-    if (target) {
-      e.preventDefault();
-      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  });
-});
+const hamburger=document.getElementById("hamburger")
+
+const navLinks=document.getElementById("nav-links")
+
+const links=navLinks.querySelectorAll("a")
+
+hamburger.addEventListener("click",()=>{
+
+hamburger.classList.toggle("active")
+
+navLinks.classList.toggle("open")
+
+})
+
+links.forEach(link=>{
+
+link.addEventListener("click",()=>{
+
+navLinks.classList.remove("open")
+
+hamburger.classList.remove("active")
+
+})
+
+})
+
+/* ---------- SMOOTH SCROLL ---------- */
+
+document.querySelectorAll('a[href^="#"]').forEach(anchor=>{
+
+anchor.addEventListener("click",function(e){
+
+const target=document.querySelector(this.getAttribute("href"))
+
+if(target){
+
+e.preventDefault()
+
+target.scrollIntoView({
+
+behavior:"smooth"
+
+})
+
+}
+
+})
+
+})
+
 </script>
+
+
 </body>
 </html>
