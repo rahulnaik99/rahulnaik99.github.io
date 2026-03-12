@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ML & Transformers — Gen AI Study Guide</title>
+<style>
+
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:       #0a0c10;
+  --surface:  #111318;
+  --surface2: #181c23;
+  --border:   #1f2530;
+  --accent:   #00e5ff;
+  --accent2:  #7c3aed;
+  --accent3:  #f59e0b;
+  --text:     #e2e8f0;
+  --muted:    #64748b;
+  --green:    #10b981;
+  --red:      #ef4444;
+  --font-head: 'Syne', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.75;
+  min-height: 100vh;
+}
+
+/* ── Noise texture overlay ── */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none; z-index: 9999;
+  opacity: 0.4;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--accent2); border-radius: 3px; }
+
+/* ── Typography ── */
+h1,h2,h3,h4 { font-family: var(--font-head); line-height: 1.2; }
+
+/* ── Code ── */
+pre, code {
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+code:not(pre code) {
+  background: rgba(0,229,255,0.08);
+  color: var(--accent);
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid rgba(0,229,255,0.15);
+}
+pre {
+  background: #0d1117;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent2);
+  padding: 1.25rem 1.5rem;
+  border-radius: 0 8px 8px 0;
+  overflow-x: auto;
+  margin: 1.25rem 0;
+  position: relative;
+}
+pre code { color: #adbac7; background: none; border: none; padding: 0; }
+
+/* ── Tables ── */
+table { width: 100%; border-collapse: collapse; margin: 1.25rem 0; font-size: 14px; }
+th {
+  background: var(--surface2);
+  color: var(--accent);
+  font-family: var(--font-head);
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  text-align: left;
+}
+td {
+  padding: 9px 14px;
+  border: 1px solid var(--border);
+  color: #c8d3e0;
+  vertical-align: top;
+}
+tr:hover td { background: rgba(255,255,255,0.02); }
+tr:nth-child(even) td { background: rgba(255,255,255,0.01); }
+
+/* ── Blockquotes ── */
+blockquote {
+  border-left: 3px solid var(--accent3);
+  background: rgba(245,158,11,0.05);
+  padding: 1rem 1.25rem;
+  border-radius: 0 8px 8px 0;
+  margin: 1.25rem 0;
+  color: #d4b896;
+  font-style: italic;
+}
+
+/* ── Horizontal rules ── */
+hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 2rem 0;
+}
+
+/* ── Lists ── */
+ul, ol { padding-left: 1.5rem; margin: 0.5rem 0; }
+li { margin: 0.3rem 0; }
+li > strong { color: var(--accent); }
+
+/* ── Links ── */
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ── Strong / Em ── */
+strong { color: #f0f4f8; font-weight: 600; }
+em { color: #a5b4c8; }
+
+
+/* ── LAYOUT ── */
+.sidebar {
+  position: fixed;
+  top: 0; left: 0;
+  width: 260px;
+  height: 100vh;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+  overflow-y: auto;
+}
+
+.sidebar-logo {
+  padding: 1.5rem 1.25rem 1rem;
+  border-bottom: 1px solid var(--border);
+}
+.sidebar-logo a {
+  font-family: var(--font-head);
+  font-weight: 800;
+  font-size: 1rem;
+  color: var(--text);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sidebar-logo a:hover { color: var(--accent); }
+.sidebar-logo a::before {
+  content: '←';
+  font-size: 0.85rem;
+  opacity: 0.5;
+}
+
+.sidebar-nav { padding: 0.75rem 0; flex: 1; }
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 1.25rem;
+  font-size: 13px;
+  color: var(--muted);
+  text-decoration: none;
+  transition: all 0.15s;
+  border-left: 2px solid transparent;
+  line-height: 1.3;
+}
+.nav-item:hover {
+  color: var(--text);
+  background: rgba(255,255,255,0.03);
+}
+.nav-item.active {
+  color: var(--text);
+  border-left-color: var(--page-color, var(--accent));
+  background: rgba(255,255,255,0.04);
+}
+.nav-num {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--page-color, var(--accent));
+  opacity: 0.6;
+  min-width: 22px;
+}
+
+.main {
+  margin-left: 260px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar {
+  padding: 1rem 2.5rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(10,12,16,0.9);
+  backdrop-filter: blur(12px);
+  position: sticky; top: 0; z-index: 50;
+}
+.page-breadcrumb {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 0.05em;
+}
+.page-breadcrumb span {
+  color: var(--page-color, var(--accent));
+}
+
+.nav-pills {
+  display: flex;
+  gap: 6px;
+}
+.nav-pill {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  text-decoration: none;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  transition: all 0.15s;
+}
+.nav-pill:hover {
+  border-color: var(--page-color, var(--accent));
+  color: var(--page-color, var(--accent));
+  text-decoration: none;
+}
+
+/* ── CONTENT ── */
+.content {
+  flex: 1;
+  padding: 3rem 4rem 5rem;
+  max-width: 900px;
+}
+
+/* h1 — page title */
+.content h1 {
+  font-size: 2.2rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--text);
+  margin-bottom: 0.25rem;
+  margin-top: 3rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+.content h1:first-child { margin-top: 0; }
+
+/* h2 — section */
+.content h2 {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--page-color, var(--accent));
+  margin: 2.5rem 0 0.75rem;
+  letter-spacing: -0.01em;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.content h2::before {
+  content: '';
+  display: inline-block;
+  width: 4px;
+  height: 18px;
+  background: var(--page-color, var(--accent));
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+/* h3 — sub-section */
+.content h3 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 1.75rem 0 0.5rem;
+  letter-spacing: -0.01em;
+}
+.content h3::before {
+  content: '// ';
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  font-weight: 400;
+}
+
+/* h4 */
+.content h4 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #94a3b8;
+  margin: 1.25rem 0 0.4rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.content p { margin: 0.6rem 0; color: #c8d3e0; }
+
+/* ── INTERVIEW SECTION highlight ── */
+.content h2[id*="interview"],
+.content h2[id*="question"] {
+  color: var(--accent3);
+  background: rgba(245,158,11,0.05);
+  padding: 0.75rem 1rem;
+  border-radius: 0 8px 8px 0;
+  border-left: 3px solid var(--accent3);
+  margin-top: 3rem;
+}
+.content h2[id*="interview"]::before,
+.content h2[id*="question"]::before {
+  background: var(--accent3);
+}
+
+/* ── FOOTER NAV ── */
+.page-footer {
+  border-top: 1px solid var(--border);
+  padding: 2rem 4rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.footer-nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  text-decoration: none;
+  color: var(--muted);
+  font-size: 13px;
+  transition: all 0.15s;
+  font-family: var(--font-head);
+  font-weight: 600;
+}
+.footer-nav-btn:hover {
+  border-color: var(--page-color, var(--accent));
+  color: var(--page-color, var(--accent));
+  text-decoration: none;
+}
+.footer-nav-btn.next { flex-direction: row-reverse; }
+.page-pos {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted);
+}
+
+/* Glow effects */
+.glow-page {
+  position: fixed;
+  width: 500px; height: 500px;
+  border-radius: 50%;
+  pointer-events: none;
+  top: 10vh; right: -150px;
+  background: radial-gradient(circle, rgba(0,0,0,0) 0%, transparent 100%);
+}
+
+:root { --page-color: #38bdf8; }
+.glow-page { background: radial-gradient(circle, #38bdf80d 0%, transparent 70%); }
+</style>
+</head>
+<body>
+
+<div class="glow-page"></div>
+
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <a href="index.html">Gen AI Study Guide</a>
+  </div>
+  <nav class="sidebar-nav">
+<a href="01_RAG_Ingestion_Pipeline.html" class="nav-item"><span class="nav-num">01</span>Ingestion Pipeline</a>
+<a href="02_RAG_Retrieval_Pipeline.html" class="nav-item"><span class="nav-num">02</span>Retrieval Pipeline</a>
+<a href="03_RAG_Generation_RAGAS.html" class="nav-item"><span class="nav-num">03</span>Generation & RAGAS</a>
+<a href="04_LangChain_LangGraph.html" class="nav-item"><span class="nav-num">04</span>LangChain & LangGraph</a>
+<a href="05_Fine_Tuning.html" class="nav-item"><span class="nav-num">05</span>Fine-Tuning</a>
+<a href="06_ML_Concepts_Transformers.html" class="nav-item active"><span class="nav-num">06</span>ML & Transformers</a>
+<a href="07_Docker_AWS_Bedrock.html" class="nav-item"><span class="nav-num">07</span>Docker & Bedrock</a>
+<a href="08_Python_System_Design.html" class="nav-item"><span class="nav-num">08</span>Python & System Design</a>
+
+  </nav>
+</aside>
+
+<main class="main">
+  <div class="topbar">
+    <div class="page-breadcrumb">Module <span>06</span> · ML & Transformers</div>
+    <div class="nav-pills">
+      <a href="05_Fine_Tuning.html" class="nav-pill">← Prev</a>
+      <a href="07_Docker_AWS_Bedrock.html" class="nav-pill">Next →</a>
+    </div>
+  </div>
+
+  <div class="content">
+<h1 id="ml-concepts-transformer-architecture">ML Concepts &amp; Transformer Architecture</h1>
+<h2 id="complete-study-guide">Complete Study Guide</h2>
+<hr />
+<h1 id="part-1-ml-fundamentals">PART 1: ML FUNDAMENTALS</h1>
+<h2 id="sub-topic-1-training-basics">Sub-topic 1: Training Basics</h2>
+<h3 id="loss-function">Loss Function</h3>
+<p><strong>What:</strong> A loss function measures how wrong the model's predictions are. During training, the model tries to minimize this number.</p>
+<p><strong>Cross-Entropy Loss</strong> (used in LLMs): For a classification task (or next-token prediction), cross-entropy measures the difference between predicted probability distribution and the true label:</p>
+<pre><code>Cross-Entropy Loss = -log(P(correct_token))
+
+If model predicts P(&quot;mortgage&quot;) = 0.9  → loss = -log(0.9) = 0.105 (good!)
+If model predicts P(&quot;mortgage&quot;) = 0.1  → loss = -log(0.1) = 2.303 (bad!)
+</code></pre>
+<p><strong>In LoanIQ fine-tuning:</strong> During QLoRA training, training loss starts around 2.5 and should decrease to &lt; 0.5 by epoch 3. A loss of 0.3 means the model correctly predicts ~74% of the next tokens in training examples.</p>
+<h3 id="backpropagation">Backpropagation</h3>
+<p><strong>What:</strong> After computing the loss, backpropagation uses the chain rule to compute how much each weight contributed to the error, then updates them.</p>
+<pre><code>Forward pass:  Input → Layers → Output → Loss
+Backward pass: dLoss/dWeights via chain rule → update weights
+
+Chain rule: dLoss/dW₁ = dLoss/dOutput × dOutput/dLayer₂ × dLayer₂/dLayer₁ × dLayer₁/dW₁
+</code></pre>
+<p><strong>In LoRA:</strong> During backpropagation, gradients flow to the LoRA A and B matrices only (not the frozen base weights). The frozen weights have their gradients detached — <code>requires_grad=False</code>.</p>
+<h3 id="learning-rate">Learning Rate</h3>
+<p><strong>What:</strong> The step size for each weight update. <code>W_new = W_old - lr × gradient</code></p>
+<ul>
+<li>Too high → gradients "explode," loss diverges</li>
+<li>Too low → training takes forever</li>
+<li>Standard LoRA: <code>lr = 2e-4</code> (0.0002)</li>
+</ul>
+<p><strong>LR Schedulers:</strong></p>
+<pre><code class="language-python"># Linear warmup + cosine decay (most common for LLMs)
+from transformers import get_cosine_schedule_with_warmup
+scheduler = get_cosine_schedule_with_warmup(
+    optimizer,
+    num_warmup_steps=5,      # gradually ramp up LR for first 5 steps
+    num_training_steps=total # then cosine decay to near zero
+)
+</code></pre>
+<p>Warmup prevents the model from making huge updates at the start of training when gradients are noisy.</p>
+<h3 id="batch-sizes">Batch Sizes</h3>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+<th>Memory</th>
+<th>Gradient Quality</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Batch GD</strong></td>
+<td>All data in one step</td>
+<td>Very high</td>
+<td>Best (low noise)</td>
+</tr>
+<tr>
+<td><strong>SGD</strong></td>
+<td>One sample per step</td>
+<td>Very low</td>
+<td>Very noisy</td>
+</tr>
+<tr>
+<td><strong>Mini-batch</strong></td>
+<td>N samples per step</td>
+<td>Moderate</td>
+<td>Good balance</td>
+</tr>
+</tbody>
+</table>
+<p>LoanIQ uses mini-batch with gradient accumulation (effective batch = 8).</p>
+<hr />
+<h2 id="sub-topic-2-optimizers">Sub-topic 2: Optimizers</h2>
+<h3 id="adam-vs-adamw">Adam vs AdamW</h3>
+<p><strong>Adam (Adaptive Moment Estimation):</strong> Maintains per-parameter learning rates based on first (mean) and second (variance) moments of gradients. Parameters with large gradient variance get smaller updates.</p>
+<pre><code>m_t = β₁ × m_{t-1} + (1-β₁) × g_t       # exponential moving average of gradient
+v_t = β₂ × v_{t-1} + (1-β₂) × g_t²      # exponential moving average of gradient squared
+θ_t = θ_{t-1} - lr × m̂_t / (√v̂_t + ε)   # update
+</code></pre>
+<p><strong>AdamW:</strong> Adam + decoupled weight decay. In standard Adam, weight decay is mixed into the gradient update (incorrect). AdamW applies weight decay directly to weights: <code>θ = θ - lr × weight_decay × θ</code>. This is the correct L2 regularization and trains better in practice.</p>
+<p><strong>LoanIQ:</strong> Uses <code>adamw_8bit</code> — AdamW with quantized optimizer states (8-bit instead of FP32). Saves ~75% of optimizer VRAM at negligible quality cost.</p>
+<hr />
+<h2 id="sub-topic-3-overfitting-regularization">Sub-topic 3: Overfitting &amp; Regularization</h2>
+<h3 id="overfitting">Overfitting</h3>
+<pre><code>Training loss:   decreasing ↓↓↓
+Validation loss: decreasing then increasing ↑↑↑ ← overfitting!
+</code></pre>
+<p>The model has memorized training data and can't generalize.</p>
+<h3 id="regularization-techniques">Regularization Techniques</h3>
+<table>
+<thead>
+<tr>
+<th>Technique</th>
+<th>How</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Dropout</strong></td>
+<td>Zero random neurons with probability p during training</td>
+<td>Forces redundancy, prevents co-adaptation</td>
+</tr>
+<tr>
+<td><strong>Weight decay (L2)</strong></td>
+<td>Add <code>λ × ||W||²</code> to loss</td>
+<td>Penalizes large weights, simpler models</td>
+</tr>
+<tr>
+<td><strong>Early stopping</strong></td>
+<td>Stop when validation loss stops improving</td>
+<td>Prevents memorization</td>
+</tr>
+<tr>
+<td><strong>Data augmentation</strong></td>
+<td>Synthetic training examples</td>
+<td>More diverse training distribution</td>
+</tr>
+</tbody>
+</table>
+<p><strong>In QLoRA:</strong> <code>lora_dropout=0</code> is actually optimal. Dettmers et al. found that with 4-bit quantization adding noise (dropout) provides no benefit. The quantization noise itself acts as regularization.</p>
+<hr />
+<h2 id="sub-topic-4-evaluation-metrics">Sub-topic 4: Evaluation Metrics</h2>
+<h3 id="classification-metrics">Classification Metrics</h3>
+<pre><code>Confusion Matrix:
+                 Predicted
+              Positive  Negative
+Actual  Positive   TP       FN
+        Negative   FP       TN
+
+Precision = TP / (TP + FP)  ← when you say yes, how often are you right?
+Recall    = TP / (TP + FN)  ← of all actual yes, how many did you find?
+F1        = 2 × P × R / (P + R)  ← harmonic mean of precision and recall
+Accuracy  = (TP + TN) / Total
+</code></pre>
+<p><strong>In mortgage decisioning:</strong>
+- High precision = low false positive rate (don't approve bad loans)
+- High recall = low false negative rate (don't decline good borrowers)
+- F1 balances both</p>
+<h3 id="llm-specific-metrics">LLM-Specific Metrics</h3>
+<p><strong>Perplexity</strong>: How surprised the model is by test data. Lower = better.
+<code>Perplexity = exp(mean cross-entropy loss over test set)</code></p>
+<p>In LoanIQ fine-tuning: training perplexity target &lt; 1.5 (exp(0.5) ≈ 1.65).</p>
+<p><strong>BLEU</strong> (Bilingual Evaluation Understudy): n-gram overlap between generated and reference text. Good for translation; insufficient for open-ended generation.</p>
+<p><strong>ROUGE</strong> (Recall-Oriented Understudy for Gisting Evaluation): ROUGE-L uses longest common subsequence. Good for summarization evaluation.</p>
+<hr />
+<h2 id="sub-topic-5-bias-variance">Sub-topic 5: Bias &amp; Variance</h2>
+<pre><code>Model Complexity vs Error:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+          Total Error
+         /
+  High Bias ←───── Bias-Variance Tradeoff ─────→ High Variance
+(Underfitting)                                    (Overfitting)
+
+  Simple model:                Complex model:
+  Train loss: high             Train loss: low
+  Test loss: high              Test loss: high
+  Prediction: poor             Prediction: memorized training
+</code></pre>
+<p><strong>Bias-variance tradeoff:</strong> You can't minimize both simultaneously with a given model capacity and dataset. More model capacity (more parameters) reduces bias but increases variance.</p>
+<p><strong>For LLMs:</strong> Pre-trained LLMs have enormous capacity (low bias) but may overfit small fine-tuning datasets (high variance). LoRA's small adapter size acts as an implicit regularizer, preventing overfitting.</p>
+<hr />
+<h1 id="part-2-llm-specific-ml">PART 2: LLM-SPECIFIC ML</h1>
+<h2 id="sub-topic-6-pre-training">Sub-topic 6: Pre-training</h2>
+<h3 id="next-token-prediction">Next Token Prediction</h3>
+<p><strong>Causal Language Modeling (CLM):</strong> The pre-training objective for GPT, Llama, and all decoder-only LLMs.</p>
+<pre><code>Text: &quot;The maximum DTI for FHA loans is 45%&quot;
+
+Training examples (autoregressive):
+  Input: &quot;The&quot;                        → Predict: &quot;maximum&quot;
+  Input: &quot;The maximum&quot;                → Predict: &quot;DTI&quot;
+  Input: &quot;The maximum DTI&quot;            → Predict: &quot;for&quot;
+  Input: &quot;The maximum DTI for FHA&quot;    → Predict: &quot;loans&quot;
+  ...
+</code></pre>
+<p>The model is trained on trillions of tokens. After training, it has learned to predict the probability distribution of the next token given any context — which means it has implicitly learned grammar, facts, reasoning, and domain knowledge.</p>
+<h3 id="why-decoder-only-for-generation">Why Decoder-Only for Generation?</h3>
+<ul>
+<li><strong>Encoder-only (BERT)</strong>: Sees the full sequence in both directions. Great for embedding/classification, can't generate.</li>
+<li><strong>Decoder-only (GPT, Llama)</strong>: Can only see left-to-right (causal masking). Perfect for autoregressive generation.</li>
+<li><strong>Encoder-decoder (T5)</strong>: Uses encoder to understand input, decoder to generate output. Good for seq2seq (translation, summarization).</li>
+</ul>
+<p>LLMs are decoder-only because text generation (predicting the next word) is the fundamental task.</p>
+<hr />
+<h2 id="sub-topic-7-inference-parameters">Sub-topic 7: Inference Parameters</h2>
+<h3 id="temperature">Temperature</h3>
+<pre><code class="language-python"># Low temperature (0.0-0.3): deterministic, conservative
+response = await llm.ainvoke(prompt, temperature=0.1)
+# → &quot;The maximum DTI for FHA loans is 45%.&quot; (repeatable)
+
+# High temperature (0.7-1.5): creative, varied  
+response = await llm.ainvoke(prompt, temperature=1.0)
+# → might add non-standard interpretations
+</code></pre>
+<p>In LoanIQ: All decision agents use <code>temperature=0.1</code> — decisions must be deterministic and reproducible. Fine-tuning inference also uses <code>temperature=0.1</code>.</p>
+<h3 id="top-p-nucleus-sampling">Top-p (Nucleus Sampling)</h3>
+<p>Sample from the smallest set of tokens whose cumulative probability ≥ p:</p>
+<pre><code>Token probabilities: [approve: 0.8, decline: 0.15, review: 0.04, ...]
+top_p=0.9: Include [approve, decline] (0.8 + 0.15 = 0.95 ≥ 0.9)
+→ Only sample from {approve, decline}, ignore rare tokens
+</code></pre>
+<p><strong>Top-p vs top-k:</strong>
+- <code>top_k=50</code>: Always consider exactly 50 tokens regardless of their probability distribution
+- <code>top_p=0.9</code>: Consider fewer tokens when model is confident, more when uncertain
+- <code>top_p</code> is generally preferred for quality</p>
+<hr />
+<h2 id="sub-topic-8-kv-cache">Sub-topic 8: KV Cache</h2>
+<h3 id="what-why-how">What, Why, How</h3>
+<p><strong>Problem:</strong> Autoregressive generation requires processing the full context every time a new token is generated. Generating 500 tokens = 500 full forward passes over the growing context = O(n²) computation.</p>
+<p><strong>KV Cache:</strong> During each forward pass, the Key and Value matrices for each token are computed once and cached. For subsequent tokens, only the new token's KV matrices are computed; old ones are reused.</p>
+<pre><code>Without KV cache:
+  Token 1: Process [token_1] → KV₁ → output
+  Token 2: Process [token_1, token_2] → KV₁, KV₂ → output  (KV₁ recomputed!)
+  Token 3: Process [token_1, token_2, token_3] → KV₁, KV₂, KV₃ (KV₁,KV₂ recomputed!)
+
+With KV cache:
+  Token 1: Compute KV₁, cache it → output
+  Token 2: Load KV₁ from cache, compute KV₂ → output  (KV₁ not recomputed!)
+  Token 3: Load KV₁, KV₂ from cache, compute KV₃ → output
+
+Speed improvement: ~10× faster for long sequences
+</code></pre>
+<p><strong>Memory tradeoff:</strong> KV cache grows linearly with context length. For a 128K context window on Llama 3.1, the KV cache alone can be several GB.</p>
+<hr />
+<h2 id="sub-topic-9-quantization">Sub-topic 9: Quantization</h2>
+<h3 id="precision-levels">Precision Levels</h3>
+<pre><code>FP32 (32-bit float):  4 bytes/parameter  → Full precision training
+FP16 (16-bit float):  2 bytes/parameter  → Mixed precision training
+BF16 (bfloat16):      2 bytes/parameter  → Better range than FP16, A100 optimized
+INT8 (8-bit int):     1 byte/parameter   → Post-training quantization
+NF4  (4-bit normal):  0.5 bytes/param   → QLoRA base model
+</code></pre>
+<h3 id="gguf-and-q4_k_m">GGUF and Q4_K_M</h3>
+<p>GGUF (GPT-Generated Unified Format) is the file format used by llama.cpp and Ollama for quantized models.</p>
+<p><code>Q4_K_M</code> (4-bit, K-quant, Medium): One of the best quality-to-size ratios:
+- <code>Q4</code>: 4-bit quantization
+- <code>K</code>: K-quant method (uses smaller bits for less important weights)
+- <code>M</code>: Medium — balances quality and size</p>
+<p>In LoanIQ deployment: Fine-tuned Llama 3.1 8B → merged 16-bit → converted to Q4_K_M GGUF → loaded in Ollama. Size: ~4.5GB. Quality: nearly identical to FP16 for this task.</p>
+<hr />
+<h1 id="part-3-transformer-architecture">PART 3: TRANSFORMER ARCHITECTURE</h1>
+<h2 id="sub-topic-10-self-attention">Sub-topic 10: Self-Attention</h2>
+<h3 id="the-attention-mechanism">The Attention Mechanism</h3>
+<pre><code>Attention — Step by Step:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Input: sequence of token embeddings X (shape: seq_len × d_model)
+
+1. Project to Q, K, V:
+   Q = X · W_Q    (query: &quot;what am I looking for?&quot;)
+   K = X · W_K    (key:   &quot;what do I have to offer?&quot;)
+   V = X · W_V    (value: &quot;what information do I carry?&quot;)
+
+2. Compute attention scores:
+   Scores = Q · K^T / √d_k    (dot product, scaled)
+
+3. Apply causal mask (decoder only — future tokens masked):
+   Scores[i,j] = -∞ if j &gt; i  (can't attend to future)
+
+4. Softmax → attention weights:
+   A = softmax(Scores)   (each row sums to 1)
+
+5. Weighted sum of values:
+   Output = A · V    (each position's output = weighted mix of all values)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+</code></pre>
+<p><strong>Why √d_k scaling?</strong> For large d_k (dimension), dot products grow large → softmax becomes too peaked (one token gets all attention, rest get ~0). Dividing by √d_k keeps variance stable.</p>
+<h3 id="multi-head-attention">Multi-Head Attention</h3>
+<p>Instead of one attention computation, run H parallel attention heads, each with smaller dimensions:</p>
+<pre><code>d_model = 4096 (Llama)
+H = 32 heads
+d_head = 4096 / 32 = 128 per head
+
+Each head learns different patterns:
+  Head 1: syntactic relationships (&quot;the&quot; → noun that follows)
+  Head 2: long-range dependencies (pronoun → antecedent)
+  Head 3: domain-specific (mortgage term relationships)
+  ...
+
+Outputs concatenated → projected back to d_model
+</code></pre>
+<p><strong>GQA (Grouped Query Attention):</strong> Used in Llama 3.1 to speed up inference. Instead of H full KV heads, use H/G KV heads shared across G query heads. Reduces KV cache size by G×.</p>
+<hr />
+<h2 id="sub-topic-11-positional-encoding">Sub-topic 11: Positional Encoding</h2>
+<h3 id="why-needed">Why Needed?</h3>
+<p>Self-attention has no inherent notion of position — the attention formula is permutation-invariant. "Dog bites man" and "Man bites dog" have the same attention scores without positional encoding.</p>
+<h3 id="rope-rotary-positional-embedding">RoPE (Rotary Positional Embedding)</h3>
+<p>Used in Llama 3.1. Key insight: encode position by rotating the Query and Key vectors.</p>
+<pre><code>RoPE: Rotate Q and K vectors by an angle proportional to position
+
+Q'ₘ = Rotate(Qₘ, θₘ)   # position m
+K'ₙ = Rotate(Kₙ, θₙ)   # position n
+
+Attention(m, n) = Q'ₘ · K'ₙ = f(Qₘ · Kₙ, m-n)
+</code></pre>
+<p>The dot product naturally encodes the <em>relative position</em> (m-n). Benefits:
+- Position 5 attends to position 3 the same way as position 15 to position 13 (translation-invariant)
+- Can extend to longer contexts by adjusting the angle (RoPE scaling)</p>
+<hr />
+<h2 id="sub-topic-12-transformer-block">Sub-topic 12: Transformer Block</h2>
+<h3 id="architecture">Architecture</h3>
+<pre><code>Single Transformer Block (Decoder, Pre-Norm):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Input: x
+  │
+  ├──────────────────────────────────────┐
+  ▼                                      │
+RMSNorm(x)                               │ residual
+  │                                      │
+Multi-Head Self-Attention                │
+  │                                      │
+  └──────────── + ───────────────────────┘ (Add &amp; Norm)
+                │
+                ├──────────────────────────────────────┐
+                ▼                                      │
+             RMSNorm(x')                               │ residual
+                │                                      │
+             SwiGLU FFN (expand to 4× d_model,         │
+                         then contract back)           │
+                │                                      │
+                └──────────── + ───────────────────────┘
+                              │
+                           Output
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+</code></pre>
+<p><strong>Residual connections:</strong> Add input to output at each sub-layer. Allows gradients to flow directly to early layers (no vanishing gradient). Makes the network learn residual corrections rather than full transformations.</p>
+<p><strong>RMSNorm vs LayerNorm:</strong> LayerNorm normalizes by both mean and variance. RMSNorm only divides by RMS (root mean square) — simpler, faster, equally effective. Llama uses RMSNorm.</p>
+<p><strong>Pre-Norm vs Post-Norm:</strong> Pre-norm (normalize before attention/FFN) trains more stably for deep networks. All modern LLMs use pre-norm.</p>
+<h3 id="feed-forward-network-swiglu">Feed-Forward Network (SwiGLU)</h3>
+<p>Standard FFN: <code>Linear → ReLU → Linear</code>
+SwiGLU (Llama): <code>(xW₁) ⊗ SiLU(xW₂)</code> where ⊗ is elementwise multiplication</p>
+<p>SwiGLU provides a learned gating mechanism — some dimensions are suppressed, others amplified. Empirically ~10% better than standard FFN.</p>
+<hr />
+<h2 id="sub-topic-13-tokenization">Sub-topic 13: Tokenization</h2>
+<h3 id="bpe-byte-pair-encoding">BPE (Byte-Pair Encoding)</h3>
+<pre><code>BPE Algorithm:
+1. Start with character vocabulary: {'m', 'o', 'r', 't', 'g', 'a', 'e', ...}
+2. Count most frequent adjacent pair: 'g' 'a' appears 1000 times → merge to 'ga'
+3. Count again: 'm' 'o' appears 800 times → merge to 'mo'
+4. Repeat until vocabulary reaches target size (e.g., 32K tokens)
+
+Result: &quot;mortgage&quot; → ['mort', 'gage'] (2 tokens)
+        &quot;mortgagee&quot; → ['mort', 'gage', 'e'] (3 tokens)
+        &quot; LTV&quot; → ['▁LTV'] (1 token — rare finance term kept as unit)
+</code></pre>
+<p><strong>Vocabulary sizes:</strong>
+- Llama 3.1: 128,256 tokens (very large — covers many languages + special tokens)
+- GPT-4: ~100,000 tokens
+- Older models (GPT-2): 50,257 tokens</p>
+<p><strong>Cost impact (important for LoanIQ):</strong> 1 token ≈ 0.75 words in English. API pricing is per token. "Analyze this loan application thoroughly and comprehensively" = ~8 tokens = ~$0.00012 at GPT-4o pricing. Knowing token counts helps budget LLM costs per agent.</p>
+<hr />
+<h2 id="sub-topic-14-flash-attention">Sub-topic 14: Flash Attention</h2>
+<h3 id="what-why-how_1">What, Why, How</h3>
+<p><strong>Problem:</strong> Standard attention requires materializing the full O(seq² × d) attention matrix — for seq_len=4096, that's 4096² = 16M attention scores × 4 bytes = 64MB per layer. Memory-bound operation.</p>
+<p><strong>Flash Attention:</strong> Rewrites the attention algorithm to avoid materializing the full attention matrix. Uses CUDA kernel fusion — computes softmax incrementally, keeps partial results in fast SRAM (on-chip memory) rather than writing to slow HBM (GPU memory).</p>
+<pre><code>Standard: Q·K^T → write to HBM (16M entries) → softmax → read from HBM → ×V
+FlashAttn: Block-wise computation entirely in SRAM → never writes large matrix to HBM
+</code></pre>
+<p>Speed: 2-4× faster. Memory: O(seq) instead of O(seq²). Quality: mathematically identical to standard attention (no approximation).</p>
+<p>LoanIQ uses Flash Attention via Unsloth's optimized kernels during fine-tuning.</p>
+<hr />
+<h2 id="10-interview-questions-ml-transformers">10 Interview Questions — ML &amp; Transformers</h2>
+<p><strong>Q1: Explain cross-entropy loss in the context of LLM training. What does a loss of 0.5 mean?</strong></p>
+<p><strong>A:</strong> Cross-entropy loss for next-token prediction is <code>-log(P(correct_next_token))</code>.</p>
+<p>If the model predicts the next token with probability 0.9, loss = -log(0.9) = 0.105.
+If it predicts probability 0.1, loss = -log(0.1) = 2.303.</p>
+<p>Training loss of 0.5 means <code>P(correct_token) = exp(-0.5) ≈ 0.61</code>. The model predicts the correct next token with 61% probability on average.</p>
+<p>For LoanIQ fine-tuning: starting loss ~2.5 (model barely knows mortgage language), target loss ~0.5 (model reliably generates correct mortgage narrative tokens). Lower loss = the model "knows" what word should come next in an underwriter narrative.</p>
+<p>Perplexity = exp(loss) = exp(0.5) ≈ 1.65. Perplexity of 1.0 would mean perfect prediction.</p>
+<hr />
+<p><strong>Q2: What is the attention mechanism? Explain Q, K, V intuitively.</strong></p>
+<p><strong>A:</strong> Attention lets each token "look at" all other tokens and decide which ones are relevant.</p>
+<p><strong>Intuitive explanation (library analogy):</strong>
+- <strong>Query (Q)</strong>: "What information am I looking for?" (like a search query)
+- <strong>Key (K)</strong>: "What information do I have to offer?" (like a book's title/index)
+- <strong>Value (V)</strong>: "What's the actual content I'll share?" (like the book's text)</p>
+<p>Each token broadcasts a Query. All tokens respond with their Keys. The similarity between Query and Keys determines the attention weights — higher similarity = more attention. The output is a weighted sum of Values.</p>
+<p>In "The maximum DTI is 45%", when processing "45%", the Query would attend heavily to "DTI" and "maximum" (high Key similarity) — gathering context that this number is a DTI limit, not a random percentage.</p>
+<hr />
+<p><strong>Q3: Why is the √d_k scaling factor in the attention formula necessary?</strong></p>
+<p><strong>A:</strong> Without scaling, dot products between Q and K vectors grow in magnitude proportional to √d_k (the square root of the dimension).</p>
+<p>For d_k=64: dot products typically in range [-8, 8] → softmax distributes attention across many tokens<br />
+For d_k=512: dot products typically in range [-23, 23] → softmax becomes very peaked, most tokens get ~0 attention, one token gets ~1.0</p>
+<p>The peaked softmax problem: gradients become tiny for the near-zero attention weights (vanishing gradients in attention). Training becomes unstable.</p>
+<p>Dividing by √d_k brings dot products back to O(1) scale regardless of dimension, keeping softmax outputs in a healthy range. This is in the original "Attention is All You Need" paper.</p>
+<hr />
+<p><strong>Q4: What is causal masking and why do decoder-only models need it?</strong></p>
+<p><strong>A:</strong> Causal masking (autoregressive masking) prevents each token from attending to future tokens during training.</p>
+<p>During training, we process the entire sequence at once (efficient). But the model should be predicting token N using only tokens 1...N-1. If it could see token N+1, it would "cheat" — trivially predict the next token by copying from the future.</p>
+<p>Implementation: Set <code>attention_score[i,j] = -∞</code> for all j &gt; i (j is after i). After softmax: <code>softmax(-∞) = 0</code> — zero attention to future tokens.</p>
+<p>During inference: No masking needed — we generate one token at a time, so there's no future to mask.</p>
+<p>Contrast with BERT (encoder-only, no causal mask): BERT sees the full sequence bidirectionally during pre-training (MLM = masked language modeling, not next-token prediction). This makes BERT great at understanding but not generating.</p>
+<hr />
+<p><strong>Q5: Explain residual connections. Why do all modern LLMs use them?</strong></p>
+<p><strong>A:</strong> Residual connections add the layer input directly to the layer output:
+<code>Output = LayerNorm(x) + x</code></p>
+<p><strong>The vanishing gradient problem without residuals:</strong> In a 96-layer transformer, gradients must pass through 96 layers to reach the early layers. Each layer multiplies the gradient by something — if these multiplications are &lt;1 on average, gradients shrink exponentially → early layers learn nothing.</p>
+<p><strong>With residuals:</strong> The gradient path includes a direct shortcut from output back to input. Even if the residual branch's gradient is near zero, the identity shortcut provides a gradient highway: <code>∂Loss/∂x = ∂Loss/∂output × (1 + ∂f/∂x)</code> — the <code>1</code> in parentheses ensures at minimum, gradient magnitude is preserved.</p>
+<p><strong>Practical effect:</strong> Networks can be much deeper (GPT-3: 96 layers, Llama 3.1 70B: 80 layers) without training instability. Also makes optimization easier — layers can "do nothing" initially (output zero → output = residual = input) and learn incrementally.</p>
+<hr />
+<p><strong>Q6: What is the KV cache and what is its memory cost for LoanIQ?</strong></p>
+<p><strong>A:</strong> The KV cache stores the Key and Value matrices computed for each token in past positions, avoiding recomputation.</p>
+<p>For Llama 3.1 8B with a 4096-token context:
+- Per layer: 2 (K+V) × 4096 tokens × 128 dims/head × 8 heads × 2 bytes/float = 8MB
+- Total (32 layers): 32 × 8MB = 256MB</p>
+<p>This is the KV cache overhead for a 4096-token context. At 32K tokens (Llama 3.1's context window), it grows to ~2GB.</p>
+<p>For LoanIQ agents: each agent receives a prompt with ~1000-2000 tokens (policy context + loan data). KV cache ≈ 64MB per agent. With 7 agents running sequentially, max KV cache in memory at one time is ~64MB — very manageable.</p>
+<p>The KV cache is why long-context inference is memory-constrained: generating a 100K-token document requires storing 6GB+ of KV cache.</p>
+<hr />
+<p><strong>Q7: Explain tokenization and why it matters for LoanIQ's cost calculations.</strong></p>
+<p><strong>A:</strong> Tokenization converts text into integer IDs using a vocabulary of ~32K-128K tokens. The vocabulary is learned using BPE (Byte-Pair Encoding): frequently co-occurring character sequences become single tokens.</p>
+<p>For LoanIQ:
+- "conventional" → 1 token (common word)<br />
+- "debt-to-income" → 3 tokens: "debt", "-to", "-income"
+- "CLTV" → 2 tokens: "C", "LTV" (financial acronym, less common)</p>
+<p><strong>Why it matters for cost:</strong> API pricing is per token, not per character. A policy chunk with 1000 characters ≈ 250 tokens (1 token ≈ 4 chars). At GPT-4o pricing of $0.015/1K tokens, processing 10 chunks of 1000 chars costs $0.038 per query.</p>
+<p>For LoanIQ's fine-tuned model at $0: tokenization still matters for latency — each token generated takes a forward pass through all layers. Shorter prompts = faster inference.</p>
+<p>LoanIQ's Context Builder enforces a 6000-token budget (≈ 24,000 chars) to control both cost and latency.</p>
+<hr />
+<p><strong>Q8: What is the difference between encoder-only, decoder-only, and encoder-decoder transformers? When would you use each?</strong></p>
+<p><strong>A:</strong></p>
+<p><strong>Encoder-only (BERT, RoBERTa):</strong>
+- Bidirectional attention — sees full context
+- Pre-trained with Masked Language Modeling
+- Great for: embeddings, classification, NER, reading comprehension
+- LoanIQ uses: embedding model (text-embedding-3-small is encoder-based)</p>
+<p><strong>Decoder-only (GPT, Llama, Claude):</strong>
+- Causal (left-to-right) attention
+- Pre-trained with next-token prediction
+- Great for: text generation, chat, reasoning, code
+- LoanIQ uses: all 7 decision agents, fine-tuned ratio model</p>
+<p><strong>Encoder-decoder (T5, BART, mT5):</strong>
+- Encoder: bidirectional attention on input
+- Decoder: causal attention + cross-attention to encoder
+- Great for: translation, summarization, question answering with long inputs
+- Not used in LoanIQ</p>
+<p>Modern trend: decoder-only models have taken over. GPT-4o, Llama 3.1, Claude — all decoder-only. They're more general and scale better with model size and training data.</p>
+<hr />
+<p><strong>Q9: Explain dropout. Why is lora_dropout=0 optimal for QLoRA?</strong></p>
+<p><strong>A:</strong> Dropout randomly zeros neurons with probability p during training:</p>
+<pre><code>Without dropout: Hidden = [0.3, -0.5, 0.8, 0.2]
+With dropout p=0.3: Hidden = [0.3, 0.0, 0.8, 0.0]  (2 neurons zeroed randomly)
+</code></pre>
+<p>This forces the network not to rely on any single neuron — it must learn redundant representations. This prevents co-adaptation (neuron A only works when neuron B has a specific value) and acts as regularization.</p>
+<p><strong>Why lora_dropout=0 with QLoRA (Dettmers et al., 2023):</strong>
+NF4 quantization introduces quantization noise in the base model — the 4-bit values are not exact. This quantization noise effectively acts as regularization, similar to what dropout provides. Adding dropout ON TOP of quantization noise doesn't improve generalization further but adds instability to training.</p>
+<p>Additionally, LoRA adapters are already small (0.1% of parameters) — they have low capacity and don't need aggressive regularization to avoid overfitting.</p>
+<p>Empirical finding: dropout=0 consistently outperformed dropout=0.05 and 0.1 in the QLoRA paper's ablation studies.</p>
+<hr />
+<p><strong>Q10: What is Flash Attention and why does LoanIQ's training benefit from it?</strong></p>
+<p><strong>A:</strong> Standard attention has two performance bottlenecks:</p>
+<ol>
+<li>
+<p><strong>Memory</strong>: The Q×K^T attention matrix is O(seq² × layers) — for seq=2048, this is 2048²×32×2bytes = 268MB of intermediate activations that must be written to GPU HBM (slow memory) during forward pass and read back during backward pass.</p>
+</li>
+<li>
+<p><strong>Bandwidth</strong>: GPU computation speed (FLOPS) has improved faster than memory bandwidth. Modern GPUs are "memory-bandwidth bound" for attention — they spend more time reading/writing HBM than computing.</p>
+</li>
+</ol>
+<p><strong>Flash Attention solution:</strong> Rewrites the attention computation to use SRAM (fast on-chip memory, ~100× faster than HBM). It processes the attention in tiles that fit in SRAM, computes softmax incrementally using the online softmax trick, and never writes the full attention matrix to HBM.</p>
+<p>Result: <strong>2-4× faster training, 5-20× less memory for attention</strong>. Mathematically identical output.</p>
+<p><strong>In LoanIQ fine-tuning:</strong> Unsloth automatically uses Flash Attention 2 kernels, which is why fine-tuning on Colab A100 takes 45 minutes instead of potentially 3-4 hours with standard attention. Also enables longer sequences (up to 8K tokens) in the same VRAM budget.</p>
+<hr />
+<p><em>Next: <a href="07_Docker_AWS.md">Docker &amp; AWS Bedrock →</a></em></p>
+  </div>
+
+  <div class="page-footer">
+    <a href="05_Fine_Tuning.html" class="footer-nav-btn prev">← Fine-Tuning</a>
+    <span class="page-pos">6 / 8</span>
+    <a href="07_Docker_AWS_Bedrock.html" class="footer-nav-btn next">Docker & Bedrock →</a>
+  </div>
+</main>
+
+</body>
+</html>

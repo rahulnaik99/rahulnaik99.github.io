@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LangChain & LangGraph — Gen AI Study Guide</title>
+<style>
+
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:       #0a0c10;
+  --surface:  #111318;
+  --surface2: #181c23;
+  --border:   #1f2530;
+  --accent:   #00e5ff;
+  --accent2:  #7c3aed;
+  --accent3:  #f59e0b;
+  --text:     #e2e8f0;
+  --muted:    #64748b;
+  --green:    #10b981;
+  --red:      #ef4444;
+  --font-head: 'Syne', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.75;
+  min-height: 100vh;
+}
+
+/* ── Noise texture overlay ── */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none; z-index: 9999;
+  opacity: 0.4;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--accent2); border-radius: 3px; }
+
+/* ── Typography ── */
+h1,h2,h3,h4 { font-family: var(--font-head); line-height: 1.2; }
+
+/* ── Code ── */
+pre, code {
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+code:not(pre code) {
+  background: rgba(0,229,255,0.08);
+  color: var(--accent);
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid rgba(0,229,255,0.15);
+}
+pre {
+  background: #0d1117;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent2);
+  padding: 1.25rem 1.5rem;
+  border-radius: 0 8px 8px 0;
+  overflow-x: auto;
+  margin: 1.25rem 0;
+  position: relative;
+}
+pre code { color: #adbac7; background: none; border: none; padding: 0; }
+
+/* ── Tables ── */
+table { width: 100%; border-collapse: collapse; margin: 1.25rem 0; font-size: 14px; }
+th {
+  background: var(--surface2);
+  color: var(--accent);
+  font-family: var(--font-head);
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  text-align: left;
+}
+td {
+  padding: 9px 14px;
+  border: 1px solid var(--border);
+  color: #c8d3e0;
+  vertical-align: top;
+}
+tr:hover td { background: rgba(255,255,255,0.02); }
+tr:nth-child(even) td { background: rgba(255,255,255,0.01); }
+
+/* ── Blockquotes ── */
+blockquote {
+  border-left: 3px solid var(--accent3);
+  background: rgba(245,158,11,0.05);
+  padding: 1rem 1.25rem;
+  border-radius: 0 8px 8px 0;
+  margin: 1.25rem 0;
+  color: #d4b896;
+  font-style: italic;
+}
+
+/* ── Horizontal rules ── */
+hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 2rem 0;
+}
+
+/* ── Lists ── */
+ul, ol { padding-left: 1.5rem; margin: 0.5rem 0; }
+li { margin: 0.3rem 0; }
+li > strong { color: var(--accent); }
+
+/* ── Links ── */
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ── Strong / Em ── */
+strong { color: #f0f4f8; font-weight: 600; }
+em { color: #a5b4c8; }
+
+
+/* ── LAYOUT ── */
+.sidebar {
+  position: fixed;
+  top: 0; left: 0;
+  width: 260px;
+  height: 100vh;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+  overflow-y: auto;
+}
+
+.sidebar-logo {
+  padding: 1.5rem 1.25rem 1rem;
+  border-bottom: 1px solid var(--border);
+}
+.sidebar-logo a {
+  font-family: var(--font-head);
+  font-weight: 800;
+  font-size: 1rem;
+  color: var(--text);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sidebar-logo a:hover { color: var(--accent); }
+.sidebar-logo a::before {
+  content: '←';
+  font-size: 0.85rem;
+  opacity: 0.5;
+}
+
+.sidebar-nav { padding: 0.75rem 0; flex: 1; }
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 1.25rem;
+  font-size: 13px;
+  color: var(--muted);
+  text-decoration: none;
+  transition: all 0.15s;
+  border-left: 2px solid transparent;
+  line-height: 1.3;
+}
+.nav-item:hover {
+  color: var(--text);
+  background: rgba(255,255,255,0.03);
+}
+.nav-item.active {
+  color: var(--text);
+  border-left-color: var(--page-color, var(--accent));
+  background: rgba(255,255,255,0.04);
+}
+.nav-num {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--page-color, var(--accent));
+  opacity: 0.6;
+  min-width: 22px;
+}
+
+.main {
+  margin-left: 260px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar {
+  padding: 1rem 2.5rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(10,12,16,0.9);
+  backdrop-filter: blur(12px);
+  position: sticky; top: 0; z-index: 50;
+}
+.page-breadcrumb {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 0.05em;
+}
+.page-breadcrumb span {
+  color: var(--page-color, var(--accent));
+}
+
+.nav-pills {
+  display: flex;
+  gap: 6px;
+}
+.nav-pill {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  text-decoration: none;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  transition: all 0.15s;
+}
+.nav-pill:hover {
+  border-color: var(--page-color, var(--accent));
+  color: var(--page-color, var(--accent));
+  text-decoration: none;
+}
+
+/* ── CONTENT ── */
+.content {
+  flex: 1;
+  padding: 3rem 4rem 5rem;
+  max-width: 900px;
+}
+
+/* h1 — page title */
+.content h1 {
+  font-size: 2.2rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--text);
+  margin-bottom: 0.25rem;
+  margin-top: 3rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+.content h1:first-child { margin-top: 0; }
+
+/* h2 — section */
+.content h2 {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--page-color, var(--accent));
+  margin: 2.5rem 0 0.75rem;
+  letter-spacing: -0.01em;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.content h2::before {
+  content: '';
+  display: inline-block;
+  width: 4px;
+  height: 18px;
+  background: var(--page-color, var(--accent));
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+/* h3 — sub-section */
+.content h3 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 1.75rem 0 0.5rem;
+  letter-spacing: -0.01em;
+}
+.content h3::before {
+  content: '// ';
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  font-weight: 400;
+}
+
+/* h4 */
+.content h4 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #94a3b8;
+  margin: 1.25rem 0 0.4rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.content p { margin: 0.6rem 0; color: #c8d3e0; }
+
+/* ── INTERVIEW SECTION highlight ── */
+.content h2[id*="interview"],
+.content h2[id*="question"] {
+  color: var(--accent3);
+  background: rgba(245,158,11,0.05);
+  padding: 0.75rem 1rem;
+  border-radius: 0 8px 8px 0;
+  border-left: 3px solid var(--accent3);
+  margin-top: 3rem;
+}
+.content h2[id*="interview"]::before,
+.content h2[id*="question"]::before {
+  background: var(--accent3);
+}
+
+/* ── FOOTER NAV ── */
+.page-footer {
+  border-top: 1px solid var(--border);
+  padding: 2rem 4rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.footer-nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  text-decoration: none;
+  color: var(--muted);
+  font-size: 13px;
+  transition: all 0.15s;
+  font-family: var(--font-head);
+  font-weight: 600;
+}
+.footer-nav-btn:hover {
+  border-color: var(--page-color, var(--accent));
+  color: var(--page-color, var(--accent));
+  text-decoration: none;
+}
+.footer-nav-btn.next { flex-direction: row-reverse; }
+.page-pos {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted);
+}
+
+/* Glow effects */
+.glow-page {
+  position: fixed;
+  width: 500px; height: 500px;
+  border-radius: 50%;
+  pointer-events: none;
+  top: 10vh; right: -150px;
+  background: radial-gradient(circle, rgba(0,0,0,0) 0%, transparent 100%);
+}
+
+:root { --page-color: #f59e0b; }
+.glow-page { background: radial-gradient(circle, #f59e0b0d 0%, transparent 70%); }
+</style>
+</head>
+<body>
+
+<div class="glow-page"></div>
+
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <a href="index.html">Gen AI Study Guide</a>
+  </div>
+  <nav class="sidebar-nav">
+<a href="01_RAG_Ingestion_Pipeline.html" class="nav-item"><span class="nav-num">01</span>Ingestion Pipeline</a>
+<a href="02_RAG_Retrieval_Pipeline.html" class="nav-item"><span class="nav-num">02</span>Retrieval Pipeline</a>
+<a href="03_RAG_Generation_RAGAS.html" class="nav-item"><span class="nav-num">03</span>Generation & RAGAS</a>
+<a href="04_LangChain_LangGraph.html" class="nav-item active"><span class="nav-num">04</span>LangChain & LangGraph</a>
+<a href="05_Fine_Tuning.html" class="nav-item"><span class="nav-num">05</span>Fine-Tuning</a>
+<a href="06_ML_Concepts_Transformers.html" class="nav-item"><span class="nav-num">06</span>ML & Transformers</a>
+<a href="07_Docker_AWS_Bedrock.html" class="nav-item"><span class="nav-num">07</span>Docker & Bedrock</a>
+<a href="08_Python_System_Design.html" class="nav-item"><span class="nav-num">08</span>Python & System Design</a>
+
+  </nav>
+</aside>
+
+<main class="main">
+  <div class="topbar">
+    <div class="page-breadcrumb">Module <span>04</span> · LangChain & LangGraph</div>
+    <div class="nav-pills">
+      <a href="03_RAG_Generation_RAGAS.html" class="nav-pill">← Prev</a>
+      <a href="05_Fine_Tuning.html" class="nav-pill">Next →</a>
+    </div>
+  </div>
+
+  <div class="content">
+<h1 id="langchain-langgraph">LangChain &amp; LangGraph</h1>
+<h2 id="complete-study-guide">Complete Study Guide</h2>
+<hr />
+<h1 id="part-1-langchain">PART 1: LANGCHAIN</h1>
+<h2 id="what-is-langchain">What is LangChain?</h2>
+<p>LangChain is a Python framework that provides building blocks for LLM applications: prompt templates, chains (sequences of LLM calls), retrievers, agents, and memory. Think of it as the "glue" that connects LLMs to your application logic.</p>
+<p>LoanIQ uses LangChain components throughout: <code>ChatPromptTemplate</code>, <code>StrOutputParser</code>, <code>PydanticOutputParser</code>, LCEL chains in every agent, and <code>RecursiveCharacterTextSplitter</code> in ingestion.</p>
+<hr />
+<h2 id="sub-topic-1-chains-lcel">Sub-topic 1: Chains &amp; LCEL</h2>
+<h3 id="what-why-how">What, Why, How</h3>
+<p><strong>What:</strong> A chain is a sequence of steps (LLM calls, tool invocations, data transformations). LCEL (LangChain Expression Language) is the modern way to compose chains using the pipe <code>|</code> operator.</p>
+<p><strong>Why:</strong> Instead of manually calling <code>llm.invoke()</code>, formatting the output, calling another function, you declare the entire pipeline declaratively. LCEL chains are automatically streamable, batchable, and async.</p>
+<p><strong>How:</strong></p>
+<pre><code class="language-python">from langchain_openai import ChatOpenAI
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.output_parsers import StrOutputParser
+
+# LCEL chain — read left to right, | means &quot;pipe output to next&quot;
+chain = prompt | llm | output_parser
+
+# Under the hood:
+# 1. prompt.invoke({&quot;question&quot;: &quot;...&quot;}) → ChatPromptValue
+# 2. llm.invoke(ChatPromptValue)        → AIMessage
+# 3. output_parser.invoke(AIMessage)    → str
+result = await chain.ainvoke({&quot;question&quot;: &quot;What is the DTI limit?&quot;})
+</code></pre>
+<h3 id="runnable-interface">Runnable Interface</h3>
+<p>Every LCEL component implements the <code>Runnable</code> interface:
+| Method | Description |
+|---|---|
+| <code>invoke(input)</code> | Synchronous single call |
+| <code>ainvoke(input)</code> | Async single call |
+| <code>batch([inputs])</code> | Synchronous list of inputs |
+| <code>abatch([inputs])</code> | Async list of inputs |
+| <code>stream(input)</code> | Synchronous streaming |
+| <code>astream(input)</code> | Async streaming |</p>
+<h3 id="in-loaniq-project">In LoanIQ Project</h3>
+<p>Every agent builds an LCEL chain. Example from the faithfulness evaluator:</p>
+<pre><code class="language-python">chain = prompt | llm | StrOutputParser()
+raw = await chain.ainvoke({&quot;context&quot;: context_text, &quot;answer&quot;: answer})
+</code></pre>
+<hr />
+<h2 id="sub-topic-2-prompt-templates">Sub-topic 2: Prompt Templates</h2>
+<h3 id="what-why-how_1">What, Why, How</h3>
+<p><strong>What:</strong> Prompt templates are reusable, parameterized prompt structures. Instead of building strings manually, you define a template with placeholders.</p>
+<p><strong>Why:</strong> Hard-coded strings are a maintenance nightmare. Templates are testable, versionable, and composable. They also handle multi-message (system/human/AI) chat formats automatically.</p>
+<p><strong>Types:</strong></p>
+<pre><code class="language-python">from langchain_core.prompts import ChatPromptTemplate, PromptTemplate, MessagesPlaceholder
+
+# Single-string template
+simple = PromptTemplate.from_template(&quot;Analyze this loan: {loan_data}&quot;)
+
+# Multi-message chat template
+chat = ChatPromptTemplate.from_messages([
+    (&quot;system&quot;, &quot;You are a mortgage expert. Answer only from policy context.&quot;),
+    (&quot;human&quot;, &quot;Context:\n{context}\n\nQuestion: {question}&quot;),
+])
+
+# With conversation history
+with_history = ChatPromptTemplate.from_messages([
+    (&quot;system&quot;, &quot;You are a helpful assistant.&quot;),
+    MessagesPlaceholder(&quot;chat_history&quot;),  # inject past messages here
+    (&quot;human&quot;, &quot;{question}&quot;),
+])
+</code></pre>
+<h3 id="in-loaniq-project_1">In LoanIQ Project</h3>
+<p>The RAGAS evaluator uses <code>ChatPromptTemplate</code>:</p>
+<pre><code class="language-python">prompt = ChatPromptTemplate.from_messages([
+    (&quot;system&quot;, &quot;&quot;&quot;Rate if the answer is fully supported by the context.
+Return ONLY a number between 0.0 and 1.0.&quot;&quot;&quot;),
+    (&quot;human&quot;, &quot;CONTEXT:\n{context}\n\nANSWER:\n{answer}\n\nScore:&quot;),
+])
+</code></pre>
+<hr />
+<h2 id="sub-topic-3-output-parsers">Sub-topic 3: Output Parsers</h2>
+<h3 id="what-why-how_2">What, Why, How</h3>
+<p><strong>What:</strong> Output parsers extract structured data from LLM text responses. LLMs output text; parsers convert that text into Python objects.</p>
+<p><strong>Types:</strong></p>
+<pre><code class="language-python">from langchain_core.output_parsers import StrOutputParser, JsonOutputParser
+from langchain_core.output_parsers import PydanticOutputParser
+from pydantic import BaseModel
+
+# StrOutputParser — raw string
+parser = StrOutputParser()  # AIMessage → str
+
+# PydanticOutputParser — validated object
+class LoanDecision(BaseModel):
+    outcome: str
+    reason: str
+    confidence: float
+
+pydantic_parser = PydanticOutputParser(pydantic_object=LoanDecision)
+# Automatically adds format instructions to prompt
+# Validates LLM output against schema
+# Raises ValidationError if LLM returns wrong format
+
+# JsonOutputParser — dict
+json_parser = JsonOutputParser()
+</code></pre>
+<h3 id="in-loaniq-project_2">In LoanIQ Project</h3>
+<p>Every LoanIQ agent uses <code>PydanticOutputParser</code> to enforce structured output from the LLM. For example, the DecisionAgent parses:</p>
+<pre><code class="language-python">class FinalDecisionOutput(BaseModel):
+    outcome: Literal[&quot;APPROVE&quot;, &quot;DECLINE&quot;, &quot;MANUAL_REVIEW&quot;, &quot;COUNTER_OFFER&quot;]
+    confidence_score: float = Field(ge=0, le=1)
+    decision_summary: str
+    decline_reasons: Optional[list[str]] = None
+    conditions: Optional[list[str]] = None
+</code></pre>
+<p>If the LLM returns malformed JSON, the parser raises an exception → the agent's try/except sets a fallback verdict.</p>
+<hr />
+<h2 id="sub-topic-4-retrievers">Sub-topic 4: Retrievers</h2>
+<h3 id="what-why-how_3">What, Why, How</h3>
+<p><strong>What:</strong> Retrievers are LangChain's interface for fetching relevant documents. They abstract over vector stores, BM25, APIs, etc.</p>
+<p><strong>Key retrievers:</strong></p>
+<pre><code class="language-python"># VectorStoreRetriever — wraps any vector store
+retriever = vectorstore.as_retriever(
+    search_type=&quot;similarity&quot;,
+    search_kwargs={&quot;k&quot;: 10}
+)
+
+# MultiQueryRetriever — auto-generates variants
+from langchain.retrievers import MultiQueryRetriever
+multi_retriever = MultiQueryRetriever.from_llm(
+    retriever=base_retriever, llm=llm  # LLM generates 3 query variants
+)
+
+# EnsembleRetriever — combines dense + sparse
+from langchain.retrievers import EnsembleRetriever
+ensemble = EnsembleRetriever(
+    retrievers=[dense_retriever, bm25_retriever],
+    weights=[0.5, 0.5]  # blend scores
+)
+</code></pre>
+<h3 id="in-loaniq-project_3">In LoanIQ Project</h3>
+<p>LoanIQ implements custom retrieval rather than using LangChain's built-in retrievers because it needs:
+- pgvector with raw SQL for metadata filtering
+- Custom RRF fusion (LangChain's EnsembleRetriever uses weighted sum, not RRF)
+- Custom BM25 implementation over specific fields</p>
+<p>The pattern follows LangChain's retriever interface but with custom implementation.</p>
+<hr />
+<h2 id="sub-topic-5-memory">Sub-topic 5: Memory</h2>
+<h3 id="what-why-how_4">What, Why, How</h3>
+<p><strong>What:</strong> LLMs are stateless — they don't remember previous turns. Memory components solve this by injecting conversation history into each prompt.</p>
+<p><strong>Types:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Memory Type</th>
+<th>How</th>
+<th>Best For</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ConversationBufferMemory</code></td>
+<td>Stores all turns in full</td>
+<td>Short conversations (&lt;20 turns)</td>
+</tr>
+<tr>
+<td><code>ConversationBufferWindowMemory</code></td>
+<td>Keeps last N turns</td>
+<td>Fixed context budget</td>
+</tr>
+<tr>
+<td><code>ConversationSummaryMemory</code></td>
+<td>Summarizes old turns</td>
+<td>Long conversations</td>
+</tr>
+<tr>
+<td><code>VectorStoreRetrieverMemory</code></td>
+<td>Embeds history, retrieves relevant turns</td>
+<td>Very long history</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-python">from langchain.memory import ConversationBufferMemory
+
+memory = ConversationBufferMemory(
+    return_messages=True,
+    memory_key=&quot;chat_history&quot;
+)
+memory.save_context(
+    {&quot;input&quot;: &quot;What is the max LTV?&quot;},
+    {&quot;output&quot;: &quot;Maximum LTV is 97% for primary residence.&quot;}
+)
+history = memory.load_memory_variables({})[&quot;chat_history&quot;]
+</code></pre>
+<h3 id="in-loaniq-project_4">In LoanIQ Project</h3>
+<p>LoanIQ doesn't use LangChain memory because it's a pipeline system (not a chatbot). State is managed by LangGraph's <code>TypedDict</code> state schema — more explicit and debuggable than LangChain memory for multi-agent workflows.</p>
+<hr />
+<h2 id="sub-topic-6-agents-tools">Sub-topic 6: Agents &amp; Tools</h2>
+<h3 id="what-why-how_5">What, Why, How</h3>
+<p><strong>What:</strong> A LangChain agent is an LLM that dynamically decides which tools to call to answer a question. Unlike a chain (fixed sequence), an agent adapts.</p>
+<p><strong>ReAct pattern:</strong></p>
+<pre><code>Thought: I need to find the DTI limit
+Action: search_policy[query=&quot;DTI limit conventional loan&quot;]
+Observation: &quot;Maximum back-end DTI is 45% for conventional loans&quot;
+Thought: I now have the answer
+Final Answer: The maximum DTI is 45%
+</code></pre>
+<p><strong>Defining tools:</strong></p>
+<pre><code class="language-python">from langchain_core.tools import tool
+from pydantic import BaseModel
+
+class PolicySearchInput(BaseModel):
+    query: str
+    loan_type: str = &quot;CONVENTIONAL&quot;
+
+@tool(args_schema=PolicySearchInput)
+async def search_policy(query: str, loan_type: str) -&gt; str:
+    &quot;&quot;&quot;Search mortgage policy documents. Returns relevant policy text.&quot;&quot;&quot;
+    results = await retrieve_policy(query, loan_type=loan_type)
+    return &quot;\n\n&quot;.join(r[&quot;content&quot;] for r in results)
+</code></pre>
+<p><strong>AgentExecutor:</strong></p>
+<pre><code class="language-python">from langchain.agents import AgentExecutor, create_openai_tools_agent
+
+agent = create_openai_tools_agent(llm, [search_policy], prompt)
+executor = AgentExecutor(
+    agent=agent,
+    tools=[search_policy],
+    max_iterations=5,    # prevent infinite loops
+    verbose=True,        # see thought/action/observation
+    handle_parsing_errors=True  # graceful recovery from bad LLM output
+)
+result = await executor.ainvoke({&quot;input&quot;: &quot;What is the max LTV?&quot;})
+</code></pre>
+<h3 id="why-loaniq-uses-langgraph-instead">Why LoanIQ Uses LangGraph Instead</h3>
+<p>LangChain agents are good for single-agent tasks but have limitations:
+- No persistent shared state across agents
+- Can't express conditional routing (if compliance fails → stop)
+- Hard to debug in production
+- Non-deterministic flow (LLM decides what to do next)</p>
+<p>LoanIQ needs 7 agents with dependencies, conditional stops, and full traceability → <strong>LangGraph</strong>.</p>
+<hr />
+<h2 id="sub-topic-7-callbacks-tracing">Sub-topic 7: Callbacks &amp; Tracing</h2>
+<h3 id="what-why-how_6">What, Why, How</h3>
+<p><strong>What:</strong> Callbacks are hooks that fire at each step of a chain/agent execution. LangSmith is a tracing service that captures all these events.</p>
+<p><strong>Why:</strong> In production, you need to see what happened when a decision was made — which chunks were retrieved, what the LLM was told, what it returned, how long each step took.</p>
+<pre><code class="language-python">import os
+os.environ[&quot;LANGCHAIN_TRACING_V2&quot;] = &quot;true&quot;
+os.environ[&quot;LANGCHAIN_API_KEY&quot;] = &quot;ls-...&quot;
+os.environ[&quot;LANGCHAIN_PROJECT&quot;] = &quot;loaniq-production&quot;
+
+# Every chain/agent call is automatically traced to LangSmith
+result = await chain.ainvoke({&quot;query&quot;: &quot;What is the DTI limit?&quot;})
+# → Trace appears in LangSmith with full input/output/tokens/latency
+</code></pre>
+<h3 id="in-loaniq-project_5">In LoanIQ Project</h3>
+<p>LangSmith tracing is enabled via environment variables. The RAG evaluator explicitly pushes evaluation results to LangSmith:</p>
+<pre><code class="language-python">def _setup_langsmith(self):
+    if settings.langchain_tracing_v2 and settings.langchain_api_key:
+        os.environ[&quot;LANGCHAIN_TRACING_V2&quot;] = &quot;true&quot;
+        self.langsmith_client = Client()
+</code></pre>
+<hr />
+<h1 id="part-2-langgraph">PART 2: LANGGRAPH</h1>
+<h2 id="what-is-langgraph">What is LangGraph?</h2>
+<p>LangGraph is a library for building stateful, multi-actor applications with LLMs. It models your application as a directed graph where:
+- <strong>Nodes</strong> = agents/functions (Python async functions)
+- <strong>Edges</strong> = connections between agents
+- <strong>State</strong> = shared data structure that flows through the graph</p>
+<p>LoanIQ's entire 7-agent mortgage decisioning pipeline is a LangGraph <code>StateGraph</code>.</p>
+<pre><code>LoanIQ LangGraph Architecture:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+START
+  │
+  ▼
+[intake_agent]  ← validates input, LLM semantic review
+  │
+  ▼
+[ratio_agent]   ← computes DTI, LTV, HLTV
+  │
+  ├──────────────────────────┐
+  ▼                          ▼
+[policy_agent]          [compliance_agent]  ← runs in parallel
+  │                          │
+  └──────────────────────────┘
+            │
+            ▼
+     [router_function]
+          │
+  ┌───────┴───────┐
+  │ FAIL          │ PASS
+  ▼               ▼
+ END         [underwriting_agent]
+                  │
+                  ▼
+             [decision_agent]
+                  │
+                  ▼
+             [audit_agent]
+                  │
+                  ▼
+                 END
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+</code></pre>
+<hr />
+<h2 id="sub-topic-1-state-graph">Sub-topic 1: State &amp; Graph</h2>
+<h3 id="what-why-how_7">What, Why, How</h3>
+<p><strong>What:</strong> A <code>StateGraph</code> takes a <code>TypedDict</code> (or Pydantic model) as its state schema. Every node receives the full state and returns only the fields it modified. LangGraph merges updates automatically.</p>
+<p><strong>Why:</strong> Shared state is the key insight of LangGraph. Agent 1's output becomes available to Agent 2 without manual passing. The state is the "memory" that persists across the entire pipeline.</p>
+<pre><code class="language-python">from typing import TypedDict, Optional, List
+from langgraph.graph import StateGraph, START, END
+
+class LoanState(TypedDict):
+    # Input
+    application_id: str
+    borrower_data: dict
+    loan_data: dict
+    property_data: dict
+
+    # Computed by agents (each fills their own fields)
+    ltv_percentage: Optional[float]
+    back_end_dti_pct: Optional[float]
+    policy_verdict: Optional[str]     # &quot;PASS&quot; or &quot;FAIL&quot;
+    compliance_verdict: Optional[str]
+    final_decision: Optional[dict]
+
+    # Metadata
+    agent_traces: List[dict]
+    errors: List[str]
+    total_llm_tokens_used: int
+</code></pre>
+<p><strong>Nodes:</strong></p>
+<pre><code class="language-python">async def intake_agent(state: LoanState) -&gt; dict:
+    &quot;&quot;&quot;Validates input and performs LLM semantic review.&quot;&quot;&quot;
+    # ... validate fields, call LLM ...
+    return {
+        &quot;intake_verdict&quot;: &quot;PASS&quot;,
+        &quot;agent_traces&quot;: state[&quot;agent_traces&quot;] + [{&quot;agent&quot;: &quot;intake&quot;, &quot;status&quot;: &quot;PASS&quot;}]
+    }
+    # Only return the fields this agent changed — LangGraph merges the rest
+</code></pre>
+<h3 id="conditional-edges">Conditional Edges</h3>
+<pre><code class="language-python">def should_continue(state: LoanState) -&gt; str:
+    &quot;&quot;&quot;Router: if compliance failed, stop. Otherwise continue.&quot;&quot;&quot;
+    if state.get(&quot;compliance_verdict&quot;) == &quot;FAIL&quot;:
+        return &quot;end&quot;   # route to END node
+    return &quot;underwriting&quot;  # route to underwriting_agent
+
+graph.add_conditional_edges(
+    &quot;compliance_router&quot;,
+    should_continue,
+    {&quot;end&quot;: END, &quot;underwriting&quot;: &quot;underwriting_agent&quot;}
+)
+</code></pre>
+<h3 id="why-langgraph-over-langchain-agents">Why LangGraph over LangChain Agents?</h3>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>LangChain AgentExecutor</th>
+<th>LangGraph StateGraph</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Flow control</strong></td>
+<td>LLM decides next action</td>
+<td>You define exact graph</td>
+</tr>
+<tr>
+<td><strong>State persistence</strong></td>
+<td>Manual, per-chain</td>
+<td>Automatic, shared across all nodes</td>
+</tr>
+<tr>
+<td><strong>Conditional routing</strong></td>
+<td>Hard to implement</td>
+<td>First-class: <code>add_conditional_edges</code></td>
+</tr>
+<tr>
+<td><strong>Parallelism</strong></td>
+<td>Not built-in</td>
+<td><code>Send()</code> API for parallel nodes</td>
+</tr>
+<tr>
+<td><strong>Debuggability</strong></td>
+<td>Opaque</td>
+<td>Inspect state at every node</td>
+</tr>
+<tr>
+<td><strong>Production</strong></td>
+<td>Risky (LLM might loop)</td>
+<td>Deterministic flow</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="sub-topic-2-state-management">Sub-topic 2: State Management</h2>
+<h3 id="why-agents-return-only-changed-fields">Why Agents Return Only Changed Fields</h3>
+<pre><code class="language-python"># ❌ Wrong: return the entire state
+async def ratio_agent(state: LoanState) -&gt; LoanState:
+    return {**state, &quot;ltv&quot;: 0.8, &quot;dti&quot;: 0.42}  # Don't do this
+
+# ✅ Correct: return only what changed
+async def ratio_agent(state: LoanState) -&gt; dict:
+    return {
+        &quot;ltv_percentage&quot;: 80.0,
+        &quot;back_end_dti_pct&quot;: 42.0,
+        &quot;estimated_monthly_payment&quot;: 1850.00,
+    }
+    # LangGraph merges this into the full state automatically
+</code></pre>
+<p>Why? If you return the full state, you risk overwriting changes made by a previous agent. With partial updates, each agent is isolated to its own fields.</p>
+<h3 id="annotated-fields-list-appending">Annotated Fields (List Appending)</h3>
+<p>By default, returning a list field replaces the previous value. To append:</p>
+<pre><code class="language-python">from typing import Annotated
+from langgraph.graph import add_messages  # or write custom reducer
+
+class LoanState(TypedDict):
+    agent_traces: Annotated[List[dict], lambda a, b: a + b]  # append, don't replace
+</code></pre>
+<p>This allows every agent to add to <code>agent_traces</code> without overwriting each other:</p>
+<pre><code class="language-python"># Agent 1 returns: {&quot;agent_traces&quot;: [{&quot;agent&quot;: &quot;intake&quot;, ...}]}
+# Agent 2 returns: {&quot;agent_traces&quot;: [{&quot;agent&quot;: &quot;ratio&quot;, ...}]}
+# Final state: {&quot;agent_traces&quot;: [{&quot;agent&quot;: &quot;intake&quot;}, {&quot;agent&quot;: &quot;ratio&quot;}]}
+</code></pre>
+<h3 id="state-persistence-checkpointers">State Persistence (Checkpointers)</h3>
+<pre><code class="language-python">from langgraph.checkpoint.memory import MemorySaver
+from langgraph.checkpoint.sqlite import SqliteSaver
+
+# In-memory checkpointer (dev)
+memory = MemorySaver()
+app = graph.compile(checkpointer=memory)
+
+# Persistent checkpointer (production)
+saver = SqliteSaver.from_conn_string(&quot;checkpoints.db&quot;)
+app = graph.compile(checkpointer=saver)
+
+# Resume a paused pipeline using thread_id
+result = await app.ainvoke(state, config={&quot;configurable&quot;: {&quot;thread_id&quot;: &quot;loan-123&quot;}})
+</code></pre>
+<hr />
+<h2 id="sub-topic-3-graph-compilation-execution">Sub-topic 3: Graph Compilation &amp; Execution</h2>
+<h3 id="building-and-running-a-graph">Building and Running a Graph</h3>
+<pre><code class="language-python">from langgraph.graph import StateGraph, START, END
+
+# 1. Define graph
+workflow = StateGraph(LoanState)
+
+# 2. Add nodes
+workflow.add_node(&quot;intake&quot;, intake_agent)
+workflow.add_node(&quot;ratio&quot;, ratio_agent)
+workflow.add_node(&quot;policy&quot;, policy_agent)
+workflow.add_node(&quot;compliance&quot;, compliance_agent)
+workflow.add_node(&quot;underwriting&quot;, underwriting_agent)
+workflow.add_node(&quot;decision&quot;, decision_agent)
+workflow.add_node(&quot;audit&quot;, audit_agent)
+
+# 3. Add edges (sequential)
+workflow.add_edge(START, &quot;intake&quot;)
+workflow.add_edge(&quot;intake&quot;, &quot;ratio&quot;)
+workflow.add_edge(&quot;ratio&quot;, &quot;policy&quot;)      # policy and compliance run...
+workflow.add_edge(&quot;ratio&quot;, &quot;compliance&quot;)  # ...in parallel from ratio
+
+# 4. Conditional edge after compliance
+workflow.add_conditional_edges(&quot;compliance&quot;, should_continue,
+                               {&quot;continue&quot;: &quot;underwriting&quot;, &quot;end&quot;: END})
+workflow.add_edge(&quot;underwriting&quot;, &quot;decision&quot;)
+workflow.add_edge(&quot;decision&quot;, &quot;audit&quot;)
+workflow.add_edge(&quot;audit&quot;, END)
+
+# 5. Compile — validates graph, returns runnable
+app = workflow.compile()
+
+# 6. Execute
+final_state = await app.ainvoke({
+    &quot;application_id&quot;: &quot;loan-123&quot;,
+    &quot;borrower_data&quot;: {...},
+    &quot;loan_data&quot;: {...},
+    &quot;property_data&quot;: {...},
+    &quot;agent_traces&quot;: [],
+    &quot;errors&quot;: [],
+    &quot;total_llm_tokens_used&quot;: 0,
+})
+</code></pre>
+<h3 id="streaming">Streaming</h3>
+<pre><code class="language-python"># Stream state updates node by node
+async for chunk in app.astream(initial_state):
+    for node_name, node_output in chunk.items():
+        print(f&quot;Node {node_name} completed: {node_output.keys()}&quot;)
+
+# Stream events (fine-grained: token-by-token LLM output)
+async for event in app.astream_events(initial_state, version=&quot;v2&quot;):
+    if event[&quot;event&quot;] == &quot;on_chat_model_stream&quot;:
+        print(event[&quot;data&quot;][&quot;chunk&quot;].content, end=&quot;&quot;, flush=True)
+</code></pre>
+<hr />
+<h2 id="sub-topic-4-multi-agent-patterns">Sub-topic 4: Multi-Agent Patterns</h2>
+<h3 id="sequential-pipeline-loaniq-pattern">Sequential Pipeline (LoanIQ pattern)</h3>
+<pre><code>Intake → Ratio → Policy → Compliance → Underwriting → Decision → Audit
+</code></pre>
+<p>Each agent specializes in one task and passes state forward. Clear separation of concerns. Easy to test individual agents.</p>
+<h3 id="supervisor-pattern">Supervisor Pattern</h3>
+<p>An orchestrator LLM routes to specialist agents:</p>
+<pre><code class="language-python">async def supervisor(state: State) -&gt; dict:
+    &quot;&quot;&quot;Routes to next agent based on current state.&quot;&quot;&quot;
+    response = await llm.ainvoke(&quot;Given state, which agent should run next?&quot;)
+    return {&quot;next_agent&quot;: response.agent_name}
+
+graph.add_conditional_edges(&quot;supervisor&quot;, lambda s: s[&quot;next_agent&quot;],
+                            {&quot;specialist_a&quot;: &quot;agent_a&quot;, &quot;specialist_b&quot;: &quot;agent_b&quot;})
+</code></pre>
+<p>LoanIQ uses sequential not supervisor because the pipeline is deterministic — compliance always comes before underwriting, always.</p>
+<h3 id="error-handling-in-langgraph">Error Handling in LangGraph</h3>
+<pre><code class="language-python">async def ratio_agent(state: LoanState) -&gt; dict:
+    try:
+        # ... compute ratios via LLM ...
+        return {&quot;ltv_percentage&quot;: ltv, &quot;ratio_verdict&quot;: &quot;PASS&quot;}
+    except TimeoutError:
+        return {
+            &quot;ratio_verdict&quot;: &quot;NEEDS_REVIEW&quot;,  # safe fallback
+            &quot;errors&quot;: state[&quot;errors&quot;] + [&quot;RatioAgent: LLM timeout, using rule-based fallback&quot;]
+        }
+    except Exception as e:
+        return {
+            &quot;ratio_verdict&quot;: &quot;NEEDS_REVIEW&quot;,
+            &quot;errors&quot;: state[&quot;errors&quot;] + [f&quot;RatioAgent failed: {str(e)}&quot;]
+        }
+</code></pre>
+<p>Critical: <strong>never let an agent crash the whole pipeline</strong>. Return safe fallback values. The pipeline continues. The audit agent records the error.</p>
+<hr />
+<h2 id="10-interview-questions-langchain-langgraph">10 Interview Questions — LangChain &amp; LangGraph</h2>
+<p><strong>Q1: What is LCEL and why is it better than manually chaining LLM calls?</strong></p>
+<p><strong>A:</strong> LCEL (LangChain Expression Language) is a declarative syntax using the <code>|</code> pipe operator to chain LangChain components. </p>
+<p>Manually: <code>output = output_parser.invoke(llm.invoke(prompt.invoke(inputs)))</code></p>
+<p>With LCEL: <code>chain = prompt | llm | output_parser; output = await chain.ainvoke(inputs)</code></p>
+<p>Benefits:
+- <strong>Streaming</strong>: LCEL chains automatically support token-by-token streaming with <code>chain.astream()</code>
+- <strong>Batching</strong>: <code>chain.abatch([input1, input2, input3])</code> automatically parallelizes
+- <strong>Async</strong>: All LCEL chains support <code>ainvoke()</code> for non-blocking execution
+- <strong>Composability</strong>: Chains can be components in larger chains
+- <strong>Type safety</strong>: Input/output types are preserved through the chain</p>
+<p>In LoanIQ, every agent builds an LCEL chain for its LLM interactions (evaluation scoring, policy analysis, decision generation).</p>
+<hr />
+<p><strong>Q2: What is the difference between <code>StateGraph</code> and <code>AgentExecutor</code> in LangChain?</strong></p>
+<p><strong>A:</strong></p>
+<p><code>AgentExecutor</code>: The LLM decides at each step which tool to call (ReAct loop). Flow is non-deterministic — the LLM might call the wrong tool, loop, or get confused. Hard to test because behavior varies with model version.</p>
+<p><code>StateGraph</code>: YOU define the exact graph — which function runs after which, what conditions route where. The LLM is called INSIDE each node but cannot change the graph structure. The flow is fully deterministic and testable.</p>
+<p>For LoanIQ:
+- An <code>AgentExecutor</code> might skip the compliance check or run underwriting before ratio calculation
+- A <code>StateGraph</code> guarantees: intake → ratio → compliance → underwriting → decision, always
+- Compliance FAIL always routes to END, never to underwriting</p>
+<p>In financial decisioning, non-deterministic agent behavior is unacceptable. LangGraph is the right choice.</p>
+<hr />
+<p><strong>Q3: Explain LangGraph state management. Why do agents return only partial state?</strong></p>
+<p><strong>A:</strong> LangGraph uses a reducer pattern. When a node returns <code>{"ltv": 0.8}</code>, LangGraph merges this into the current state with <code>{**current_state, "ltv": 0.8}</code> — equivalent to <code>dict.update()</code>.</p>
+<p>If agents returned the full state, two agents running in parallel (policy and compliance in LoanIQ) would race to write the full state — one would overwrite the other's changes.</p>
+<p>With partial updates:
+- <code>compliance_agent</code> returns <code>{"compliance_verdict": "PASS", "compliance_flags": [...]}</code>
+- <code>policy_agent</code> returns <code>{"policy_verdict": "PASS", "retrieved_policy_chunks": [...]}</code>
+- LangGraph merges both: state has all fields from both agents, no conflict</p>
+<p>For list fields that should accumulate (like <code>agent_traces</code>), you use <code>Annotated[List[dict], lambda a, b: a + b]</code> as the reducer so each agent's trace is appended rather than replaced.</p>
+<hr />
+<p><strong>Q4: How does LoanIQ implement conditional routing? Walk through the compliance failure path.</strong></p>
+<p><strong>A:</strong> After the compliance agent runs, a router function inspects the state and decides the next node:</p>
+<pre><code class="language-python">def route_after_compliance(state: LoanState) -&gt; str:
+    if state.get(&quot;has_blocking_compliance_issues&quot;):
+        return &quot;end&quot;          # Hard stop — blocked by compliance
+    return &quot;underwriting&quot;     # Continue to underwriting
+</code></pre>
+<p>This function is registered with:</p>
+<pre><code class="language-python">graph.add_conditional_edges(
+    &quot;compliance_agent&quot;,        # source node
+    route_after_compliance,    # function returns string
+    {
+        &quot;end&quot;: END,            # string &quot;end&quot; → go to END
+        &quot;underwriting&quot;: &quot;underwriting_agent&quot;  # string &quot;underwriting&quot; → continue
+    }
+)
+</code></pre>
+<p>When a loan violates ECOA (Equal Credit Opportunity Act) or is in a sanctioned state, <code>has_blocking_compliance_issues = True</code> → the pipeline terminates immediately with a DECLINE decision from the compliance agent. The underwriting, decision, and audit agents never run.</p>
+<p>This is a hard stop — not a soft recommendation. There's no override.</p>
+<hr />
+<p><strong>Q5: What is the "lost state" bug in LangGraph and how do you avoid it?</strong></p>
+<p><strong>A:</strong> The "lost state" bug occurs when a node returns the full state object instead of just the changed fields. In parallel execution:</p>
+<pre><code>Time 0: State = {ltv: None, dti: None, policy: None, compliance: None}
+Time 1: policy_agent and compliance_agent run in parallel
+
+compliance_agent (returns full state):
+  → {ltv: None, dti: None, policy: None, compliance: &quot;PASS&quot;}  # overwrites policy!
+
+policy_agent (also returns full state):
+  → {ltv: None, dti: None, policy: &quot;PASS&quot;, compliance: None}  # overwrites compliance!
+
+Final state: compliance=None (compliance result was lost!)
+</code></pre>
+<p><strong>Fix:</strong> Always return only the fields your agent changed:</p>
+<pre><code class="language-python"># compliance_agent
+return {&quot;compliance_verdict&quot;: &quot;PASS&quot;, &quot;compliance_flags&quot;: [...]}
+
+# policy_agent  
+return {&quot;policy_verdict&quot;: &quot;PASS&quot;, &quot;retrieved_policy_chunks&quot;: [...]}
+# LangGraph merges both correctly
+</code></pre>
+<p>This is the most common LangGraph bug in production. Add field-level tests: after parallel nodes complete, verify both agents' output fields are in the final state.</p>
+<hr />
+<p><strong>Q6: How does LangGraph observability work in LoanIQ?</strong></p>
+<p><strong>A:</strong> LoanIQ uses three-layer observability:</p>
+<ol>
+<li>
+<p><strong>LangSmith tracing</strong>: When <code>LANGCHAIN_TRACING_V2=true</code>, every node execution is automatically traced — input state, output state diff, duration, LLM tokens used. Accessible in the LangSmith UI.</p>
+</li>
+<li>
+<p><strong>agent_traces field in state</strong>: Every agent appends a structured trace to the state:</p>
+</li>
+</ol>
+<pre><code class="language-python">return {
+    &quot;agent_traces&quot;: [{
+        &quot;agent_name&quot;: &quot;ratio_agent&quot;,
+        &quot;status&quot;: &quot;PASS&quot;,
+        &quot;duration_ms&quot;: 450,
+        &quot;llm_tokens&quot;: 1200,
+        &quot;details&quot;: &quot;DTI=42%, LTV=80%&quot;
+    }]
+}
+</code></pre>
+<ol>
+<li><strong>Structured logging</strong>: Every agent logs key metrics using structlog — searchable in CloudWatch.</li>
+</ol>
+<p>In the API response from <code>POST /loans/{id}/decide</code>, the <code>pipeline_metadata</code> field includes a complete execution report: each agent's status, duration, and token count.</p>
+<hr />
+<p><strong>Q7: What's the difference between <code>PydanticOutputParser</code> and <code>JsonOutputParser</code>? Which should you use?</strong></p>
+<p><strong>A:</strong></p>
+<p><code>JsonOutputParser</code>: Parses any valid JSON from the LLM response. Returns a Python dict. No schema validation — if the LLM returns <code>{"outcome": 123}</code> when you expected a string, no error.</p>
+<p><code>PydanticOutputParser</code>: Takes a Pydantic model class. Parses JSON AND validates against the schema. If <code>outcome</code> should be a Literal["APPROVE", "DECLINE"] and the LLM returns "MAYBE", a <code>ValidationError</code> is raised.</p>
+<p>For LoanIQ's agents:</p>
+<pre><code class="language-python">class DecisionOutput(BaseModel):
+    outcome: Literal[&quot;APPROVE&quot;, &quot;DECLINE&quot;, &quot;MANUAL_REVIEW&quot;, &quot;COUNTER_OFFER&quot;]
+    confidence: float = Field(ge=0.0, le=1.0, description=&quot;Confidence 0-1&quot;)
+    summary: str = Field(min_length=20)
+
+parser = PydanticOutputParser(pydantic_object=DecisionOutput)
+# Adds format instructions to prompt automatically
+# Validates model output — confidence=1.5 raises ValidationError
+</code></pre>
+<p><strong>Use <code>PydanticOutputParser</code></strong> when:
+- Schema matters (financial decisions, structured data)
+- You need validation
+- Downstream code expects typed attributes</p>
+<p><strong>Use <code>JsonOutputParser</code></strong> when:
+- Schema is dynamic or unknown
+- You just need a dict quickly in a prototype</p>
+<hr />
+<p><strong>Q8: How do you handle LLM failures (timeouts, rate limits) in LangGraph nodes?</strong></p>
+<p><strong>A:</strong> Every LoanIQ agent wraps its LLM call in a try/except and returns a safe fallback:</p>
+<pre><code class="language-python">async def policy_agent(state: LoanState) -&gt; dict:
+    try:
+        # Primary: call LLM with RAG context
+        response = await llm_chain.ainvoke({&quot;context&quot;: chunks, &quot;loan&quot;: state})
+        return {&quot;policy_verdict&quot;: response.verdict, &quot;policy_chunks&quot;: chunks}
+
+    except asyncio.TimeoutError:
+        # Retry once with shorter timeout
+        try:
+            response = await asyncio.wait_for(llm_chain.ainvoke(...), timeout=10)
+            return {&quot;policy_verdict&quot;: response.verdict}
+        except:
+            # Both retries failed — escalate to manual review
+            return {
+                &quot;policy_verdict&quot;: &quot;NEEDS_REVIEW&quot;,
+                &quot;errors&quot;: state[&quot;errors&quot;] + [&quot;PolicyAgent: LLM timeout after 2 retries&quot;]
+            }
+
+    except RateLimitError:
+        await asyncio.sleep(5)  # Brief pause
+        # ... retry ...
+</code></pre>
+<p>Key principle: <strong>the pipeline must never crash</strong>. A "NEEDS_REVIEW" verdict on failure means a human loan officer reviews it. The AuditAgent records the error. The borrower gets a response, not a 500 error.</p>
+<p>For the <code>tenacity</code> library (used in LoanIQ's embedding service):</p>
+<pre><code class="language-python">from tenacity import retry, stop_after_attempt, wait_exponential
+
+@retry(stop=stop_after_attempt(3), wait=wait_exponential(min=4, max=10))
+async def embed_with_retry(texts: list[str]) -&gt; list:
+    return await embed_client.embeddings.create(model=&quot;text-embedding-3-small&quot;, input=texts)
+</code></pre>
+<hr />
+<p><strong>Q9: Explain the MultiQueryRetriever. How does it improve recall?</strong></p>
+<p><strong>A:</strong> MultiQueryRetriever asks an LLM to generate N alternative phrasings of the original query, runs all N queries through the retriever, and merges the results.</p>
+<pre><code class="language-python">from langchain.retrievers import MultiQueryRetriever
+
+retriever = MultiQueryRetriever.from_llm(
+    retriever=vectorstore.as_retriever(search_kwargs={&quot;k&quot;: 5}),
+    llm=llm,
+    parser_key=&quot;lines&quot;  # LLM returns one query per line
+)
+# Internally generates 3 variants, retrieves 5×3=15 docs, deduplicates to unique set
+docs = await retriever.ainvoke(&quot;What is the DTI limit for FHA loans?&quot;)
+</code></pre>
+<p><strong>Why it improves recall:</strong> The vector embedding of "DTI limit FHA" might not be close to chunks that say "debt-to-income ratio maximum for government-backed loans" — different words, same concept. One variant might be: "What is the maximum debt-to-income ratio for FHA mortgage applications?" — this phrasing would embed closer to the policy chunk.</p>
+<p>In LoanIQ, multi-query expansion is implemented custom (not using LangChain's MultiQueryRetriever) because we need control over how results are fused (we use RRF, not simple deduplication).</p>
+<hr />
+<p><strong>Q10: What is <code>MessagesPlaceholder</code> and when would you use it in LoanIQ?</strong></p>
+<p><strong>A:</strong> <code>MessagesPlaceholder</code> is a special prompt template component that injects a list of <code>BaseMessage</code> objects (conversation history) into a specific position in the prompt template.</p>
+<pre><code class="language-python">from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+
+chat_prompt = ChatPromptTemplate.from_messages([
+    (&quot;system&quot;, &quot;You are a mortgage expert.&quot;),
+    MessagesPlaceholder(&quot;chat_history&quot;),  # ← inject history here
+    (&quot;human&quot;, &quot;{question}&quot;),
+])
+
+# Usage:
+history = [
+    HumanMessage(content=&quot;What is my LTV?&quot;),
+    AIMessage(content=&quot;Your LTV is 75%.&quot;),
+]
+prompt = chat_prompt.invoke({&quot;chat_history&quot;: history, &quot;question&quot;: &quot;Is PMI required?&quot;})
+</code></pre>
+<p><strong>In LoanIQ:</strong> Not currently used because LoanIQ is a pipeline (not a chatbot). However, if LoanIQ added a "borrower Q&amp;A" chatbot feature where borrowers could ask follow-up questions, <code>MessagesPlaceholder</code> would be used to maintain context:</p>
+<p>"My credit score is 700, will I be approved?" → "Your score is good."<br />
+"What about my DTI?" → [needs context that we're talking about the previous loan application]</p>
+<p><code>MessagesPlaceholder</code> + <code>ConversationBufferWindowMemory</code> (last 10 turns) would solve this.</p>
+<hr />
+<p><em>Next: <a href="05_Fine_Tuning.md">Fine-Tuning with LoRA &amp; QLoRA →</a></em></p>
+  </div>
+
+  <div class="page-footer">
+    <a href="03_RAG_Generation_RAGAS.html" class="footer-nav-btn prev">← Generation & RAGAS</a>
+    <span class="page-pos">4 / 8</span>
+    <a href="05_Fine_Tuning.html" class="footer-nav-btn next">Fine-Tuning →</a>
+  </div>
+</main>
+
+</body>
+</html>

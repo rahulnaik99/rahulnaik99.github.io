@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fine-Tuning — Gen AI Study Guide</title>
+<style>
+
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:       #0a0c10;
+  --surface:  #111318;
+  --surface2: #181c23;
+  --border:   #1f2530;
+  --accent:   #00e5ff;
+  --accent2:  #7c3aed;
+  --accent3:  #f59e0b;
+  --text:     #e2e8f0;
+  --muted:    #64748b;
+  --green:    #10b981;
+  --red:      #ef4444;
+  --font-head: 'Syne', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.75;
+  min-height: 100vh;
+}
+
+/* ── Noise texture overlay ── */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none; z-index: 9999;
+  opacity: 0.4;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--accent2); border-radius: 3px; }
+
+/* ── Typography ── */
+h1,h2,h3,h4 { font-family: var(--font-head); line-height: 1.2; }
+
+/* ── Code ── */
+pre, code {
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+code:not(pre code) {
+  background: rgba(0,229,255,0.08);
+  color: var(--accent);
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid rgba(0,229,255,0.15);
+}
+pre {
+  background: #0d1117;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent2);
+  padding: 1.25rem 1.5rem;
+  border-radius: 0 8px 8px 0;
+  overflow-x: auto;
+  margin: 1.25rem 0;
+  position: relative;
+}
+pre code { color: #adbac7; background: none; border: none; padding: 0; }
+
+/* ── Tables ── */
+table { width: 100%; border-collapse: collapse; margin: 1.25rem 0; font-size: 14px; }
+th {
+  background: var(--surface2);
+  color: var(--accent);
+  font-family: var(--font-head);
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  text-align: left;
+}
+td {
+  padding: 9px 14px;
+  border: 1px solid var(--border);
+  color: #c8d3e0;
+  vertical-align: top;
+}
+tr:hover td { background: rgba(255,255,255,0.02); }
+tr:nth-child(even) td { background: rgba(255,255,255,0.01); }
+
+/* ── Blockquotes ── */
+blockquote {
+  border-left: 3px solid var(--accent3);
+  background: rgba(245,158,11,0.05);
+  padding: 1rem 1.25rem;
+  border-radius: 0 8px 8px 0;
+  margin: 1.25rem 0;
+  color: #d4b896;
+  font-style: italic;
+}
+
+/* ── Horizontal rules ── */
+hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 2rem 0;
+}
+
+/* ── Lists ── */
+ul, ol { padding-left: 1.5rem; margin: 0.5rem 0; }
+li { margin: 0.3rem 0; }
+li > strong { color: var(--accent); }
+
+/* ── Links ── */
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ── Strong / Em ── */
+strong { color: #f0f4f8; font-weight: 600; }
+em { color: #a5b4c8; }
+
+
+/* ── LAYOUT ── */
+.sidebar {
+  position: fixed;
+  top: 0; left: 0;
+  width: 260px;
+  height: 100vh;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+  overflow-y: auto;
+}
+
+.sidebar-logo {
+  padding: 1.5rem 1.25rem 1rem;
+  border-bottom: 1px solid var(--border);
+}
+.sidebar-logo a {
+  font-family: var(--font-head);
+  font-weight: 800;
+  font-size: 1rem;
+  color: var(--text);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sidebar-logo a:hover { color: var(--accent); }
+.sidebar-logo a::before {
+  content: '←';
+  font-size: 0.85rem;
+  opacity: 0.5;
+}
+
+.sidebar-nav { padding: 0.75rem 0; flex: 1; }
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 1.25rem;
+  font-size: 13px;
+  color: var(--muted);
+  text-decoration: none;
+  transition: all 0.15s;
+  border-left: 2px solid transparent;
+  line-height: 1.3;
+}
+.nav-item:hover {
+  color: var(--text);
+  background: rgba(255,255,255,0.03);
+}
+.nav-item.active {
+  color: var(--text);
+  border-left-color: var(--page-color, var(--accent));
+  background: rgba(255,255,255,0.04);
+}
+.nav-num {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--page-color, var(--accent));
+  opacity: 0.6;
+  min-width: 22px;
+}
+
+.main {
+  margin-left: 260px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar {
+  padding: 1rem 2.5rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(10,12,16,0.9);
+  backdrop-filter: blur(12px);
+  position: sticky; top: 0; z-index: 50;
+}
+.page-breadcrumb {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 0.05em;
+}
+.page-breadcrumb span {
+  color: var(--page-color, var(--accent));
+}
+
+.nav-pills {
+  display: flex;
+  gap: 6px;
+}
+.nav-pill {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  text-decoration: none;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  transition: all 0.15s;
+}
+.nav-pill:hover {
+  border-color: var(--page-color, var(--accent));
+  color: var(--page-color, var(--accent));
+  text-decoration: none;
+}
+
+/* ── CONTENT ── */
+.content {
+  flex: 1;
+  padding: 3rem 4rem 5rem;
+  max-width: 900px;
+}
+
+/* h1 — page title */
+.content h1 {
+  font-size: 2.2rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--text);
+  margin-bottom: 0.25rem;
+  margin-top: 3rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+.content h1:first-child { margin-top: 0; }
+
+/* h2 — section */
+.content h2 {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--page-color, var(--accent));
+  margin: 2.5rem 0 0.75rem;
+  letter-spacing: -0.01em;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.content h2::before {
+  content: '';
+  display: inline-block;
+  width: 4px;
+  height: 18px;
+  background: var(--page-color, var(--accent));
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+/* h3 — sub-section */
+.content h3 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 1.75rem 0 0.5rem;
+  letter-spacing: -0.01em;
+}
+.content h3::before {
+  content: '// ';
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  font-weight: 400;
+}
+
+/* h4 */
+.content h4 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #94a3b8;
+  margin: 1.25rem 0 0.4rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.content p { margin: 0.6rem 0; color: #c8d3e0; }
+
+/* ── INTERVIEW SECTION highlight ── */
+.content h2[id*="interview"],
+.content h2[id*="question"] {
+  color: var(--accent3);
+  background: rgba(245,158,11,0.05);
+  padding: 0.75rem 1rem;
+  border-radius: 0 8px 8px 0;
+  border-left: 3px solid var(--accent3);
+  margin-top: 3rem;
+}
+.content h2[id*="interview"]::before,
+.content h2[id*="question"]::before {
+  background: var(--accent3);
+}
+
+/* ── FOOTER NAV ── */
+.page-footer {
+  border-top: 1px solid var(--border);
+  padding: 2rem 4rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.footer-nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  text-decoration: none;
+  color: var(--muted);
+  font-size: 13px;
+  transition: all 0.15s;
+  font-family: var(--font-head);
+  font-weight: 600;
+}
+.footer-nav-btn:hover {
+  border-color: var(--page-color, var(--accent));
+  color: var(--page-color, var(--accent));
+  text-decoration: none;
+}
+.footer-nav-btn.next { flex-direction: row-reverse; }
+.page-pos {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted);
+}
+
+/* Glow effects */
+.glow-page {
+  position: fixed;
+  width: 500px; height: 500px;
+  border-radius: 50%;
+  pointer-events: none;
+  top: 10vh; right: -150px;
+  background: radial-gradient(circle, rgba(0,0,0,0) 0%, transparent 100%);
+}
+
+:root { --page-color: #e879f9; }
+.glow-page { background: radial-gradient(circle, #e879f90d 0%, transparent 70%); }
+</style>
+</head>
+<body>
+
+<div class="glow-page"></div>
+
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <a href="index.html">Gen AI Study Guide</a>
+  </div>
+  <nav class="sidebar-nav">
+<a href="01_RAG_Ingestion_Pipeline.html" class="nav-item"><span class="nav-num">01</span>Ingestion Pipeline</a>
+<a href="02_RAG_Retrieval_Pipeline.html" class="nav-item"><span class="nav-num">02</span>Retrieval Pipeline</a>
+<a href="03_RAG_Generation_RAGAS.html" class="nav-item"><span class="nav-num">03</span>Generation & RAGAS</a>
+<a href="04_LangChain_LangGraph.html" class="nav-item"><span class="nav-num">04</span>LangChain & LangGraph</a>
+<a href="05_Fine_Tuning.html" class="nav-item active"><span class="nav-num">05</span>Fine-Tuning</a>
+<a href="06_ML_Concepts_Transformers.html" class="nav-item"><span class="nav-num">06</span>ML & Transformers</a>
+<a href="07_Docker_AWS_Bedrock.html" class="nav-item"><span class="nav-num">07</span>Docker & Bedrock</a>
+<a href="08_Python_System_Design.html" class="nav-item"><span class="nav-num">08</span>Python & System Design</a>
+
+  </nav>
+</aside>
+
+<main class="main">
+  <div class="topbar">
+    <div class="page-breadcrumb">Module <span>05</span> · Fine-Tuning</div>
+    <div class="nav-pills">
+      <a href="04_LangChain_LangGraph.html" class="nav-pill">← Prev</a>
+      <a href="06_ML_Concepts_Transformers.html" class="nav-pill">Next →</a>
+    </div>
+  </div>
+
+  <div class="content">
+<h1 id="fine-tuning-lora-qlora">Fine-Tuning: LoRA &amp; QLoRA</h1>
+<h2 id="complete-study-guide">Complete Study Guide</h2>
+<blockquote>
+<p><strong>What is Fine-Tuning?</strong>
+Fine-tuning adapts a pre-trained LLM to a specific task or domain by continuing to train it on domain-specific examples. Instead of re-training from scratch (impossibly expensive), you adjust the model using your data.</p>
+<p>LoanIQ fine-tunes Llama 3.1 8B to generate mortgage ratio analysis narratives in the exact format that underwriters expect — something GPT-4o doesn't do out-of-the-box.</p>
+</blockquote>
+<hr />
+<h2 id="sub-topic-1-why-fine-tune">Sub-topic 1: Why Fine-Tune?</h2>
+<h3 id="what-why-how">What, Why, How</h3>
+<p><strong>What:</strong> Fine-tuning is the process of taking a pre-trained foundation model and continuing training it on domain-specific examples so it learns specialized knowledge or output style.</p>
+<p><strong>Why fine-tune vs. prompt engineering?</strong></p>
+<table>
+<thead>
+<tr>
+<th>Approach</th>
+<th>Cost per Call</th>
+<th>Quality</th>
+<th>Privacy</th>
+<th>Latency</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GPT-4o with detailed prompts</td>
+<td>~$0.015/1K tokens</td>
+<td>High</td>
+<td>Data sent to OpenAI</td>
+<td>~2-3s</td>
+</tr>
+<tr>
+<td>Fine-tuned Llama 3.1 8B local</td>
+<td>$0 (inference)</td>
+<td>Higher for domain task</td>
+<td>Fully private</td>
+<td>~0.5s</td>
+</tr>
+<tr>
+<td>GPT-4o fine-tuned</td>
+<td>~$0.005/1K tokens</td>
+<td>High</td>
+<td>Data sent to OpenAI</td>
+<td>~2-3s</td>
+</tr>
+</tbody>
+</table>
+<p><strong>LoanIQ rationale for fine-tuning:</strong></p>
+<ol>
+<li>
+<p><strong>Domain-specific language</strong>: Mortgage terms like "PITI", "HLTV", "conforming limit", "Freddie Mac overlay" appear rarely in GPT training data. A fine-tuned model speaks fluent mortgage language.</p>
+</li>
+<li>
+<p><strong>Output style control</strong>: Underwriters need narratives in a specific format: "DTI: 42.5% (Back-End). Analysis: Borrower's debt ratio exceeds the standard 43% threshold; however, compensating factors include..." — hard to achieve consistently with prompting alone.</p>
+</li>
+<li>
+<p><strong>Cost at scale</strong>: 500 loan decisions/day × average 3000 tokens = 1.5M tokens/day. At GPT-4o pricing ($15/1M tokens) = $22.50/day = $8,200/year. Fine-tuned local model: $0/call.</p>
+</li>
+<li>
+<p><strong>Privacy</strong>: Borrower PII and financial data never leaves your infrastructure. No GDPR risk, no data sharing agreements.</p>
+</li>
+</ol>
+<hr />
+<h2 id="sub-topic-2-full-fine-tuning-vs-lora">Sub-topic 2: Full Fine-Tuning vs LoRA</h2>
+<h3 id="the-problem-with-full-fine-tuning">The Problem with Full Fine-Tuning</h3>
+<p>Full fine-tuning updates all model weights. Llama 3.1 8B has 8 billion parameters. Each parameter stored as float16 = 2 bytes → <strong>16GB just to store the model</strong>. Training requires 3× the storage for optimizer states → <strong>48GB+</strong>. Consumer GPUs top out at 24GB. Impractical.</p>
+<h3 id="lora-low-rank-adaptation">LoRA — Low-Rank Adaptation</h3>
+<p><strong>Key insight:</strong> Weight updates during fine-tuning are low-rank. You don't need to update all 8B parameters — just add small "adapter" matrices that capture the domain-specific changes.</p>
+<pre><code>LoRA Architecture:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Frozen base weights: W (d × d matrix)
+LoRA adapters: A (d × r) and B (r × d), where r &lt;&lt; d
+
+Forward pass:
+  h = W·x + (lora_alpha/r) × B·A·x
+
+W is frozen (never updated). Only A and B are trained.
+
+Example:
+  W: 4096 × 4096 = 16,777,216 parameters (frozen)
+  A: 4096 × 16  =    65,536 parameters (trainable)
+  B: 16  × 4096 =    65,536 parameters (trainable)
+
+Trainable params = 131,072 vs 16,777,216 = 0.78% of one layer
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+</code></pre>
+<p><strong>Why this works:</strong> The hypothesis (validated empirically) is that weight updates during fine-tuning can be expressed as a low-rank matrix. If r=16 captures the needed update, you only train 0.1% of parameters.</p>
+<h3 id="key-lora-hyperparameters">Key LoRA Hyperparameters</h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>What it controls</th>
+<th>LoanIQ value</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>r</code> (rank)</td>
+<td>Size of A and B matrices</td>
+<td>16</td>
+<td>Higher = more capacity, more VRAM</td>
+</tr>
+<tr>
+<td><code>lora_alpha</code></td>
+<td>Scaling: <code>scale = alpha/r</code></td>
+<td>16</td>
+<td>Keep equal to r for effective scale=1</td>
+</tr>
+<tr>
+<td><code>target_modules</code></td>
+<td>Which weight matrices to adapt</td>
+<td>q,k,v,o,gate,up,down proj</td>
+<td>All attention + FFN layers</td>
+</tr>
+<tr>
+<td><code>lora_dropout</code></td>
+<td>Dropout on adapter</td>
+<td>0</td>
+<td>0 is optimal with QLoRA (Dettmers 2023)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="sub-topic-3-qlora-quantized-lora">Sub-topic 3: QLoRA — Quantized LoRA</h2>
+<h3 id="what-why-how_1">What, Why, How</h3>
+<p><strong>What:</strong> QLoRA (Quantized LoRA) extends LoRA by quantizing the frozen base model to 4-bit precision. The LoRA adapters are still trained in 16-bit.</p>
+<p><strong>Why:</strong> Quantizing 8B float16 model to 4-bit reduces VRAM from 16GB to 4GB — now fits on a 16GB consumer GPU (RTX 3080, A10G, Colab A100).</p>
+<pre><code>QLoRA Memory Calculation:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Llama 3.1 8B model:
+
+Full precision (FP32):   8B × 4 bytes = 32 GB  ← requires 2× A100
+Half precision (FP16):   8B × 2 bytes = 16 GB  ← requires A100 (80GB for training)
+4-bit quantized (NF4):   8B × 0.5 bytes = 4 GB ← fits on 16GB GPU ✅
+
+LoRA adapters (FP16): ~50MB for r=16
+Optimizer states (FP16): ~200MB
+Activations: ~2GB
+
+Total QLoRA training VRAM: ~6-8GB ← fits on RTX 3080!
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+</code></pre>
+<p><strong>NF4 quantization:</strong> Normal Float 4-bit is designed specifically for neural network weights. Neural network weights follow a normal (Gaussian) distribution. NF4 bins are spaced to optimally represent a normal distribution — not equally spaced like standard INT4. This preserves more information.</p>
+<p><strong>Double quantization:</strong> Quantize the quantization constants too (the scale factors used to dequantize). Saves ~0.37 bits/parameter — ~3GB savings for 70B models. Less significant for 8B.</p>
+<h3 id="in-loaniq-project">In LoanIQ Project</h3>
+<p>From <code>scripts/finetune_ratio_model.py</code>:</p>
+<pre><code class="language-python">from unsloth import FastLanguageModel
+import torch
+
+model, tokenizer = FastLanguageModel.from_pretrained(
+    model_name=&quot;unsloth/Meta-Llama-3.1-8B&quot;,
+    max_seq_length=512,
+    dtype=None,        # auto-detect bfloat16 on A100
+    load_in_4bit=True, # QLoRA — quantize to NF4
+)
+
+model = FastLanguageModel.get_peft_model(
+    model,
+    r=16,              # LoRA rank
+    target_modules=[
+        &quot;q_proj&quot;, &quot;k_proj&quot;, &quot;v_proj&quot;, &quot;o_proj&quot;,    # attention
+        &quot;gate_proj&quot;, &quot;up_proj&quot;, &quot;down_proj&quot;,         # FFN
+    ],
+    lora_alpha=16,
+    lora_dropout=0,    # 0 is optimal with QLoRA
+    use_gradient_checkpointing=&quot;unsloth&quot;,  # 30% less VRAM
+)
+</code></pre>
+<p><strong>Why Unsloth?</strong> Unsloth implements fused kernels for LoRA training — 2× faster training speed with 60% less VRAM vs standard HuggingFace PEFT. For a 45-minute Colab job, this cuts training to ~20 minutes.</p>
+<hr />
+<h2 id="sub-topic-4-training-setup">Sub-topic 4: Training Setup</h2>
+<h3 id="sfttrainer-configuration">SFTTrainer Configuration</h3>
+<pre><code class="language-python">from trl import SFTTrainer
+from transformers import TrainingArguments
+
+trainer = SFTTrainer(
+    model=model,
+    tokenizer=tokenizer,
+    train_dataset=dataset,
+    dataset_text_field=&quot;text&quot;,
+    max_seq_length=512,
+    args=TrainingArguments(
+        per_device_train_batch_size=2,
+        gradient_accumulation_steps=4,   # effective batch = 2×4 = 8
+        num_train_epochs=3,
+        learning_rate=2e-4,              # standard LoRA LR
+        bf16=True,                       # bfloat16 on A100
+        logging_steps=10,
+        optim=&quot;adamw_8bit&quot;,              # 8-bit Adam saves VRAM
+        output_dir=&quot;./checkpoints&quot;,
+    ),
+)
+trainer.train()
+</code></pre>
+<h3 id="gradient-accumulation">Gradient Accumulation</h3>
+<p><strong>Problem:</strong> With batch size 2 on a 16GB GPU, gradients are noisy (high variance). Ideal batch size is 8-16.</p>
+<p><strong>Solution:</strong> <code>gradient_accumulation_steps=4</code> means:
+1. Forward + backward pass on batch of 2 → accumulate gradients
+2. Repeat 4 times → total gradient from 8 samples
+3. Update weights once</p>
+<p>Effective batch size = <code>per_device_batch_size × gradient_accumulation_steps = 2 × 4 = 8</code></p>
+<p>No extra VRAM needed. Computation time = 4× more steps, but same quality as batch 8.</p>
+<h3 id="alpaca-prompt-format">Alpaca Prompt Format</h3>
+<p>LoanIQ uses Alpaca format for the ratio agent:</p>
+<pre><code class="language-python">def format_alpaca(example):
+    return f&quot;&quot;&quot;Below is an instruction for a mortgage ratio analysis task.
+Write a response that appropriately completes the request.
+
+### Instruction:
+{example['instruction']}
+
+### Response:
+{example['output']}&quot;&quot;&quot;
+
+# Example:
+# Instruction: LTV 85% | DTI 42% | Credit 695 | Type CONVENTIONAL | Loan $340K
+# Response: &quot;RATIO ANALYSIS: LTV of 85.0% exceeds the 80% threshold requiring PMI.
+#            Back-end DTI of 42.0% is within conventional guidelines (max 45%)...&quot;
+</code></pre>
+<hr />
+<h2 id="sub-topic-5-training-data-generation">Sub-topic 5: Training Data Generation</h2>
+<h3 id="teacher-student-pattern">Teacher-Student Pattern</h3>
+<p>LoanIQ uses GPT-4o to generate high-quality training data for the smaller Llama model:</p>
+<pre><code class="language-python"># GPT-4o = teacher
+teacher_prompt = &quot;&quot;&quot;You are an expert mortgage underwriter.
+Given these loan metrics, write a professional ratio analysis narrative
+in the format used by underwriters.
+
+Metrics: LTV {ltv}%, DTI {dti}%, Credit {credit}, Type {loan_type}
+&quot;&quot;&quot;
+# GPT-4o generates 500 gold-quality narratives
+
+# These become training data for Llama 3.1 8B = student
+# Student learns to match teacher's output quality
+</code></pre>
+<p><strong>Why 500 examples?</strong> Rule of thumb for meaningful domain adaptation via LoRA:
+- &lt;100: Likely overfits, doesn't generalize
+- 200-500: Sweet spot for style/format learning
+- 1000+: Needed for deep knowledge injection</p>
+<h3 id="edge-cases">Edge Cases</h3>
+<p>Include borderline scenarios deliberately:
+- DTI exactly 45% (right at limit)
+- LTV exactly 80% (PMI threshold)
+- Credit 619 (one point below minimum)
+- Combinations: Good credit + bad DTI, etc.</p>
+<p>These edge cases ensure the model handles real-world ambiguity, not just easy clear-cut cases.</p>
+<hr />
+<h2 id="sub-topic-6-evaluation">Sub-topic 6: Evaluation</h2>
+<h3 id="training-loss-target">Training Loss Target</h3>
+<p>A decreasing training loss is necessary but not sufficient:
+- Target: loss &lt; 0.5 after 3 epochs
+- Steady decrease without sudden spikes (spikes indicate bad training examples)
+- If loss plateaus early, may need more epochs or higher learning rate</p>
+<h3 id="llm-as-judge-evaluation">LLM-as-Judge Evaluation</h3>
+<p>Compare fine-tuned model output to GPT-4o reference:</p>
+<pre><code class="language-python"># Using GPT-4o to score fine-tuned model output
+judge_prompt = &quot;&quot;&quot;
+Score the mortgage ratio analysis (0-10) on:
+1. Accuracy of numerical interpretation
+2. Correct identification of policy violations
+3. Professional underwriter language
+4. Format compliance
+
+Reference answer (GPT-4o): {reference}
+Model answer (fine-tuned Llama): {model_answer}
+
+Score (0-10 for each criterion):
+&quot;&quot;&quot;
+</code></pre>
+<h3 id="catastrophic-forgetting">Catastrophic Forgetting</h3>
+<p><strong>Problem:</strong> Fine-tuning on mortgage data can cause the model to forget general capabilities (writing, reasoning, coding). Called "catastrophic forgetting."</p>
+<p><strong>Mitigation:</strong>
+1. <strong>LoRA protects against it</strong> — base weights are frozen; only adapters change. The base model's general capabilities are preserved.
+2. <strong>Low learning rate</strong> (2e-4): Gentle updates don't overwrite too much
+3. <strong>Evaluation on general tasks</strong> before and after fine-tuning</p>
+<p>With QLoRA, catastrophic forgetting is minimal because the 8B base model is 4-bit frozen — its general knowledge is structurally preserved.</p>
+<hr />
+<h2 id="sub-topic-7-model-formats-deployment">Sub-topic 7: Model Formats &amp; Deployment</h2>
+<h3 id="model-formats">Model Formats</h3>
+<table>
+<thead>
+<tr>
+<th>Format</th>
+<th>Size</th>
+<th>Use Case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>safetensors</code></td>
+<td>~50MB (adapters only)</td>
+<td>Store adapters, merge separately</td>
+</tr>
+<tr>
+<td>Merged 16-bit</td>
+<td>~16GB</td>
+<td>Full standalone model, server deployment</td>
+</tr>
+<tr>
+<td>GGUF (Q4_K_M)</td>
+<td>~4.5GB</td>
+<td>Ollama local deployment, CPU inference</td>
+</tr>
+</tbody>
+</table>
+<h3 id="deployment-via-ollama">Deployment via Ollama</h3>
+<pre><code class="language-python"># 1. Fine-tune → save as merged 16-bit to HuggingFace
+model.push_to_hub_merged(
+    &quot;your-username/loaniq-ratio-llama-3.1-8b&quot;,
+    tokenizer,
+    save_method=&quot;merged_16bit&quot;,
+    token=HF_TOKEN,
+)
+
+# 2. Create Ollama Modelfile
+# File: Modelfile.ratio
+&quot;&quot;&quot;
+FROM hf.co/your-username/loaniq-ratio-llama-3.1-8b
+SYSTEM &quot;You are an expert mortgage ratio analyst.&quot;
+PARAMETER temperature 0.1
+&quot;&quot;&quot;
+
+# 3. Create Ollama model
+# $ ollama create loaniq-ratio -f Modelfile.ratio
+
+# 4. Use via OpenAI-compatible API
+from openai import AsyncOpenAI
+client = AsyncOpenAI(
+    base_url=&quot;http://localhost:11434/v1&quot;,  # Ollama's OpenAI-compatible endpoint
+    api_key=&quot;ollama&quot;,
+)
+response = await client.chat.completions.create(
+    model=&quot;loaniq-ratio&quot;,
+    messages=[{&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;LTV 85% | DTI 42% | Credit 695&quot;}],
+    temperature=0.1,
+)
+</code></pre>
+<hr />
+<h2 id="10-interview-questions-fine-tuning">10 Interview Questions — Fine-Tuning</h2>
+<p><strong>Q1: Why did LoanIQ fine-tune a model instead of just improving the system prompt?</strong></p>
+<p><strong>A:</strong> Four reasons:</p>
+<ol>
+<li>
+<p><strong>Output format consistency</strong>: Underwriters need narratives in a very specific structured format — numbered sections, specific headers, quantitative thresholds cited correctly. Even with detailed few-shot examples, GPT-4o produces inconsistent formatting across different loan profiles. The fine-tuned model was trained on 500 examples in the exact format, so it reliably produces correct structure.</p>
+</li>
+<li>
+<p><strong>Domain terminology</strong>: Mortgage language is specialized — "PITI", "HLTV", "Freddie Mac overlay", "qualifying income". The fine-tuned model uses this terminology naturally.</p>
+</li>
+<li>
+<p><strong>Cost</strong>: The RatioCalculationAgent runs on every loan decision. At scale, using GPT-4o for this agent alone would cost thousands per month. Fine-tuned Llama 3.1 8B runs locally in Ollama at $0/call.</p>
+</li>
+<li>
+<p><strong>Latency</strong>: Local Ollama inference: ~300ms. GPT-4o API: ~2000ms. For a 7-agent pipeline, saving 1.7 seconds per agent multiplies significantly.</p>
+</li>
+</ol>
+<p>Prompt engineering reaches diminishing returns for format-critical, high-volume tasks. Fine-tuning is the right tool here.</p>
+<hr />
+<p><strong>Q2: Explain LoRA. What are the A and B matrices and why does this reduce training cost?</strong></p>
+<p><strong>A:</strong> LoRA (Low-Rank Adaptation) hypothesizes that weight updates during fine-tuning are "low-rank" — they can be expressed as the product of two small matrices.</p>
+<p>Instead of updating W (a 4096×4096 matrix = 16M parameters), LoRA learns:
+- A: 4096×16 matrix (65,536 parameters)
+- B: 16×4096 matrix (65,536 parameters)</p>
+<p>Forward pass: <code>h = (W + α/r × B·A) · x</code></p>
+<p>W is frozen. Only A and B are updated. In a full model, we add LoRA to every attention projection and FFN layer. Total trainable parameters ≈ 0.1% of the model.</p>
+<p><strong>Why 0.1% is enough:</strong> Domain adaptation doesn't require re-learning how to reason or use language — just learning the specific output style and domain terminology. A small delta on frozen weights is sufficient for this.</p>
+<p>Training A and B matrices requires proportionally less GPU memory, less gradient computation, and the resulting "adapter" file is only ~50MB vs 16GB for the full model.</p>
+<hr />
+<p><strong>Q3: What is the difference between LoRA and QLoRA?</strong></p>
+<p><strong>A:</strong> LoRA freezes the base model weights but keeps them in full precision (FP16 = 16-bit). To load and fine-tune Llama 3.1 8B in FP16, you need 16GB VRAM just for the model parameters, plus optimizer states.</p>
+<p>QLoRA adds: <strong>quantize the base model to 4-bit (NF4)</strong> before training. This reduces base model VRAM from 16GB to ~4GB. The LoRA adapters are still trained in 16-bit (you can't effectively train in 4-bit — gradients become too noisy).</p>
+<pre><code>LoRA:   FP16 base (16GB) + FP16 adapters (~50MB)
+QLoRA:  NF4 base  (4GB)  + FP16 adapters (~50MB)
+</code></pre>
+<p>The key insight: NF4 is a special 4-bit format designed for normally distributed weights (which neural network weights are). During the forward pass, NF4 values are dequantized to FP16 for computation, then gradients flow back to the FP16 adapters.</p>
+<p>LoanIQ uses QLoRA to train on Google Colab's A100 (~16GB VRAM) — LoRA alone wouldn't fit.</p>
+<hr />
+<p><strong>Q4: What is <code>gradient_accumulation_steps</code> and why is it needed?</strong></p>
+<p><strong>A:</strong> <code>gradient_accumulation_steps</code> is a technique to simulate a larger batch size when GPU memory is limited.</p>
+<p>With batch_size=2, each forward+backward pass uses only 2 samples. The gradient estimate is noisy. You'd ideally use batch_size=16 but that requires 8× more activation memory.</p>
+<p>With <code>gradient_accumulation_steps=4</code>:
+1. Forward+backward on 2 samples → store gradients (don't update weights)
+2. Forward+backward on next 2 samples → ADD to stored gradients
+3. Forward+backward on next 2 samples → ADD
+4. Forward+backward on next 2 samples → ADD → NOW update weights</p>
+<p>Effective batch size = 2×4=8. Memory usage is still for 2 samples at a time, but the gradient quality is as if you used batch 8.</p>
+<p>The only downside: 4× more forward/backward passes per weight update = slightly slower, but no quality loss compared to true batch 8.</p>
+<hr />
+<p><strong>Q5: What are <code>target_modules</code> in LoRA configuration? Why do we add adapters to so many layers?</strong></p>
+<p><strong>A:</strong> <code>target_modules</code> specifies which weight matrices in the model get LoRA adapters. In Llama 3.1:</p>
+<ul>
+<li><code>q_proj</code>, <code>k_proj</code>, <code>v_proj</code>: Query, Key, Value projection matrices in attention layers. These control how each token attends to others — critical for reasoning and language understanding.</li>
+<li><code>o_proj</code>: Output projection of attention — combines multi-head attention outputs</li>
+<li><code>gate_proj</code>, <code>up_proj</code>, <code>down_proj</code>: The three weight matrices in the SwiGLU FFN layer — control how token representations are transformed</li>
+</ul>
+<p>LoanIQ adds adapters to all 7 module types. Why all of them? More target modules = more trainable parameters = more capacity to learn the domain. For a specific output style task (mortgage narratives), adapting both attention and FFN gives the model enough capacity to learn the exact narrative format.</p>
+<p>You could reduce target modules to just <code>q_proj</code> and <code>v_proj</code> (as in the original LoRA paper) to save VRAM, but LoanIQ prioritizes quality over marginal VRAM savings.</p>
+<hr />
+<p><strong>Q6: What is the teacher-student approach to training data generation? Why use GPT-4o as teacher?</strong></p>
+<p><strong>A:</strong> Teacher-student (aka knowledge distillation) trains a smaller, cheaper model to replicate the outputs of a larger, more capable model.</p>
+<p>In LoanIQ:
+1. <strong>Teacher (GPT-4o)</strong>: Given loan metrics → generates high-quality underwriter narratives. Cost: ~$30 for 500 examples (one-time).
+2. <strong>Student (Llama 3.1 8B)</strong>: Trained on GPT-4o's outputs → learns to generate similar narratives. Cost: ~$10/month on Colab Pro (training). $0/inference (local Ollama).</p>
+<p>Why GPT-4o as teacher:
+- GPT-4o produces the highest-quality structured mortgage narratives
+- Its outputs become the "gold standard" that Llama learns to match
+- After fine-tuning, Llama 3.1 8B matches GPT-4o quality on this specific task, at 1/10 the inference cost</p>
+<p>This is the key economic argument: spend $30 once on GPT-4o for training data → save thousands per month on inference.</p>
+<hr />
+<p><strong>Q7: How do you evaluate a fine-tuned model? What's "LLM-as-judge"?</strong></p>
+<p><strong>A:</strong> Three evaluation methods in LoanIQ:</p>
+<ol>
+<li>
+<p><strong>Training loss</strong>: Should decrease steadily, target &lt; 0.5. Necessary but not sufficient — loss just measures how well the model memorized training data.</p>
+</li>
+<li>
+<p><strong>LLM-as-judge</strong>: Use GPT-4o-mini (a strong but cheap model) to score fine-tuned Llama's outputs against reference answers on a held-out test set:</p>
+</li>
+</ol>
+<pre><code class="language-python">judge_prompt = &quot;&quot;&quot;
+Score 0-10: Does the model's narrative correctly identify:
+- LTV violation (if applicable)?
+- DTI guideline compliance?
+- Professional underwriter language?
+Model output: {model_output}
+Reference: {reference}
+Score:
+&quot;&quot;&quot;
+</code></pre>
+<ol>
+<li><strong>Human evaluation</strong>: Show real underwriters 20 outputs from GPT-4o and 20 from fine-tuned Llama (blind). Ask which is better. If they prefer fine-tuned outputs ≥ 80% of the time, the model is production-ready.</li>
+</ol>
+<p><strong>LLM-as-judge advantage</strong>: No labeled test set needed. GPT-4o-mini can assess "does this narrative correctly identify the DTI violation?" without you providing explicit labels.</p>
+<hr />
+<p><strong>Q8: What is catastrophic forgetting? How does QLoRA mitigate it?</strong></p>
+<p><strong>A:</strong> Catastrophic forgetting is when fine-tuning a model on domain-specific data causes it to lose its general capabilities. Example: After fine-tuning on mortgage data, the model can't write Python code anymore, or its reasoning ability degrades.</p>
+<p>In standard fine-tuning, all weights are updated — general knowledge encoded in weights gets overwritten by mortgage knowledge.</p>
+<p>QLoRA mitigates this in two ways:
+1. <strong>Frozen base model</strong>: The 8B base model weights are frozen (never updated). All general knowledge (language understanding, reasoning, coding) is structurally preserved.
+2. <strong>Small adapters only</strong>: Only the tiny A and B LoRA matrices are updated. These are additive to the frozen weights — they layer domain knowledge on top without destroying the foundation.</p>
+<p>Result: After QLoRA fine-tuning, Llama 3.1 8B can still write code, answer general knowledge questions, AND generate mortgage narratives. The base stays intact; the adapters add the specialization.</p>
+<hr />
+<p><strong>Q9: Explain NF4 quantization. Why is it better than simple INT4?</strong></p>
+<p><strong>A:</strong> INT4 quantization equally spaces 16 values between min and max weight values. But neural network weights follow a bell curve (normal distribution) — most values cluster near zero, few values are extreme.</p>
+<p>INT4: <code>[-1.0, -0.87, -0.73, ..., 0.73, 0.87, 1.0]</code> — equally spaced, wastes many bins on rare extreme values</p>
+<p>NF4 (Normal Float 4): Bins are spaced according to quantiles of a standard normal distribution:
+<code>[-1.0, -0.69, -0.53, ..., 0.00, ..., 0.53, 0.69, 1.0]</code> — denser bins near zero where most weights cluster</p>
+<p>This means more quantization levels are used for the values that actually appear most frequently → less quantization error → better model quality at the same 4-bit budget.</p>
+<p>NF4 was introduced in the QLoRA paper (Dettmers et al., 2023) and is the default in HuggingFace <code>bitsandbytes</code>.</p>
+<hr />
+<p><strong>Q10: Walk through the complete fine-tuning pipeline in LoanIQ from data to deployment.</strong></p>
+<p><strong>A:</strong> From <code>scripts/finetune_ratio_model.py</code> and deployment:</p>
+<p><strong>Step 1: Generate training data</strong> (<code>generate_training_data.py</code>)
+- 500 loan scenarios generated with random but realistic metrics
+- GPT-4o called for each scenario: generates gold-quality underwriter narrative
+- Saved as Alpaca format JSON: <code>{"instruction": "LTV 85% | DTI 42%...", "output": "ANALYSIS: ..."}</code></p>
+<p><strong>Step 2: Load model with QLoRA</strong> (Google Colab A100)</p>
+<pre><code class="language-python">model, tokenizer = FastLanguageModel.from_pretrained(
+    &quot;unsloth/Meta-Llama-3.1-8B&quot;, load_in_4bit=True)
+model = FastLanguageModel.get_peft_model(model, r=16, ...)
+</code></pre>
+<p><strong>Step 3: Train with SFTTrainer</strong> (~45 minutes on Colab A100)</p>
+<pre><code class="language-python">trainer = SFTTrainer(model, train_dataset, ...)
+trainer.train()  # loss decreases from ~2.5 → ~0.3
+</code></pre>
+<p><strong>Step 4: Evaluate</strong> 
+- Check loss curve (no spikes, steady decrease)
+- LLM-as-judge: GPT-4o-mini scores 20 held-out examples
+- Compare to GPT-4o baseline</p>
+<p><strong>Step 5: Push to HuggingFace Hub</strong></p>
+<pre><code class="language-python">model.push_to_hub_merged(&quot;your-hf-username/loaniq-ratio&quot;, save_method=&quot;merged_16bit&quot;)
+</code></pre>
+<p><strong>Step 6: Convert to GGUF for Ollama</strong></p>
+<pre><code class="language-bash">ollama create loaniq-ratio -f Modelfile.ratio
+# Modelfile: FROM hf.co/username/loaniq-ratio
+</code></pre>
+<p><strong>Step 7: Update llm_router.py</strong></p>
+<pre><code class="language-python">MODEL_ROUTING = {
+    &quot;RatioCalculationAgent&quot;: {
+        &quot;dev&quot;: &quot;ollama/loaniq-ratio&quot;,    # local fine-tuned
+        &quot;prod&quot;: &quot;anthropic/claude-haiku&quot; # cloud fallback
+    }
+}
+</code></pre>
+<p>Total cost: ~$30 GPT-4o training data + ~$10 Colab Pro month. Result: $0 per loan decision for ratio analysis, 300ms latency, data never leaves your infrastructure.</p>
+<hr />
+<p><em>Next: <a href="06_ML_Concepts_Transformers.md">ML Concepts &amp; Transformers →</a></em></p>
+  </div>
+
+  <div class="page-footer">
+    <a href="04_LangChain_LangGraph.html" class="footer-nav-btn prev">← LangChain & LangGraph</a>
+    <span class="page-pos">5 / 8</span>
+    <a href="06_ML_Concepts_Transformers.html" class="footer-nav-btn next">ML & Transformers →</a>
+  </div>
+</main>
+
+</body>
+</html>

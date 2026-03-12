@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ingestion Pipeline — Gen AI Study Guide</title>
+<style>
+
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:       #0a0c10;
+  --surface:  #111318;
+  --surface2: #181c23;
+  --border:   #1f2530;
+  --accent:   #00e5ff;
+  --accent2:  #7c3aed;
+  --accent3:  #f59e0b;
+  --text:     #e2e8f0;
+  --muted:    #64748b;
+  --green:    #10b981;
+  --red:      #ef4444;
+  --font-head: 'Syne', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.75;
+  min-height: 100vh;
+}
+
+/* ── Noise texture overlay ── */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none; z-index: 9999;
+  opacity: 0.4;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--accent2); border-radius: 3px; }
+
+/* ── Typography ── */
+h1,h2,h3,h4 { font-family: var(--font-head); line-height: 1.2; }
+
+/* ── Code ── */
+pre, code {
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+code:not(pre code) {
+  background: rgba(0,229,255,0.08);
+  color: var(--accent);
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid rgba(0,229,255,0.15);
+}
+pre {
+  background: #0d1117;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent2);
+  padding: 1.25rem 1.5rem;
+  border-radius: 0 8px 8px 0;
+  overflow-x: auto;
+  margin: 1.25rem 0;
+  position: relative;
+}
+pre code { color: #adbac7; background: none; border: none; padding: 0; }
+
+/* ── Tables ── */
+table { width: 100%; border-collapse: collapse; margin: 1.25rem 0; font-size: 14px; }
+th {
+  background: var(--surface2);
+  color: var(--accent);
+  font-family: var(--font-head);
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  text-align: left;
+}
+td {
+  padding: 9px 14px;
+  border: 1px solid var(--border);
+  color: #c8d3e0;
+  vertical-align: top;
+}
+tr:hover td { background: rgba(255,255,255,0.02); }
+tr:nth-child(even) td { background: rgba(255,255,255,0.01); }
+
+/* ── Blockquotes ── */
+blockquote {
+  border-left: 3px solid var(--accent3);
+  background: rgba(245,158,11,0.05);
+  padding: 1rem 1.25rem;
+  border-radius: 0 8px 8px 0;
+  margin: 1.25rem 0;
+  color: #d4b896;
+  font-style: italic;
+}
+
+/* ── Horizontal rules ── */
+hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 2rem 0;
+}
+
+/* ── Lists ── */
+ul, ol { padding-left: 1.5rem; margin: 0.5rem 0; }
+li { margin: 0.3rem 0; }
+li > strong { color: var(--accent); }
+
+/* ── Links ── */
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ── Strong / Em ── */
+strong { color: #f0f4f8; font-weight: 600; }
+em { color: #a5b4c8; }
+
+
+/* ── LAYOUT ── */
+.sidebar {
+  position: fixed;
+  top: 0; left: 0;
+  width: 260px;
+  height: 100vh;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+  overflow-y: auto;
+}
+
+.sidebar-logo {
+  padding: 1.5rem 1.25rem 1rem;
+  border-bottom: 1px solid var(--border);
+}
+.sidebar-logo a {
+  font-family: var(--font-head);
+  font-weight: 800;
+  font-size: 1rem;
+  color: var(--text);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sidebar-logo a:hover { color: var(--accent); }
+.sidebar-logo a::before {
+  content: '←';
+  font-size: 0.85rem;
+  opacity: 0.5;
+}
+
+.sidebar-nav { padding: 0.75rem 0; flex: 1; }
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 1.25rem;
+  font-size: 13px;
+  color: var(--muted);
+  text-decoration: none;
+  transition: all 0.15s;
+  border-left: 2px solid transparent;
+  line-height: 1.3;
+}
+.nav-item:hover {
+  color: var(--text);
+  background: rgba(255,255,255,0.03);
+}
+.nav-item.active {
+  color: var(--text);
+  border-left-color: var(--page-color, var(--accent));
+  background: rgba(255,255,255,0.04);
+}
+.nav-num {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--page-color, var(--accent));
+  opacity: 0.6;
+  min-width: 22px;
+}
+
+.main {
+  margin-left: 260px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar {
+  padding: 1rem 2.5rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(10,12,16,0.9);
+  backdrop-filter: blur(12px);
+  position: sticky; top: 0; z-index: 50;
+}
+.page-breadcrumb {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 0.05em;
+}
+.page-breadcrumb span {
+  color: var(--page-color, var(--accent));
+}
+
+.nav-pills {
+  display: flex;
+  gap: 6px;
+}
+.nav-pill {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  text-decoration: none;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  transition: all 0.15s;
+}
+.nav-pill:hover {
+  border-color: var(--page-color, var(--accent));
+  color: var(--page-color, var(--accent));
+  text-decoration: none;
+}
+
+/* ── CONTENT ── */
+.content {
+  flex: 1;
+  padding: 3rem 4rem 5rem;
+  max-width: 900px;
+}
+
+/* h1 — page title */
+.content h1 {
+  font-size: 2.2rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--text);
+  margin-bottom: 0.25rem;
+  margin-top: 3rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+.content h1:first-child { margin-top: 0; }
+
+/* h2 — section */
+.content h2 {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--page-color, var(--accent));
+  margin: 2.5rem 0 0.75rem;
+  letter-spacing: -0.01em;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.content h2::before {
+  content: '';
+  display: inline-block;
+  width: 4px;
+  height: 18px;
+  background: var(--page-color, var(--accent));
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+/* h3 — sub-section */
+.content h3 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 1.75rem 0 0.5rem;
+  letter-spacing: -0.01em;
+}
+.content h3::before {
+  content: '// ';
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  font-weight: 400;
+}
+
+/* h4 */
+.content h4 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #94a3b8;
+  margin: 1.25rem 0 0.4rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.content p { margin: 0.6rem 0; color: #c8d3e0; }
+
+/* ── INTERVIEW SECTION highlight ── */
+.content h2[id*="interview"],
+.content h2[id*="question"] {
+  color: var(--accent3);
+  background: rgba(245,158,11,0.05);
+  padding: 0.75rem 1rem;
+  border-radius: 0 8px 8px 0;
+  border-left: 3px solid var(--accent3);
+  margin-top: 3rem;
+}
+.content h2[id*="interview"]::before,
+.content h2[id*="question"]::before {
+  background: var(--accent3);
+}
+
+/* ── FOOTER NAV ── */
+.page-footer {
+  border-top: 1px solid var(--border);
+  padding: 2rem 4rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.footer-nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  text-decoration: none;
+  color: var(--muted);
+  font-size: 13px;
+  transition: all 0.15s;
+  font-family: var(--font-head);
+  font-weight: 600;
+}
+.footer-nav-btn:hover {
+  border-color: var(--page-color, var(--accent));
+  color: var(--page-color, var(--accent));
+  text-decoration: none;
+}
+.footer-nav-btn.next { flex-direction: row-reverse; }
+.page-pos {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted);
+}
+
+/* Glow effects */
+.glow-page {
+  position: fixed;
+  width: 500px; height: 500px;
+  border-radius: 50%;
+  pointer-events: none;
+  top: 10vh; right: -150px;
+  background: radial-gradient(circle, rgba(0,0,0,0) 0%, transparent 100%);
+}
+
+:root { --page-color: #00e5ff; }
+.glow-page { background: radial-gradient(circle, #00e5ff0d 0%, transparent 70%); }
+</style>
+</head>
+<body>
+
+<div class="glow-page"></div>
+
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <a href="index.html">Gen AI Study Guide</a>
+  </div>
+  <nav class="sidebar-nav">
+<a href="01_RAG_Ingestion_Pipeline.html" class="nav-item active"><span class="nav-num">01</span>Ingestion Pipeline</a>
+<a href="02_RAG_Retrieval_Pipeline.html" class="nav-item"><span class="nav-num">02</span>Retrieval Pipeline</a>
+<a href="03_RAG_Generation_RAGAS.html" class="nav-item"><span class="nav-num">03</span>Generation & RAGAS</a>
+<a href="04_LangChain_LangGraph.html" class="nav-item"><span class="nav-num">04</span>LangChain & LangGraph</a>
+<a href="05_Fine_Tuning.html" class="nav-item"><span class="nav-num">05</span>Fine-Tuning</a>
+<a href="06_ML_Concepts_Transformers.html" class="nav-item"><span class="nav-num">06</span>ML & Transformers</a>
+<a href="07_Docker_AWS_Bedrock.html" class="nav-item"><span class="nav-num">07</span>Docker & Bedrock</a>
+<a href="08_Python_System_Design.html" class="nav-item"><span class="nav-num">08</span>Python & System Design</a>
+
+  </nav>
+</aside>
+
+<main class="main">
+  <div class="topbar">
+    <div class="page-breadcrumb">Module <span>01</span> · Ingestion Pipeline</div>
+    <div class="nav-pills">
+      
+      <a href="02_RAG_Retrieval_Pipeline.html" class="nav-pill">Next →</a>
+    </div>
+  </div>
+
+  <div class="content">
+<h1 id="rag-retrieval-augmented-generation">RAG — Retrieval Augmented Generation</h1>
+<h2 id="module-1-ingestion-pipeline">Module 1: Ingestion Pipeline</h2>
+<blockquote>
+<p><strong>What is RAG?</strong>
+RAG is a technique where, instead of relying on what an LLM "memorized" during training, you first <em>retrieve</em> relevant documents from a database, then <em>feed</em> those documents into the LLM as context so it can generate a grounded, accurate answer.</p>
+<p>Think of it like an open-book exam: the LLM doesn't need to remember everything — it just reads the relevant pages you hand it.</p>
+</blockquote>
+<pre><code>RAG Architecture — High Level
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                  ┌─────────────────────────────┐
+                  │      INGESTION (Offline)     │
+                  │                             │
+  PDF/DOCX ──►  Load ──► Clean ──► Chunk ──► Embed ──► Vector DB
+                  └─────────────────────────────┘
+
+                  ┌─────────────────────────────┐
+                  │     RETRIEVAL (Online)       │
+                  │                             │
+  User Query ──► Embed ──► Search ──► Rerank ──► LLM ──► Answer
+                  └─────────────────────────────┘
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+</code></pre>
+<hr />
+<h2 id="sub-topic-1-document-loading">Sub-topic 1: Document Loading</h2>
+<h3 id="what-why-how">What, Why, How</h3>
+<p><strong>What:</strong> Document loading is the first step of the ingestion pipeline. It reads raw files (PDFs, Word docs, HTML, CSV) and extracts plain text from them.</p>
+<p><strong>Why:</strong> LLMs cannot read binary file formats like PDFs. You must convert them to plain text first. The quality of your extracted text directly impacts retrieval quality — garbage in, garbage out.</p>
+<p><strong>How:</strong> Libraries like PyMuPDF (<code>fitz</code>), pypdf, or pdfplumber open the file page by page and extract text. For scanned PDFs with no embedded text, OCR (Optical Character Recognition) tools like Tesseract or AWS Textract are required.</p>
+<h3 id="comparison-of-pdf-libraries">Comparison of PDF Libraries</h3>
+<table>
+<thead>
+<tr>
+<th>Library</th>
+<th>Speed</th>
+<th>Accuracy</th>
+<th>Table Handling</th>
+<th>Best For</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>PyMuPDF (fitz)</strong></td>
+<td>Very Fast</td>
+<td>High</td>
+<td>Good</td>
+<td>Production — LoanIQ uses this</td>
+</tr>
+<tr>
+<td><strong>pdfplumber</strong></td>
+<td>Slower</td>
+<td>Very High</td>
+<td>Excellent</td>
+<td>Complex tables/forms</td>
+</tr>
+<tr>
+<td><strong>pypdf</strong></td>
+<td>Fast</td>
+<td>Medium</td>
+<td>Poor</td>
+<td>Simple text-only PDFs</td>
+</tr>
+<tr>
+<td><strong>AWS Textract</strong></td>
+<td>API-based</td>
+<td>Highest</td>
+<td>Excellent</td>
+<td>Scanned/handwritten PDFs</td>
+</tr>
+</tbody>
+</table>
+<h3 id="in-loaniq-project">In LoanIQ Project</h3>
+<p>In <code>app/services/rag/pdf_ingestion.py</code>, PyMuPDF (<code>fitz</code>) is used:</p>
+<pre><code class="language-python">def _extract_text_from_pdf(self, file_path: str) -&gt; List[str]:
+    pages_text = []
+    with fitz.open(file_path) as doc:
+        for page_num, page in enumerate(doc):
+            text = page.get_text(&quot;text&quot;)    # Extract text from each page
+            text = &quot; &quot;.join(text.split())   # Normalize whitespace
+            pages_text.append(text)
+    return pages_text
+</code></pre>
+<p>The extracted text is tagged with page numbers:</p>
+<pre><code class="language-python">full_text = &quot;\n\n&quot;.join(
+    f&quot;[PAGE {i+1}]\n{text}&quot; for i, text in enumerate(raw_pages) if text.strip()
+)
+</code></pre>
+<p>This <code>[PAGE N]</code> tag is crucial — it becomes part of chunk metadata so later the system can cite exact page numbers.</p>
+<h3 id="implementation">Implementation</h3>
+<pre><code class="language-python">import fitz  # PyMuPDF — pip install pymupdf
+
+def extract_per_page(pdf_path: str) -&gt; list[dict]:
+    &quot;&quot;&quot;Extract text per page, preserving page metadata.&quot;&quot;&quot;
+    pages = []
+    with fitz.open(pdf_path) as doc:
+        for page_num, page in enumerate(doc, start=1):
+            text = page.get_text(&quot;text&quot;)
+            # Clean whitespace artifacts
+            text = &quot; &quot;.join(text.split())
+            pages.append({
+                &quot;page_number&quot;: page_num,
+                &quot;text&quot;: text,
+                &quot;char_count&quot;: len(text)
+            })
+    return pages
+
+# For Word documents (LangChain)
+from langchain_community.document_loaders import Docx2txtLoader
+loader = Docx2txtLoader(&quot;document.docx&quot;)
+docs = loader.load()  # Returns List[Document] with page_content and metadata
+
+# For scanned PDFs with OCR
+import pytesseract
+from PIL import Image
+import fitz
+def extract_scanned_pdf(pdf_path: str) -&gt; list[str]:
+    pages = []
+    with fitz.open(pdf_path) as doc:
+        for page in doc:
+            pix = page.get_pixmap()
+            img = Image.frombytes(&quot;RGB&quot;, [pix.width, pix.height], pix.samples)
+            text = pytesseract.image_to_string(img)
+            pages.append(text)
+    return pages
+</code></pre>
+<h3 id="alternatives-why-we-used-pymupdf">Alternatives &amp; Why We Used PyMuPDF</h3>
+<ul>
+<li><strong>pypdf</strong>: Pure Python, no C dependency, but struggles with complex layouts. We chose PyMuPDF because it handles real-world mortgage PDFs (multi-column, tables, headers) far better.</li>
+<li><strong>pdfplumber</strong>: Best for tables but slower; we don't need table extraction in the policy ingestion path.</li>
+<li><strong>AWS Textract</strong>: Would be overkill — our policy PDFs are not scanned; they're digital PDFs with embedded text.</li>
+<li><strong>LangChain PyPDFLoader</strong>: Wraps pypdf, convenient but less control over per-page extraction.</li>
+</ul>
+<p><strong>We chose PyMuPDF</strong> because it's the fastest high-accuracy library for digital PDFs, and we need per-page extraction for citation metadata.</p>
+<hr />
+<h2 id="sub-topic-2-text-cleaning">Sub-topic 2: Text Cleaning</h2>
+<h3 id="what-why-how_1">What, Why, How</h3>
+<p><strong>What:</strong> After extraction, raw PDF text is messy. It contains headers, footers, page numbers, hyphenated line breaks (<code>mort-\ngage</code>), and random whitespace. Text cleaning normalizes all of this.</p>
+<p><strong>Why:</strong> Dirty text produces bad embeddings. If chunk 1 ends with <code>mort-</code> and chunk 2 starts with <code>gage</code>, the word "mortgage" appears nowhere in your vector database — searches for "mortgage" will miss it.</p>
+<p><strong>How:</strong> A series of regex replacements and string operations:
+1. Remove repeated headers/footers using pattern matching
+2. Fix hyphenated line breaks (<code>re.sub(r'-\n', '', text)</code>)
+3. Normalize whitespace
+4. Handle Unicode normalization</p>
+<h3 id="in-loaniq-project_1">In LoanIQ Project</h3>
+<p>In <code>pdf_ingestion.py</code>, basic cleaning is applied after extraction:</p>
+<pre><code class="language-python">text = &quot; &quot;.join(text.split())  # Collapse all whitespace including \n into single spaces
+</code></pre>
+<h3 id="implementation_1">Implementation</h3>
+<pre><code class="language-python">import re
+import unicodedata
+
+def clean_pdf_text(text: str) -&gt; str:
+    &quot;&quot;&quot;Full text cleaning pipeline for PDF-extracted text.&quot;&quot;&quot;
+    # Fix hyphenated line breaks (common in justified PDF text)
+    text = re.sub(r'(\w)-\n(\w)', r'\1\2', text)
+
+    # Remove page numbers (standalone numbers on a line)
+    text = re.sub(r'\n\s*\d+\s*\n', '\n', text)
+
+    # Remove common header/footer patterns
+    text = re.sub(r'CONFIDENTIAL.*?\n', '', text, flags=re.IGNORECASE)
+
+    # Normalize unicode (fix smart quotes, em-dashes, etc.)
+    text = unicodedata.normalize('NFKC', text)
+
+    # Collapse multiple newlines to max two (preserves paragraphs)
+    text = re.sub(r'\n{3,}', '\n\n', text)
+
+    # Normalize whitespace within lines
+    text = re.sub(r'[ \t]+', ' ', text)
+
+    return text.strip()
+</code></pre>
+<h3 id="alternatives">Alternatives</h3>
+<ul>
+<li><strong>spaCy sentence splitter</strong>: More accurate but much heavier for pure cleaning</li>
+<li><strong>NLTK</strong>: Overkill for text normalization</li>
+<li><strong>Hand-tuned regexes</strong>: What LoanIQ uses — simple, fast, and predictable for known document formats</li>
+</ul>
+<hr />
+<h2 id="sub-topic-3-chunking-strategies">Sub-topic 3: Chunking Strategies</h2>
+<h3 id="what-why-how_2">What, Why, How</h3>
+<p><strong>What:</strong> Chunking splits a long document into smaller pieces (chunks). Each chunk gets its own embedding vector and is stored separately in the vector database.</p>
+<p><strong>Why:</strong> You cannot embed an entire 200-page PDF as one vector — you'd lose all specificity. Also, LLMs have context windows. You need small, retrievable pieces. But chunks too small lose context.</p>
+<p><strong>How:</strong> Split on natural boundaries (paragraphs, sentences) with configurable size and overlap.</p>
+<pre><code>Chunking with Overlap — Visual Explanation
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Full Text: [........AAAABBBBCCCCDDDDEEEE........]
+
+chunk_size=4, overlap=2:
+
+Chunk 1: [AAAABB]
+Chunk 2:   [BBBBCC]    ← overlaps with chunk 1
+Chunk 3:     [CCCCDD]  ← overlaps with chunk 2
+Chunk 4:       [DDDDEE]
+
+Overlap ensures a sentence spanning a boundary
+doesn't get split in half and lost.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+</code></pre>
+<h3 id="strategy-comparison">Strategy Comparison</h3>
+<table>
+<thead>
+<tr>
+<th>Strategy</th>
+<th>Pros</th>
+<th>Cons</th>
+<th>When to Use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Fixed-size</strong></td>
+<td>Simple, fast</td>
+<td>Can cut mid-sentence</td>
+<td>Prototyping</td>
+</tr>
+<tr>
+<td><strong>Recursive Character</strong></td>
+<td>Respects paragraphs → sentences → words</td>
+<td>Still character-based</td>
+<td><strong>General purpose (LoanIQ)</strong></td>
+</tr>
+<tr>
+<td><strong>Sentence-aware</strong></td>
+<td>Respects sentence boundaries</td>
+<td>Slower</td>
+<td>QA systems</td>
+</tr>
+<tr>
+<td><strong>Semantic</strong></td>
+<td>Splits on topic changes</td>
+<td>Expensive (requires embeddings)</td>
+<td>Research papers</td>
+</tr>
+<tr>
+<td><strong>Parent-child</strong></td>
+<td>Small for retrieval, large for context</td>
+<td>Complex to manage</td>
+<td>Complex documents</td>
+</tr>
+</tbody>
+</table>
+<h3 id="in-loaniq-project_2">In LoanIQ Project</h3>
+<pre><code class="language-python">from langchain_text_splitters import RecursiveCharacterTextSplitter
+
+self.text_splitter = RecursiveCharacterTextSplitter(
+    chunk_size=settings.chunk_size,       # typically 1000 chars
+    chunk_overlap=settings.chunk_overlap,  # typically 200 chars
+    separators=[&quot;\n\n&quot;, &quot;\n&quot;, &quot;. &quot;, &quot; &quot;, &quot;&quot;],  # tries these in order
+)
+</code></pre>
+<p>The <code>separators</code> list is key: it tries to split on <code>\n\n</code> (paragraph break) first, then <code>\n</code>, then <code>.</code> — so it only splits mid-sentence as a last resort.</p>
+<h3 id="implementation_2">Implementation</h3>
+<pre><code class="language-python">from langchain_text_splitters import RecursiveCharacterTextSplitter
+
+splitter = RecursiveCharacterTextSplitter(
+    chunk_size=1000,       # characters per chunk
+    chunk_overlap=200,     # characters of overlap between chunks
+    length_function=len,   # can swap to tiktoken for token-based
+    separators=[&quot;\n\n&quot;, &quot;\n&quot;, &quot;. &quot;, &quot; &quot;, &quot;&quot;]
+)
+
+chunks = splitter.split_text(full_document_text)
+
+# Parent-child chunking pattern
+large_splitter = RecursiveCharacterTextSplitter(chunk_size=2000, chunk_overlap=200)
+small_splitter = RecursiveCharacterTextSplitter(chunk_size=400, chunk_overlap=50)
+
+parent_chunks = large_splitter.split_text(text)  # stored for context
+child_chunks = small_splitter.split_text(text)    # used for retrieval
+</code></pre>
+<h3 id="alternatives_1">Alternatives</h3>
+<ul>
+<li><strong>TokenTextSplitter</strong>: Splits by actual token count — more precise for LLM context budget but slower</li>
+<li><strong>SentenceTransformersTokenTextSplitter</strong>: Splits by the embedding model's token count — ensures no chunk overflows the embedding model's context</li>
+<li><strong>Semantic Chunking</strong>: Uses embedding similarity shifts to find topic boundaries; expensive but produces the most meaningful chunks</li>
+</ul>
+<p><strong>Why Recursive Character Splitting?</strong> It's the best balance of quality and speed. It produces coherent chunks that respect document structure without the computational cost of semantic splitting.</p>
+<hr />
+<h2 id="sub-topic-4-metadata-preservation">Sub-topic 4: Metadata Preservation</h2>
+<h3 id="what-why-how_3">What, Why, How</h3>
+<p><strong>What:</strong> Alongside the chunk text, you store structured metadata: page number, section title, document name, character offsets, etc.</p>
+<p><strong>Why:</strong> Without metadata, you can't cite sources. "The answer is X" is useless in production — you need "The answer is X (Source: Policy 3, Section 4.2, Page 18)". Also, metadata enables pre-filtering during retrieval (e.g., "only search chunks from state=CA").</p>
+<p><strong>How:</strong> Extract metadata during ingestion, store it in separate columns (not mixed into the chunk text), and attach it to every retrieved chunk.</p>
+<h3 id="in-loaniq-project_3">In LoanIQ Project</h3>
+<p>In <code>models.py</code>, the <code>PolicyChunk</code> table has:</p>
+<pre><code class="language-python">class PolicyChunk(Base):
+    __tablename__ = &quot;policy_chunks&quot;
+
+    id = mapped_column(UUID, primary_key=True)
+    content = mapped_column(Text)                    # The chunk text
+    embedding = mapped_column(Vector(1536))           # The embedding vector
+    chunk_index = mapped_column(Integer)              # Position in document
+    section_title = mapped_column(String(500))        # Section header if detected
+    page_number = mapped_column(Integer)              # Page from PDF
+    applicable_states = mapped_column(JSONB)          # [&quot;CA&quot;, &quot;TX&quot;] or [&quot;ALL&quot;]
+    applicable_loan_types = mapped_column(JSONB)      # [&quot;CONVENTIONAL&quot;, &quot;FHA&quot;]
+    document_id = mapped_column(ForeignKey(&quot;policy_documents.id&quot;))
+</code></pre>
+<h3 id="implementation_3">Implementation</h3>
+<pre><code class="language-python">import re
+
+def detect_section_header(text: str) -&gt; str | None:
+    &quot;&quot;&quot;Detect if text starts with a section header using regex.&quot;&quot;&quot;
+    patterns = [
+        r'^(\d+\.\d+\.?\s+[A-Z][A-Za-z\s]{5,50})$',   # &quot;4.2 Credit Score Requirements&quot;
+        r'^(Section\s+\d+[:\s]+.{5,50})$',              # &quot;Section 4: Eligibility&quot;
+        r'^([A-Z][A-Z\s]{5,40})$',                      # &quot;CREDIT REQUIREMENTS&quot;
+    ]
+    first_line = text.split('\n')[0].strip()
+    for pattern in patterns:
+        match = re.match(pattern, first_line, re.MULTILINE)
+        if match:
+            return match.group(1).strip()
+    return None
+
+def build_chunk_metadata(
+    chunk_text: str,
+    page_number: int,
+    doc_title: str,
+    chunk_index: int
+) -&gt; dict:
+    return {
+        &quot;page_number&quot;: page_number,
+        &quot;section_title&quot;: detect_section_header(chunk_text),
+        &quot;document_title&quot;: doc_title,
+        &quot;chunk_index&quot;: chunk_index,
+        &quot;char_count&quot;: len(chunk_text),
+        &quot;token_estimate&quot;: len(chunk_text) // 4,  # 4 chars ≈ 1 token
+    }
+</code></pre>
+<hr />
+<h2 id="sub-topic-5-embedding-models">Sub-topic 5: Embedding Models</h2>
+<h3 id="what-why-how_4">What, Why, How</h3>
+<p><strong>What:</strong> An embedding model converts text into a dense vector of floating-point numbers (e.g., 1536 floats). Semantically similar texts produce vectors that are close together in this high-dimensional space.</p>
+<p><strong>Why:</strong> You cannot do "semantic search" on raw text — computers can't compare meaning directly. Vectors enable cosine similarity calculations that measure semantic closeness.</p>
+<p><strong>How:</strong> Pass text to an embedding API or local model, receive a list of floats. These floats capture the "meaning" of the text.</p>
+<pre><code>Embedding — Conceptual
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+&quot;What is the DTI requirement?&quot; 
+           ↓ embed
+[0.021, -0.143, 0.887, ..., 0.034]  ← 1536 numbers
+
+&quot;Debt-to-income ratio must be below 43%&quot;
+           ↓ embed  
+[0.019, -0.139, 0.901, ..., 0.031]  ← 1536 numbers
+
+cosine_similarity = 0.94  ← very similar meaning!
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+</code></pre>
+<h3 id="model-comparison">Model Comparison</h3>
+<table>
+<thead>
+<tr>
+<th>Model</th>
+<th>Dimensions</th>
+<th>Cost</th>
+<th>Quality</th>
+<th>Use Case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>text-embedding-3-small</code></td>
+<td>1536</td>
+<td>$0.02/1M tokens</td>
+<td>High</td>
+<td><strong>LoanIQ default</strong></td>
+</tr>
+<tr>
+<td><code>text-embedding-3-large</code></td>
+<td>3072</td>
+<td>$0.13/1M tokens</td>
+<td>Highest</td>
+<td>When accuracy is critical</td>
+</tr>
+<tr>
+<td><code>BGE-M3</code></td>
+<td>1024</td>
+<td>Free (local)</td>
+<td>High</td>
+<td>Privacy-sensitive data</td>
+</tr>
+<tr>
+<td>Amazon Titan v2</td>
+<td>1024</td>
+<td>$0.02/1M tokens</td>
+<td>High</td>
+<td><strong>LoanIQ Bedrock option</strong></td>
+</tr>
+<tr>
+<td><code>nomic-embed-text</code></td>
+<td>768</td>
+<td>Free (local)</td>
+<td>Good</td>
+<td>Cost-sensitive prototypes</td>
+</tr>
+</tbody>
+</table>
+<h3 id="in-loaniq-project_4">In LoanIQ Project</h3>
+<p>LoanIQ routes embeddings through an <code>llm_router</code> that switches between OpenAI and Bedrock Titan based on the <code>EMBEDDING_PROVIDER</code> env variable:</p>
+<pre><code class="language-python"># In pdf_ingestion.py
+embeddings = await self._embed_chunks_batched(chunks_text)
+# → calls router.embed_documents(batch)
+# → routes to OpenAI or Bedrock Titan
+</code></pre>
+<p>Batching in sets of 100 to respect API rate limits:</p>
+<pre><code class="language-python">async def _embed_chunks_batched(self, chunks: List[str]) -&gt; List[List[float]]:
+    all_embeddings = []
+    for i in range(0, len(chunks), 100):   # batch_size = 100
+        batch = chunks[i:i + 100]
+        batch_embeddings = await self._embed_single_batch(batch)
+        all_embeddings.extend(batch_embeddings)
+    return all_embeddings
+</code></pre>
+<h3 id="implementation_4">Implementation</h3>
+<pre><code class="language-python">from openai import AsyncOpenAI
+
+client = AsyncOpenAI(api_key=&quot;...&quot;)
+
+async def embed_batch(texts: list[str]) -&gt; list[list[float]]:
+    &quot;&quot;&quot;Embed a batch of texts. Returns list of 1536-dim vectors.&quot;&quot;&quot;
+    response = await client.embeddings.create(
+        model=&quot;text-embedding-3-small&quot;,
+        input=texts,
+    )
+    return [item.embedding for item in response.data]
+
+# Local embedding with sentence-transformers
+from sentence_transformers import SentenceTransformer
+model = SentenceTransformer(&quot;BAAI/bge-m3&quot;)
+embeddings = model.encode([&quot;text1&quot;, &quot;text2&quot;], batch_size=32)
+</code></pre>
+<hr />
+<h2 id="sub-topic-6-vector-stores">Sub-topic 6: Vector Stores</h2>
+<h3 id="what-why-how_5">What, Why, How</h3>
+<p><strong>What:</strong> A vector store (vector database) stores embedding vectors alongside their metadata and supports fast approximate nearest neighbor (ANN) search — finding the K most similar vectors to a query vector.</p>
+<p><strong>Why:</strong> Regular SQL <code>=</code> comparisons don't work on vectors. You need specialized indexes (like HNSW) that can efficiently find vectors with high cosine similarity.</p>
+<p><strong>How:</strong> Store <code>(id, embedding_vector, metadata)</code>. At query time, compute cosine similarity between the query vector and all stored vectors, return the top-K results.</p>
+<pre><code>HNSW Index — How It Navigates
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Layer 2 (coarse): [A] ─────────────────── [Z]
+Layer 1 (medium): [A] ──── [M] ──────── [Z]  
+Layer 0 (fine):   [A][B][C][D]...[M][N]...[Z]
+
+Query → Enter at top layer → Navigate toward query →
+Drop to finer layer → Repeat → Final neighbors found
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+</code></pre>
+<h3 id="vector-store-comparison">Vector Store Comparison</h3>
+<table>
+<thead>
+<tr>
+<th>Store</th>
+<th>Type</th>
+<th>Pros</th>
+<th>Cons</th>
+<th>LoanIQ?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>pgvector</strong></td>
+<td>PostgreSQL extension</td>
+<td>Same DB as app data, SQL joins</td>
+<td>Slower ANN than dedicated DBs</td>
+<td>✅ Used</td>
+</tr>
+<tr>
+<td><strong>Pinecone</strong></td>
+<td>Managed cloud</td>
+<td>Zero-ops, fast</td>
+<td>Expensive, vendor lock-in</td>
+<td>No</td>
+</tr>
+<tr>
+<td><strong>Qdrant</strong></td>
+<td>Self-hosted/managed</td>
+<td>Fast, rich filtering</td>
+<td>Extra infra</td>
+<td>No</td>
+</tr>
+<tr>
+<td><strong>Weaviate</strong></td>
+<td>Self-hosted/managed</td>
+<td>Built-in schemas</td>
+<td>Complex setup</td>
+<td>No</td>
+</tr>
+<tr>
+<td><strong>FAISS</strong></td>
+<td>In-memory library</td>
+<td>Fast, free</td>
+<td>No persistence</td>
+<td>Dev only</td>
+</tr>
+<tr>
+<td><strong>Chroma</strong></td>
+<td>Embedded</td>
+<td>Easy to use</td>
+<td>Not production-grade</td>
+<td>Prototypes</td>
+</tr>
+</tbody>
+</table>
+<h3 id="in-loaniq-project_5">In LoanIQ Project</h3>
+<p>pgvector is used with PostgreSQL. The <code>PolicyChunk</code> model has:</p>
+<pre><code class="language-python">embedding = mapped_column(Vector(1536))  # pgvector column type
+</code></pre>
+<p>The SQL query uses <code>&lt;=&gt;</code> (cosine distance operator):</p>
+<pre><code class="language-sql">SELECT *, 1 - (pc.embedding &lt;=&gt; CAST(:embedding AS vector)) AS similarity_score
+FROM policy_chunks pc
+WHERE 1 - (pc.embedding &lt;=&gt; ...) &gt;= 0.7   -- similarity threshold
+ORDER BY pc.embedding &lt;=&gt; CAST(:embedding AS vector)
+LIMIT 10
+</code></pre>
+<p><code>&lt;=&gt;</code> = cosine distance (0 = identical, 2 = opposite). Similarity = <code>1 - distance</code>.</p>
+<h3 id="why-pgvector">Why pgvector?</h3>
+<p><strong>Why not Pinecone?</strong> pgvector means one database for everything — application data, borrower records, and vectors. No extra infrastructure, no syncing, no extra cost. For LoanIQ's scale, pgvector is more than sufficient.</p>
+<hr />
+<h2 id="sub-topic-7-idempotency-versioning">Sub-topic 7: Idempotency &amp; Versioning</h2>
+<h3 id="what-why-how_6">What, Why, How</h3>
+<p><strong>What:</strong> Idempotency means running the ingestion pipeline multiple times on the same document produces the same result without creating duplicate records.</p>
+<p><strong>Why:</strong> Policy PDFs get updated. You need to re-ingest them without flooding the DB with duplicates. Also, if the pipeline crashes halfway, you need safe restarts.</p>
+<p><strong>How:</strong> Hash the document content, check if that hash already exists in the DB before ingesting. On re-ingestion, soft-delete old chunks and insert new ones.</p>
+<h3 id="in-loaniq-project_6">In LoanIQ Project</h3>
+<pre><code class="language-python"># Check for existing document by filename before ingesting
+existing = await session.execute(
+    select(PolicyDocument).where(PolicyDocument.filename == path.name)
+)
+if existing.scalar_one_or_none():
+    logger.info(&quot;pdf_already_ingested&quot;, file=path.name)
+    return existing_doc  # skip re-ingestion
+</code></pre>
+<h3 id="implementation_5">Implementation</h3>
+<pre><code class="language-python">import hashlib
+
+def compute_document_hash(file_path: str) -&gt; str:
+    &quot;&quot;&quot;SHA-256 hash of file contents — changes if file changes.&quot;&quot;&quot;
+    sha256 = hashlib.sha256()
+    with open(file_path, &quot;rb&quot;) as f:
+        for chunk in iter(lambda: f.read(8192), b&quot;&quot;):
+            sha256.update(chunk)
+    return sha256.hexdigest()
+
+async def ingest_with_idempotency(file_path: str, session):
+    doc_hash = compute_document_hash(file_path)
+
+    # Check if already ingested with same content
+    existing = await session.execute(
+        select(PolicyDocument).where(PolicyDocument.content_hash == doc_hash)
+    )
+    if existing.scalar_one_or_none():
+        return &quot;already_exists&quot;
+
+    # Soft-delete old version if file was updated
+    old = await session.execute(
+        select(PolicyDocument).where(PolicyDocument.filename == Path(file_path).name)
+    )
+    if old_doc := old.scalar_one_or_none():
+        old_doc.is_active = False  # soft delete — keeps history
+
+    # Proceed with fresh ingestion...
+</code></pre>
+<hr />
+<h2 id="10-interview-questions-rag-ingestion-pipeline">10 Interview Questions — RAG Ingestion Pipeline</h2>
+<p><strong>Q1: What's the difference between pypdf, pdfplumber, and PyMuPDF? Which would you choose for production?</strong></p>
+<p><strong>A:</strong> All three extract text from PDFs, but differ in accuracy, speed, and table handling.
+- <strong>pypdf</strong>: Pure Python, no C dependency, easiest to install. Works for simple PDFs but struggles with complex layouts, multi-column text, and tables.
+- <strong>pdfplumber</strong>: Best table detection — identifies cell boundaries, row/column structure. Slower due to detailed parsing.
+- <strong>PyMuPDF (fitz)</strong>: Fastest, C-based. Excellent for complex layouts and digital PDFs. Cannot do OCR.</p>
+<p>In LoanIQ, we use PyMuPDF for its speed and accuracy on digital mortgage policy PDFs. We'd add Textract only if we encountered scanned documents.</p>
+<hr />
+<p><strong>Q2: Why do we add page numbers to chunk text during extraction? Isn't that metadata, not content?</strong></p>
+<p><strong>A:</strong> We tag the text with <code>[PAGE N]</code> markers and then store page numbers in the metadata separately. The page tag in the text helps the chunker know where page breaks occur, which is important for two reasons:
+1. <strong>Citation accuracy</strong>: When we retrieve chunk X, we can tell the user "Source: Page 18" — critical for compliance in mortgage.
+2. <strong>Boundary awareness</strong>: Prevents chunks from combining content that spans unrelated pages.</p>
+<p>In LoanIQ: <code>f"[PAGE {i+1}]\n{text}"</code> is prepended before splitting so that even if a chunk spans a page boundary, we can still trace it.</p>
+<hr />
+<p><strong>Q3: Explain the RecursiveCharacterTextSplitter. Why is it called "recursive"?</strong></p>
+<p><strong>A:</strong> It's "recursive" because it tries a list of separators in priority order and recursively falls back to the next one if chunks are still too large.</p>
+<p>Priority: <code>["\n\n", "\n", ". ", " ", ""]</code></p>
+<ol>
+<li>First tries to split on <code>\n\n</code> (paragraph breaks) — best quality</li>
+<li>If any chunk is still too big, tries <code>\n</code> (line breaks)</li>
+<li>Still too big? Tries <code>.</code> (sentence ends)</li>
+<li>Still too big? Splits on spaces</li>
+<li>Last resort: splits mid-character</li>
+</ol>
+<p>This ensures we cut at the most natural boundary possible. In LoanIQ, mortgage policy paragraphs rarely exceed 1000 chars, so most splits happen at <code>\n\n</code> level.</p>
+<hr />
+<p><strong>Q4: What chunk size and overlap did you use in LoanIQ and why?</strong></p>
+<p><strong>A:</strong> chunk_size=1000 characters, chunk_overlap=200 characters.</p>
+<ul>
+<li><strong>1000 chars</strong> (~250 tokens) is enough for a complete policy rule with context, but small enough that retrieved chunks are specific, not overly broad.</li>
+<li><strong>200 char overlap</strong> (~50 tokens, ~20% of chunk) prevents information loss at boundaries. A sentence like "The maximum LTV for FHA loans is..." won't be split such that "maximum LTV for FHA loans is" is in one chunk and "...80%" is in the next — the overlap ensures both chunks contain the complete rule.</li>
+</ul>
+<p>For production, we tune these based on RAGAS context precision/recall scores.</p>
+<hr />
+<p><strong>Q5: What is a vector embedding? Explain it to a 5-year-old and then explain it technically.</strong></p>
+<p><strong>A:</strong></p>
+<p><strong>Simple explanation:</strong> Imagine placing every sentence in a giant room. Sentences with similar meanings stand close to each other. "The DTI must be below 43%" stands near "Debt-to-income ratio cannot exceed 43%." An embedding is the (x, y, z...) address of a sentence in that room.</p>
+<p><strong>Technical explanation:</strong> An embedding model (like <code>text-embedding-3-small</code>) is a neural network trained to compress text into a dense vector of floats (e.g., 1536 floats). The training objective ensures that semantically similar texts produce vectors with high cosine similarity. The model captures meaning, not keywords: "DTI limit" and "maximum debt ratio" will have high cosine similarity even though they share no words.</p>
+<p>Formula: <code>cosine_similarity(A, B) = (A · B) / (|A| × |B|)</code> — ranges from -1 to 1, where 1 = identical direction = same meaning.</p>
+<hr />
+<p><strong>Q6: Why use pgvector instead of Pinecone for LoanIQ?</strong></p>
+<p><strong>A:</strong> Several reasons:</p>
+<ol>
+<li><strong>Single database</strong>: LoanIQ already uses PostgreSQL for borrower records, loan applications, and decisions. pgvector adds vector capabilities to the same DB — no separate service, no data sync, no extra infrastructure cost.</li>
+<li><strong>SQL joins</strong>: We can join <code>policy_chunks</code> (vector) with <code>policy_documents</code> (metadata) and <code>loan_applications</code> (application data) in a single SQL query. Pinecone can't do that.</li>
+<li><strong>Scale</strong>: LoanIQ has ~500-1000 policy chunks. pgvector with HNSW index handles millions of vectors easily — no need for a dedicated vector DB at this scale.</li>
+<li><strong>Privacy</strong>: Data stays in our PostgreSQL instance. Pinecone is a cloud service — a concern for financial data.</li>
+</ol>
+<p>Pinecone would make sense at 100M+ vectors or when multiple services need to share a vector store.</p>
+<hr />
+<p><strong>Q7: What is HNSW and how does it make vector search fast?</strong></p>
+<p><strong>A:</strong> HNSW (Hierarchical Navigable Small World) is a graph-based approximate nearest neighbor index.</p>
+<p>Without HNSW, finding the nearest vector to a query requires comparing with every stored vector — O(n) time. With 1M vectors, that's 1M cosine calculations per query.</p>
+<p>HNSW builds a layered graph:
+- Top layers: sparse, long-range connections — navigation highways
+- Bottom layer: dense, short-range connections — fine-grained search</p>
+<p>At query time: enter at top layer → greedily navigate toward the query vector → drop to lower layer → repeat until bottom → you've found approximate nearest neighbors.</p>
+<p>Result: O(log n) search time. In pgvector: <code>CREATE INDEX ON policy_chunks USING hnsw (embedding vector_cosine_ops);</code></p>
+<p>The tradeoff: HNSW finds <em>approximate</em> neighbors (may miss the absolute nearest), but in practice it's 99%+ accurate while being 100x faster than exact search.</p>
+<hr />
+<p><strong>Q8: What's the difference between cosine similarity, dot product, and L2 distance for vector search?</strong></p>
+<p><strong>A:</strong></p>
+<ul>
+<li><strong>Cosine similarity</strong>: Measures the angle between two vectors, ignoring magnitude. <code>sim = (A·B)/(|A||B|)</code>. Best for text embeddings where the length of the vector shouldn't affect similarity. Used in LoanIQ.</li>
+<li><strong>Dot product</strong>: <code>A·B</code> — measures both direction AND magnitude. Use when embedding magnitude carries meaning (e.g., some models are trained with dot product objective).</li>
+<li><strong>L2 distance (Euclidean)</strong>: Physical distance in vector space. Less appropriate for text because two embeddings could be far apart in L2 but have the same direction.</li>
+</ul>
+<p><strong>Rule of thumb</strong>: For normalized embeddings (unit vectors), cosine similarity = dot product (they're mathematically equivalent). Most text embedding models produce approximately normalized vectors, so either works.</p>
+<p>In pgvector: <code>&lt;=&gt;</code> = cosine distance, <code>&lt;#&gt;</code> = negative dot product, <code>&lt;-&gt;</code> = L2 distance.</p>
+<hr />
+<p><strong>Q9: How do you handle duplicate ingestion? What happens if the same PDF is ingested twice?</strong></p>
+<p><strong>A:</strong> Idempotency is built into the ingestion service:</p>
+<ol>
+<li><strong>Hash check</strong>: Compute SHA-256 of the file. If the same hash already exists in <code>policy_documents</code>, skip ingestion.</li>
+<li><strong>Filename + soft-delete</strong>: If the filename exists but hash differs (file was updated), soft-delete the old document (<code>is_active = False</code>) and its chunks before inserting the new ones. The old data is preserved for audit trail.</li>
+<li><strong>Atomic transaction</strong>: The entire ingestion (document + all chunks) happens in one database transaction. If it fails halfway, everything is rolled back — no half-ingested documents.</li>
+</ol>
+<p>This means you can run <code>python ingest_policies.py</code> safely in a CI/CD pipeline on every deployment.</p>
+<hr />
+<p><strong>Q10: What is semantic chunking and when would you use it instead of RecursiveCharacterTextSplitter?</strong></p>
+<p><strong>A:</strong> Semantic chunking embeds the text first, then splits where the embedding similarity drops significantly between consecutive sentences. It detects topic changes rather than splitting at character counts.</p>
+<p><strong>How it works:</strong>
+1. Split document into sentences
+2. Embed each sentence
+3. Compute cosine similarity between adjacent sentences
+4. Split where similarity drops below a threshold (topic change)</p>
+<p><strong>When to use it:</strong>
+- Documents with clearly defined topic sections that don't align with paragraph breaks (e.g., transcripts, mixed-topic articles)
+- When retrieval precision is more important than ingestion speed</p>
+<p><strong>Why LoanIQ doesn't use it:</strong>
+- 3-5x slower (requires embedding every sentence during ingestion)
+- Policy PDFs have clear paragraph structure — RecursiveCharacterTextSplitter already produces coherent policy-rule chunks
+- Semantic chunking shines when topic boundaries are unpredictable; mortgage policies are well-structured documents</p>
+<p>Cost of semantic chunking: ~5x more embedding API calls during ingestion.</p>
+<hr />
+<p><em>Next: <a href="02_RAG_Retrieval_Pipeline.md">RAG Retrieval Pipeline →</a></em></p>
+  </div>
+
+  <div class="page-footer">
+    <span></span>
+    <span class="page-pos">1 / 8</span>
+    <a href="02_RAG_Retrieval_Pipeline.html" class="footer-nav-btn next">Retrieval Pipeline →</a>
+  </div>
+</main>
+
+</body>
+</html>

@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Generation & RAGAS — Gen AI Study Guide</title>
+<style>
+
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:       #0a0c10;
+  --surface:  #111318;
+  --surface2: #181c23;
+  --border:   #1f2530;
+  --accent:   #00e5ff;
+  --accent2:  #7c3aed;
+  --accent3:  #f59e0b;
+  --text:     #e2e8f0;
+  --muted:    #64748b;
+  --green:    #10b981;
+  --red:      #ef4444;
+  --font-head: 'Syne', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.75;
+  min-height: 100vh;
+}
+
+/* ── Noise texture overlay ── */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none; z-index: 9999;
+  opacity: 0.4;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--accent2); border-radius: 3px; }
+
+/* ── Typography ── */
+h1,h2,h3,h4 { font-family: var(--font-head); line-height: 1.2; }
+
+/* ── Code ── */
+pre, code {
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+code:not(pre code) {
+  background: rgba(0,229,255,0.08);
+  color: var(--accent);
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid rgba(0,229,255,0.15);
+}
+pre {
+  background: #0d1117;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent2);
+  padding: 1.25rem 1.5rem;
+  border-radius: 0 8px 8px 0;
+  overflow-x: auto;
+  margin: 1.25rem 0;
+  position: relative;
+}
+pre code { color: #adbac7; background: none; border: none; padding: 0; }
+
+/* ── Tables ── */
+table { width: 100%; border-collapse: collapse; margin: 1.25rem 0; font-size: 14px; }
+th {
+  background: var(--surface2);
+  color: var(--accent);
+  font-family: var(--font-head);
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  text-align: left;
+}
+td {
+  padding: 9px 14px;
+  border: 1px solid var(--border);
+  color: #c8d3e0;
+  vertical-align: top;
+}
+tr:hover td { background: rgba(255,255,255,0.02); }
+tr:nth-child(even) td { background: rgba(255,255,255,0.01); }
+
+/* ── Blockquotes ── */
+blockquote {
+  border-left: 3px solid var(--accent3);
+  background: rgba(245,158,11,0.05);
+  padding: 1rem 1.25rem;
+  border-radius: 0 8px 8px 0;
+  margin: 1.25rem 0;
+  color: #d4b896;
+  font-style: italic;
+}
+
+/* ── Horizontal rules ── */
+hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 2rem 0;
+}
+
+/* ── Lists ── */
+ul, ol { padding-left: 1.5rem; margin: 0.5rem 0; }
+li { margin: 0.3rem 0; }
+li > strong { color: var(--accent); }
+
+/* ── Links ── */
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ── Strong / Em ── */
+strong { color: #f0f4f8; font-weight: 600; }
+em { color: #a5b4c8; }
+
+
+/* ── LAYOUT ── */
+.sidebar {
+  position: fixed;
+  top: 0; left: 0;
+  width: 260px;
+  height: 100vh;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+  overflow-y: auto;
+}
+
+.sidebar-logo {
+  padding: 1.5rem 1.25rem 1rem;
+  border-bottom: 1px solid var(--border);
+}
+.sidebar-logo a {
+  font-family: var(--font-head);
+  font-weight: 800;
+  font-size: 1rem;
+  color: var(--text);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sidebar-logo a:hover { color: var(--accent); }
+.sidebar-logo a::before {
+  content: '←';
+  font-size: 0.85rem;
+  opacity: 0.5;
+}
+
+.sidebar-nav { padding: 0.75rem 0; flex: 1; }
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 1.25rem;
+  font-size: 13px;
+  color: var(--muted);
+  text-decoration: none;
+  transition: all 0.15s;
+  border-left: 2px solid transparent;
+  line-height: 1.3;
+}
+.nav-item:hover {
+  color: var(--text);
+  background: rgba(255,255,255,0.03);
+}
+.nav-item.active {
+  color: var(--text);
+  border-left-color: var(--page-color, var(--accent));
+  background: rgba(255,255,255,0.04);
+}
+.nav-num {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--page-color, var(--accent));
+  opacity: 0.6;
+  min-width: 22px;
+}
+
+.main {
+  margin-left: 260px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar {
+  padding: 1rem 2.5rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(10,12,16,0.9);
+  backdrop-filter: blur(12px);
+  position: sticky; top: 0; z-index: 50;
+}
+.page-breadcrumb {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 0.05em;
+}
+.page-breadcrumb span {
+  color: var(--page-color, var(--accent));
+}
+
+.nav-pills {
+  display: flex;
+  gap: 6px;
+}
+.nav-pill {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  text-decoration: none;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  transition: all 0.15s;
+}
+.nav-pill:hover {
+  border-color: var(--page-color, var(--accent));
+  color: var(--page-color, var(--accent));
+  text-decoration: none;
+}
+
+/* ── CONTENT ── */
+.content {
+  flex: 1;
+  padding: 3rem 4rem 5rem;
+  max-width: 900px;
+}
+
+/* h1 — page title */
+.content h1 {
+  font-size: 2.2rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--text);
+  margin-bottom: 0.25rem;
+  margin-top: 3rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+.content h1:first-child { margin-top: 0; }
+
+/* h2 — section */
+.content h2 {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--page-color, var(--accent));
+  margin: 2.5rem 0 0.75rem;
+  letter-spacing: -0.01em;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.content h2::before {
+  content: '';
+  display: inline-block;
+  width: 4px;
+  height: 18px;
+  background: var(--page-color, var(--accent));
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+/* h3 — sub-section */
+.content h3 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 1.75rem 0 0.5rem;
+  letter-spacing: -0.01em;
+}
+.content h3::before {
+  content: '// ';
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  font-weight: 400;
+}
+
+/* h4 */
+.content h4 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #94a3b8;
+  margin: 1.25rem 0 0.4rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.content p { margin: 0.6rem 0; color: #c8d3e0; }
+
+/* ── INTERVIEW SECTION highlight ── */
+.content h2[id*="interview"],
+.content h2[id*="question"] {
+  color: var(--accent3);
+  background: rgba(245,158,11,0.05);
+  padding: 0.75rem 1rem;
+  border-radius: 0 8px 8px 0;
+  border-left: 3px solid var(--accent3);
+  margin-top: 3rem;
+}
+.content h2[id*="interview"]::before,
+.content h2[id*="question"]::before {
+  background: var(--accent3);
+}
+
+/* ── FOOTER NAV ── */
+.page-footer {
+  border-top: 1px solid var(--border);
+  padding: 2rem 4rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.footer-nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  text-decoration: none;
+  color: var(--muted);
+  font-size: 13px;
+  transition: all 0.15s;
+  font-family: var(--font-head);
+  font-weight: 600;
+}
+.footer-nav-btn:hover {
+  border-color: var(--page-color, var(--accent));
+  color: var(--page-color, var(--accent));
+  text-decoration: none;
+}
+.footer-nav-btn.next { flex-direction: row-reverse; }
+.page-pos {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted);
+}
+
+/* Glow effects */
+.glow-page {
+  position: fixed;
+  width: 500px; height: 500px;
+  border-radius: 50%;
+  pointer-events: none;
+  top: 10vh; right: -150px;
+  background: radial-gradient(circle, rgba(0,0,0,0) 0%, transparent 100%);
+}
+
+:root { --page-color: #10b981; }
+.glow-page { background: radial-gradient(circle, #10b9810d 0%, transparent 70%); }
+</style>
+</head>
+<body>
+
+<div class="glow-page"></div>
+
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <a href="index.html">Gen AI Study Guide</a>
+  </div>
+  <nav class="sidebar-nav">
+<a href="01_RAG_Ingestion_Pipeline.html" class="nav-item"><span class="nav-num">01</span>Ingestion Pipeline</a>
+<a href="02_RAG_Retrieval_Pipeline.html" class="nav-item"><span class="nav-num">02</span>Retrieval Pipeline</a>
+<a href="03_RAG_Generation_RAGAS.html" class="nav-item active"><span class="nav-num">03</span>Generation & RAGAS</a>
+<a href="04_LangChain_LangGraph.html" class="nav-item"><span class="nav-num">04</span>LangChain & LangGraph</a>
+<a href="05_Fine_Tuning.html" class="nav-item"><span class="nav-num">05</span>Fine-Tuning</a>
+<a href="06_ML_Concepts_Transformers.html" class="nav-item"><span class="nav-num">06</span>ML & Transformers</a>
+<a href="07_Docker_AWS_Bedrock.html" class="nav-item"><span class="nav-num">07</span>Docker & Bedrock</a>
+<a href="08_Python_System_Design.html" class="nav-item"><span class="nav-num">08</span>Python & System Design</a>
+
+  </nav>
+</aside>
+
+<main class="main">
+  <div class="topbar">
+    <div class="page-breadcrumb">Module <span>03</span> · Generation & RAGAS</div>
+    <div class="nav-pills">
+      <a href="02_RAG_Retrieval_Pipeline.html" class="nav-pill">← Prev</a>
+      <a href="04_LangChain_LangGraph.html" class="nav-pill">Next →</a>
+    </div>
+  </div>
+
+  <div class="content">
+<h1 id="rag-retrieval-augmented-generation">RAG — Retrieval Augmented Generation</h1>
+<h2 id="module-3-generation-ragas-evaluation">Module 3: Generation &amp; RAGAS Evaluation</h2>
+<blockquote>
+<p><strong>What is Generation in RAG?</strong>
+After retrieval finds the relevant chunks, the Generation stage assembles them into a prompt and passes it to an LLM to produce a grounded, cited answer. The LLM is explicitly instructed to <em>only</em> use the provided context — not its training knowledge.</p>
+</blockquote>
+<hr />
+<h2 id="sub-topic-1-prompt-construction">Sub-topic 1: Prompt Construction</h2>
+<h3 id="what-why-how">What, Why, How</h3>
+<p><strong>What:</strong> Prompt construction is the art of assembling the system prompt, retrieved chunks, and user query into a single prompt that guides the LLM to generate accurate, grounded, cited answers.</p>
+<p><strong>Why:</strong> A poorly constructed prompt leads to:
+- Hallucinations (LLM invents information not in chunks)
+- Ignored citations (LLM doesn't reference sources)
+- Lost-in-the-middle failures (LLM misses information in the middle of a long context)</p>
+<p><strong>How:</strong> Structure the prompt in three parts:
+1. <strong>System prompt</strong>: Ground the LLM — "Answer ONLY from the provided context"
+2. <strong>Context block</strong>: Retrieved chunks, formatted with source labels
+3. <strong>User question</strong>: The actual question to answer</p>
+<pre><code>Effective RAG Prompt Structure:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SYSTEM:
+You are a mortgage policy expert. Answer ONLY using the policy 
+sections provided below. If the answer is not in the context, 
+say &quot;I cannot find this in the provided policy documents.&quot;
+Cite sources as [POLICY SOURCE N].
+
+CONTEXT:
+[POLICY SOURCE 1] Eligibility Guidelines — Credit Requirements (p.12)
+Relevance: 0.94
+────────────────────────────────────────────────────────────
+The minimum credit score for conventional loans is 620...
+
+[POLICY SOURCE 2] Underwriting Borrowers — DTI Limits (p.8)  
+Relevance: 0.88
+────────────────────────────────────────────────────────────
+The maximum back-end DTI ratio is 45% for most loan types...
+
+USER QUESTION:
+What is the minimum credit score and DTI limit for a conventional loan?
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+</code></pre>
+<h3 id="in-loaniq-project">In LoanIQ Project</h3>
+<p>From <code>app/services/rag/context_builder.py</code>, chunks are formatted with source labels and relevance scores before being injected into the prompt:</p>
+<pre><code class="language-python">def _format_context(self, chunks: list[RetrievedChunk]) -&gt; str:
+    parts = []
+    for i, chunk in enumerate(chunks, 1):
+        score = chunk.rerank_score if chunk.rerank_score != 0 else chunk.rrf_score
+        header = (
+            f&quot;[POLICY SOURCE {i}] {chunk.document_title} — {chunk.section_title}\n&quot;
+            f&quot;Relevance Score: {score:.3f}\n&quot;
+            f&quot;{'─' * 60}&quot;
+        )
+        parts.append(f&quot;{header}\n{chunk.content.strip()}&quot;)
+    return &quot;\n\n{'═' * 60}\n\n&quot;.join(parts)
+</code></pre>
+<h3 id="lost-in-the-middle-problem">Lost in the Middle Problem</h3>
+<p>Research shows LLMs have U-shaped attention over long contexts: strongest at the beginning and end, weakest in the middle. For a 5-chunk context, the LLM may effectively ignore chunks 2, 3, 4.</p>
+<p><strong>Mitigation in LoanIQ:</strong>
+- Keep context concise (max 6000 tokens via <code>context_builder.py</code>)
+- Put highest-scoring chunk first and second-highest last
+- Use only top-5 chunks after reranking (not 15)</p>
+<h3 id="fallback-when-no-relevant-chunks-found">Fallback When No Relevant Chunks Found</h3>
+<pre><code class="language-python">if not chunks or max(c.rrf_score for c in chunks) &lt; 0.5:
+    return &quot;I cannot find relevant policy information for this question. Please consult your loan officer.&quot;
+</code></pre>
+<p>Never let the LLM hallucinate an answer when there's no supporting context.</p>
+<hr />
+<h2 id="sub-topic-2-hallucination-prevention">Sub-topic 2: Hallucination Prevention</h2>
+<h3 id="what-why-how_1">What, Why, How</h3>
+<p><strong>What:</strong> Hallucination occurs when the LLM generates statements not supported by the retrieved context. In mortgage decisioning, a hallucinated "you qualify" response could expose the company to legal liability.</p>
+<p><strong>Why:</strong> LLMs are trained to be helpful and produce fluent text — they'd rather make something up than say "I don't know." The grounding prompt reduces this but doesn't eliminate it. Post-generation validation is the safety net.</p>
+<p><strong>How:</strong> After the LLM generates a response, validate it against the retrieved context using a secondary LLM call or NLI (Natural Language Inference) model.</p>
+<h3 id="hallucination-prevention-methods">Hallucination Prevention Methods</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>How</th>
+<th>Speed</th>
+<th>Accuracy</th>
+<th>LoanIQ?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Grounding prompt</strong></td>
+<td>"Only answer from context"</td>
+<td>No overhead</td>
+<td>Moderate</td>
+<td>✅ First line of defense</td>
+</tr>
+<tr>
+<td><strong>Post-generation NLI</strong></td>
+<td>Check entailment of each claim</td>
+<td>Fast</td>
+<td>Good</td>
+<td>Research-grade</td>
+</tr>
+<tr>
+<td><strong>LLM-as-judge</strong></td>
+<td>Secondary LLM validates faithfulness</td>
+<td>Slow (extra LLM call)</td>
+<td>High</td>
+<td>✅ Used in RAGAS eval</td>
+</tr>
+<tr>
+<td><strong>Self-consistency</strong></td>
+<td>Generate multiple answers, check agreement</td>
+<td>Very slow (N × LLM calls)</td>
+<td>High</td>
+<td>Not used</td>
+</tr>
+<tr>
+<td><strong>Citation verification</strong></td>
+<td>Check cited chunks actually support claims</td>
+<td>Fast</td>
+<td>Good</td>
+<td>✅ RAGAS faithfulness</td>
+</tr>
+</tbody>
+</table>
+<h3 id="in-loaniq-project_1">In LoanIQ Project</h3>
+<p>The Stage 7 <code>AuditAgent</code> performs post-generation validation. The RAGAS evaluator measures faithfulness:</p>
+<pre><code class="language-python">async def _score_faithfulness(self, rag_result) -&gt; float:
+    &quot;&quot;&quot;LLM-as-judge: Is every claim in the answer supported by the context?&quot;&quot;&quot;
+    llm = ChatOpenAI(model=&quot;gpt-4o-mini&quot;, temperature=0)
+
+    prompt = ChatPromptTemplate.from_messages([
+        (&quot;system&quot;, &quot;&quot;&quot;Rate if the answer is fully supported by the context.
+Return ONLY a number between 0.0 and 1.0.
+1.0 = every claim is directly supported by context
+0.5 = partially supported
+0.0 = answer contains claims not in context (hallucination)&quot;&quot;&quot;),
+        (&quot;human&quot;, &quot;CONTEXT:\n{context}\n\nANSWER:\n{answer}\n\nScore:&quot;),
+    ])
+
+    chain = prompt | llm | StrOutputParser()
+    raw = await chain.ainvoke({&quot;context&quot;: context_text[:3000], &quot;answer&quot;: answer[:1000]})
+    return max(0.0, min(1.0, float(raw.strip())))
+</code></pre>
+<h3 id="abstaining-pattern">Abstaining Pattern</h3>
+<p>When context is insufficient, the system should abstain rather than guess:</p>
+<pre><code class="language-python">ABSTAIN_PHRASES = [&quot;not in the provided policy&quot;, &quot;cannot find&quot;, &quot;not covered&quot;]
+
+def should_abstain(answer: str, chunks: list) -&gt; bool:
+    # Abstain if no chunks were retrieved
+    if not chunks:
+        return True
+    # Abstain if LLM signals uncertainty
+    if any(phrase in answer.lower() for phrase in ABSTAIN_PHRASES):
+        return True
+    # Abstain if faithfulness score is too low
+    return False
+</code></pre>
+<hr />
+<h2 id="sub-topic-3-ragas-faithfulness">Sub-topic 3: RAGAS — Faithfulness</h2>
+<h3 id="what-why-how_2">What, Why, How</h3>
+<p><strong>What:</strong> RAGAS (Retrieval Augmented Generation Assessment) is a framework to evaluate RAG pipelines without requiring human labels for every query. Faithfulness is its most important metric.</p>
+<p><strong>Why:</strong> A RAG system that produces fluent, confident-sounding answers that aren't grounded in retrieved context is dangerous. Faithfulness measures this risk.</p>
+<p><strong>Definition:</strong> Faithfulness = (number of claims in answer supported by context) / (total claims in answer)</p>
+<p><strong>How the RAGAS faithfulness algorithm works:</strong></p>
+<pre><code>Step 1: Decompose answer into atomic claims
+  Answer: &quot;The max DTI is 45% and PMI is required for LTV &gt; 80%.&quot;
+  Claims: [&quot;max DTI is 45%&quot;, &quot;PMI required when LTV &gt; 80%&quot;]
+
+Step 2: For each claim, check if it can be inferred from context
+  &quot;max DTI is 45%&quot; → present in chunk 2 → SUPPORTED
+  &quot;PMI required when LTV &gt; 80%&quot; → present in chunk 1 → SUPPORTED
+
+Step 3: Faithfulness = 2/2 = 1.0 (perfect)
+
+If one claim was not in context:
+  Faithfulness = 1/2 = 0.5 (hallucination detected!)
+</code></pre>
+<h3 id="in-loaniq-project_2">In LoanIQ Project</h3>
+<p>In <code>rag_evaluator.py</code>, faithfulness is scored using LLM-as-judge:</p>
+<pre><code class="language-python"># The LLM breaks down the answer and checks each claim
+# Returns a float 0.0-1.0
+faithfulness = await self._score_faithfulness(rag_result)
+</code></pre>
+<p><strong>What a low faithfulness score means:</strong>
+- LLM is using training knowledge instead of retrieved context
+- Chunks retrieved don't contain the answer → LLM fills in the gap
+- Fix: Improve retrieval to find the right chunks; strengthen grounding prompt</p>
+<hr />
+<h2 id="sub-topic-4-ragas-answer-relevancy">Sub-topic 4: RAGAS — Answer Relevancy</h2>
+<h3 id="what-why-how_3">What, Why, How</h3>
+<p><strong>What:</strong> Answer Relevancy measures whether the generated answer actually addresses the user's question. A high-faithfulness answer can have low relevancy if it's grounded in context but answers the wrong question.</p>
+<p><strong>Algorithm (Reverse Generation):</strong></p>
+<pre><code>Step 1: Generate synthetic questions FROM the answer
+  Answer: &quot;The minimum credit score is 620 for conventional loans.&quot;
+  Generated questions: 
+    - &quot;What is the minimum credit score for conventional loans?&quot;
+    - &quot;What credit score do I need for a conventional mortgage?&quot;
+
+Step 2: Measure cosine similarity between generated questions and original question
+  Original: &quot;What is the minimum FICO for a conventional loan?&quot;
+  Sim(&quot;What credit score for conventional loans?&quot;, original) = 0.94
+
+Step 3: Answer Relevancy = mean cosine similarity of generated questions
+  → 0.94 (high — the answer is on topic)
+</code></pre>
+<p><strong>Why this approach?</strong> If the answer is on-topic, questions generated FROM it will be similar to the original question. If the answer is off-topic (e.g., talking about FHA when asked about conventional), the generated questions would be very different.</p>
+<h3 id="in-loaniq-project_3">In LoanIQ Project</h3>
+<pre><code class="language-python">async def _score_answer_relevancy(self, question: str, answer: str) -&gt; float:
+    &quot;&quot;&quot;LLM rates: does the answer actually address the question? 0.0-1.0&quot;&quot;&quot;
+    llm = ChatOpenAI(model=&quot;gpt-4o-mini&quot;, temperature=0)
+    prompt = ChatPromptTemplate.from_messages([
+        (&quot;system&quot;, &quot;Rate how well the answer addresses the question. Return ONLY a float 0.0-1.0.&quot;),
+        (&quot;human&quot;, &quot;QUESTION: {question}\n\nANSWER: {answer}\n\nScore:&quot;),
+    ])
+    # Simplified LLM-as-judge version (full RAGAS does reverse generation)
+    raw = await chain.ainvoke({&quot;question&quot;: question, &quot;answer&quot;: answer[:800]})
+    return max(0.0, min(1.0, float(raw.strip())))
+</code></pre>
+<hr />
+<h2 id="sub-topic-5-ragas-context-precision-recall">Sub-topic 5: RAGAS — Context Precision &amp; Recall</h2>
+<h3 id="context-precision">Context Precision</h3>
+<p><strong>What:</strong> Of all chunks retrieved, what fraction were actually useful for generating the answer?</p>
+<p><strong>Why it matters:</strong> If you retrieved 10 chunks but only 2 were relevant, the LLM's context is 80% noise. This leads to distracted, inaccurate answers and wasted tokens.</p>
+<p><strong>Low precision fix:</strong>
+- Tighten similarity threshold (e.g., from 0.6 to 0.75)
+- Reduce top-K (retrieve fewer but better chunks)
+- Improve chunking (finer, more specific chunks)
+- Better reranking (more aggressive filtering)</p>
+<h3 id="context-recall">Context Recall</h3>
+<p><strong>What:</strong> Of all the information needed to correctly answer the question, did retrieval find all of it?</p>
+<p><strong>Requires ground truth:</strong> You need a reference answer to know what information was <em>supposed</em> to be retrieved.</p>
+<p><strong>Low recall fix:</strong>
+- Increase top-K (retrieve more candidates)
+- Fix chunking (important facts might be split across chunks)
+- Improve query expansion (more query variants cover more ground)
+- Check corpus completeness (is the answer even in the ingested documents?)</p>
+<h3 id="in-loaniq-project_4">In LoanIQ Project</h3>
+<p>From <code>rag_evaluator.py</code>:</p>
+<pre><code class="language-python">def _score_context_precision(self, sample, rag_result) -&gt; float:
+    &quot;&quot;&quot;What fraction of retrieved chunks contain relevant keywords?&quot;&quot;&quot;
+    relevant = sum(
+        1 for chunk in rag_result.source_chunks
+        if any(kw.lower() in chunk.content.lower() for kw in sample.context_keywords)
+    )
+    return relevant / len(rag_result.source_chunks)
+
+def _score_context_recall(self, sample, rag_result) -&gt; float:
+    &quot;&quot;&quot;What fraction of expected keywords appear in retrieved chunks?&quot;&quot;&quot;
+    all_context = &quot; &quot;.join(c.content.lower() for c in rag_result.source_chunks)
+    found = sum(1 for kw in sample.context_keywords if kw.lower() in all_context)
+    return found / len(sample.context_keywords)
+</code></pre>
+<hr />
+<h2 id="sub-topic-6-evaluation-dataset">Sub-topic 6: Evaluation Dataset</h2>
+<h3 id="what-why-how_4">What, Why, How</h3>
+<p><strong>What:</strong> An evaluation dataset is a collection of (question, ground_truth_answer, relevant_context) triplets used to objectively measure RAG pipeline quality.</p>
+<p><strong>Why:</strong> You cannot improve what you don't measure. Without an eval dataset, you're guessing whether your pipeline improvements actually help or hurt.</p>
+<p><strong>How to build it:</strong>
+1. <strong>Manual curation</strong>: Loan officers write real questions they'd ask; annotators write ground truth answers.
+2. <strong>Synthetic generation</strong>: Use GPT-4 to generate Q&amp;A pairs from policy documents.
+3. <strong>Mining real queries</strong>: Use logs of actual questions asked to the system.</p>
+<h3 id="loaniq-eval-dataset-format">LoanIQ Eval Dataset Format</h3>
+<p>From <code>app/evaluation/datasets/loan_eval_dataset.json</code>:</p>
+<pre><code class="language-json">[
+  {
+    &quot;id&quot;: &quot;eval_001&quot;,
+    &quot;question&quot;: &quot;What is the maximum LTV for a conventional purchase loan with credit score 680?&quot;,
+    &quot;ground_truth&quot;: &quot;The maximum LTV for a conventional purchase loan with a credit score of 680 is 95% for owner-occupied primary residences, subject to PMI requirements above 80% LTV.&quot;,
+    &quot;category&quot;: &quot;ltv_requirements&quot;,
+    &quot;loan_type&quot;: &quot;CONVENTIONAL&quot;,
+    &quot;state&quot;: &quot;CA&quot;,
+    &quot;context_keywords&quot;: [&quot;LTV&quot;, &quot;conventional&quot;, &quot;680&quot;, &quot;PMI&quot;, &quot;95%&quot;, &quot;primary&quot;]
+  }
+]
+</code></pre>
+<h3 id="evaluation-flow">Evaluation Flow</h3>
+<p>From <code>rag_evaluator.py</code>:</p>
+<pre><code class="language-python">async def run_evaluation(self, dataset_path, sample_size):
+    # 1. Load dataset
+    samples = self._load_dataset(dataset_path, sample_size)
+
+    # 2. For each sample, run the RAG pipeline
+    for sample in samples:
+        rag_result = await self.pipeline.run(
+            query=sample.question,
+            state_filter=sample.state,
+            loan_type_filter=sample.loan_type,
+        )
+
+        # 3. Score the result
+        sr = await self._score_sample(sample, rag_result, latency_ms)
+
+    # 4. Aggregate and push to LangSmith
+    report = self._aggregate(run_name, sample_results)
+    await self._push_to_langsmith(report)
+</code></pre>
+<h3 id="interpreting-ragas-scores">Interpreting RAGAS Scores</h3>
+<table>
+<thead>
+<tr>
+<th>Score Range</th>
+<th>Meaning</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Faithfulness &lt; 0.7</td>
+<td>High hallucination risk</td>
+<td>Strengthen grounding prompt; improve retrieval</td>
+</tr>
+<tr>
+<td>Faithfulness &gt; 0.9</td>
+<td>Good grounding</td>
+<td>Monitor, no action needed</td>
+</tr>
+<tr>
+<td>Answer Relevancy &lt; 0.7</td>
+<td>Answers off-topic questions</td>
+<td>Improve prompt; check query handling</td>
+</tr>
+<tr>
+<td>Context Precision &lt; 0.6</td>
+<td>Too much noise in context</td>
+<td>Tighten similarity threshold; better reranking</td>
+</tr>
+<tr>
+<td>Context Recall &lt; 0.7</td>
+<td>Missing relevant information</td>
+<td>Increase K; fix chunking; add more content</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="10-interview-questions-generation-ragas-evaluation">10 Interview Questions — Generation &amp; RAGAS Evaluation</h2>
+<p><strong>Q1: What is RAG hallucination and how does LoanIQ prevent it?</strong></p>
+<p><strong>A:</strong> RAG hallucination occurs when the LLM generates factual claims that aren't in the retrieved context — it's "making things up" despite being given reference material. In mortgage decisioning, this is a compliance risk: a hallucinated "you qualify" or incorrect LTV limit could expose the bank to legal liability.</p>
+<p>LoanIQ's three-layer defense:
+1. <strong>Prompt grounding</strong>: System prompt says "Answer ONLY from the provided policy sections. If not in context, say so."
+2. <strong>Abstaining fallback</strong>: When no relevant chunks are retrieved (similarity &lt; threshold), the system returns "I cannot find this in the policy" instead of letting the LLM guess.
+3. <strong>Post-generation validation (Stage 7 AuditAgent)</strong>: A secondary LLM call checks if the generated decision is supported by the retrieved policy context. Evaluated by RAGAS faithfulness score.</p>
+<p>If faithfulness drops below 0.75 in production monitoring, it triggers an alert to review the retrieval pipeline.</p>
+<hr />
+<p><strong>Q2: Explain RAGAS faithfulness. How is it computed?</strong></p>
+<p><strong>A:</strong> Faithfulness measures whether every factual claim in the generated answer can be traced back to the retrieved context. It ranges from 0 (pure hallucination) to 1 (fully grounded).</p>
+<p><strong>Algorithm:</strong>
+1. Use an LLM to decompose the generated answer into individual atomic claims: "The max DTI is 45%" and "PMI is required above 80% LTV" are two separate claims.
+2. For each claim, ask an LLM (or NLI model): "Can this claim be inferred from the context?" → Yes/No
+3. Faithfulness = (claims supported by context) / (total claims)</p>
+<p><strong>Example in LoanIQ:</strong> 
+- Answer: "The maximum LTV is 80% and credit score must be at least 620."
+- Claim 1: "max LTV 80%" → in context → ✅
+- Claim 2: "credit score ≥ 620" → in context → ✅
+- Faithfulness = 2/2 = 1.0</p>
+<p>If the LLM adds "and PMI is typically 0.5-1.5%" (not in context) → 2/3 = 0.67</p>
+<hr />
+<p><strong>Q3: What is the difference between faithfulness and answer correctness? Can an answer be faithful but incorrect?</strong></p>
+<p><strong>A:</strong> Yes — a faithful answer can be incorrect if the retrieved context itself contains wrong or outdated information.</p>
+<ul>
+<li><strong>Faithfulness</strong>: Does the answer match the retrieved context? (Is the LLM grounded?)</li>
+<li><strong>Answer Correctness</strong>: Does the answer match the ground truth? (Is the answer actually right?)</li>
+</ul>
+<p>Example:
+- Ground truth: "Max LTV for FHA is 96.5%"
+- Retrieved context contains an outdated policy: "Max LTV for FHA is 95%"
+- LLM answer: "Max LTV for FHA is 95% per the policy."
+- Faithfulness = 1.0 (perfectly grounded in context)
+- Answer Correctness = low (wrong answer — old policy was retrieved)</p>
+<p>This is why you also need context recall (did you retrieve the <em>current</em> correct policy?) and periodic re-ingestion when policies update.</p>
+<hr />
+<p><strong>Q4: How does LoanIQ build its evaluation dataset? What's in each record?</strong></p>
+<p><strong>A:</strong> The eval dataset in <code>loan_eval_dataset.json</code> is built as (question, ground_truth, metadata) triplets:</p>
+<pre><code class="language-json">{
+  &quot;id&quot;: &quot;eval_001&quot;,
+  &quot;question&quot;: &quot;What is the max LTV for conventional loans with credit score 680?&quot;,
+  &quot;ground_truth&quot;: &quot;Maximum LTV is 95% for primary residence with credit score 680...&quot;,
+  &quot;category&quot;: &quot;ltv_requirements&quot;,
+  &quot;loan_type&quot;: &quot;CONVENTIONAL&quot;,
+  &quot;state&quot;: &quot;CA&quot;,
+  &quot;context_keywords&quot;: [&quot;LTV&quot;, &quot;conventional&quot;, &quot;680&quot;, &quot;95%&quot;, &quot;primary&quot;]
+}
+</code></pre>
+<p>The dataset has several origins:
+1. <strong>Manual</strong>: Mortgage underwriters wrote real questions they encounter daily
+2. <strong>Synthetic</strong>: GPT-4o generated Q&amp;A pairs from policy PDFs with the prompt "Generate a question and answer that could be asked about this policy section"
+3. <strong>Edge cases</strong>: Questions about borderline scenarios (LTV exactly 80%, DTI exactly 45%) that stress-test boundary conditions</p>
+<p>The <code>context_keywords</code> field is used for context precision/recall scoring — the evaluator checks if retrieved chunks contain these keywords.</p>
+<hr />
+<p><strong>Q5: Why does LoanIQ use LLM-as-judge for faithfulness instead of traditional NLP metrics like BLEU or ROUGE?</strong></p>
+<p><strong>A:</strong> BLEU and ROUGE measure n-gram overlap between the generated answer and a reference answer. They were designed for translation and summarization where there's a "correct" target text.</p>
+<p>For faithfulness in RAG, we're asking a different question: "Is this claim supported by this context?" — which requires reading comprehension, not string matching.</p>
+<p>Example:
+- Context: "Debt-to-income ratio must not exceed 45%"
+- Answer claim: "The maximum DTI is 45%"
+- BLEU/ROUGE: Low score — different words ("must not exceed" vs "maximum is")
+- LLM-as-judge: ✅ Supported — same meaning, different phrasing</p>
+<p>LLM-as-judge uses GPT-4o-mini in LoanIQ's evaluator because it understands semantic equivalence, can handle domain-specific terminology, and produces calibrated 0-1 scores. The downside: adds latency and cost to evaluation. We use <code>gpt-4o-mini</code> (cheaper) instead of <code>gpt-4o</code> because the faithfulness task is relatively simple.</p>
+<hr />
+<p><strong>Q6: What does "low context precision" tell you and how do you fix it?</strong></p>
+<p><strong>A:</strong> Low context precision means your retrieval is returning irrelevant chunks that are polluting the LLM's context.</p>
+<p>Example: Query "What is the PMI requirement?" retrieves:
+- Chunk 1: ✅ "PMI is required when LTV exceeds 80%"
+- Chunk 2: ✅ "PMI rate is typically 0.5-1.5% annually"
+- Chunk 3: ❌ "Property insurance requirements for flood zones" (off-topic)
+- Chunk 4: ❌ "Flood insurance requirements in FEMA Zone A" (off-topic)</p>
+<p>Precision = 2/4 = 0.50 — poor. The LLM might confuse property insurance with PMI.</p>
+<p><strong>Fixes:</strong>
+1. <strong>Raise similarity threshold</strong>: In LoanIQ, increase from 0.7 to 0.75 — more strict
+2. <strong>Reduce top-K</strong>: Retrieve fewer candidates (15 → 10) — less noise
+3. <strong>Better reranking</strong>: The cross-encoder should catch off-topic chunks — check if reranker model needs upgrading
+4. <strong>Better chunking</strong>: If "property insurance" and "PMI" appear in the same chunk due to bad splitting, they'd be inseparable
+5. <strong>Metadata filtering</strong>: Add category tags to chunks ("pmi", "flood_insurance") and filter pre-retrieval</p>
+<hr />
+<p><strong>Q7: How would you detect and handle the "lost in the middle" problem in LoanIQ?</strong></p>
+<p><strong>A:</strong> The "lost in the middle" problem (Liu et al., 2023): LLMs attend strongly to the beginning and end of context but ignore the middle. For a prompt with 5 chunks, chunks 2 and 3 are most likely to be ignored.</p>
+<p><strong>Detection in LoanIQ:</strong>
+- RAGAS answer correctness drops as context window grows
+- Questions whose answers are in middle-positioned chunks score lower</p>
+<p><strong>Mitigation strategies:</strong>
+1. <strong>Best chunks at boundaries</strong>: Sort so the highest-scoring chunk is first, second-highest is last, rest in middle.
+2. <strong>Limit context size</strong>: LoanIQ's ContextBuilder uses 6000 token budget — don't stuff 20 chunks. Top 5 reranked chunks only.
+3. <strong>Reduce redundancy with MMR</strong>: If all chunks say slightly different versions of the same thing, the LLM wastes middle attention on duplicates. MMR ensures diverse content.
+4. <strong>Chunk summaries in the prompt header</strong>: Before the full chunks, include a 1-sentence summary of each: "Source 1: Credit requirements; Source 2: DTI limits; Source 3: PMI rules" — helps the LLM scan before reading deeply.</p>
+<hr />
+<p><strong>Q8: What is the RAGAS "answer correctness" metric? How does it differ from faithfulness?</strong></p>
+<p><strong>A:</strong> Answer correctness measures how close the generated answer is to the ground truth answer. It uses token-level F1 score (same as SQuAD evaluation):</p>
+<pre><code class="language-python">def _score_answer_correctness(self, ground_truth: str, answer: str) -&gt; float:
+    gt_tokens = set(re.findall(r'\b\w+\b', ground_truth.lower()))
+    ans_tokens = set(re.findall(r'\b\w+\b', answer.lower()))
+
+    common = gt_tokens &amp; ans_tokens
+    precision = len(common) / len(ans_tokens)
+    recall = len(common) / len(gt_tokens)
+    f1 = 2 * precision * recall / (precision + recall)
+    return f1
+</code></pre>
+<p><strong>vs Faithfulness:</strong>
+- Faithfulness: Does the answer match the <em>retrieved context</em>? (Doesn't require ground truth)
+- Answer Correctness: Does the answer match the <em>ground truth</em>? (Requires labeled dataset)</p>
+<p>You can have high faithfulness and low correctness (retrieved wrong context) or low faithfulness and high correctness (hallucinated the right answer by luck). Both matter.</p>
+<hr />
+<p><strong>Q9: How does LoanIQ push evaluation results to LangSmith and why?</strong></p>
+<p><strong>A:</strong> LangSmith is Anthropic/LangChain's tracing and evaluation platform. LoanIQ pushes evaluation results there for visual analysis:</p>
+<pre><code class="language-python">def _setup_langsmith(self):
+    if settings.langchain_tracing_v2 and settings.langchain_api_key:
+        os.environ[&quot;LANGCHAIN_TRACING_V2&quot;] = &quot;true&quot;
+        os.environ[&quot;LANGCHAIN_API_KEY&quot;] = settings.langchain_api_key
+        os.environ[&quot;LANGCHAIN_PROJECT&quot;] = settings.langchain_project
+        self.langsmith_client = Client()
+</code></pre>
+<p>Every evaluation run gets pushed as a named run (e.g., <code>loaniq-eval-20240115-143022</code>) with all per-sample scores, latencies, and the final aggregated report.</p>
+<p><strong>Why LangSmith:</strong>
+1. <strong>Trend tracking</strong>: See if faithfulness improved after a chunking change
+2. <strong>Failure analysis</strong>: Click into a specific sample that scored 0.0 — see exactly which chunk was retrieved and what the LLM generated
+3. <strong>Dataset management</strong>: Store eval datasets centrally, run evals against them consistently
+4. <strong>Cost tracking</strong>: Token counts per run, per agent</p>
+<p>Alternative: MLflow for experiment tracking, but LangSmith is purpose-built for LLM evaluation and integrates natively with LangChain/LangGraph.</p>
+<hr />
+<p><strong>Q10: Walk me through the complete evaluation flow in LoanIQ from query to score.</strong></p>
+<p><strong>A:</strong> Complete flow from <code>run_evaluation()</code> in <code>rag_evaluator.py</code>:</p>
+<ol>
+<li><strong>Load dataset</strong>: Read <code>loan_eval_dataset.json</code> — 50 Q&amp;A triplets</li>
+<li><strong>For each sample</strong>:</li>
+<li>Record start time</li>
+<li>Call <code>AdvancedRAGPipeline.run(question, state="CA", loan_type="CONVENTIONAL")</code></li>
+<li>This runs: query rewriting → dense + sparse retrieval → RRF → MMR → reranking → context building → LLM generation</li>
+<li>Record end time → <code>latency_ms</code></li>
+<li><strong>Score the result</strong>:</li>
+<li><code>faithfulness</code>: LLM-as-judge (GPT-4o-mini) checks if answer claims are in context</li>
+<li><code>answer_relevancy</code>: LLM rates if answer addresses the question</li>
+<li><code>context_precision</code>: Keyword overlap — what % of chunks have expected keywords?</li>
+<li><code>context_recall</code>: What % of expected keywords appear in any retrieved chunk?</li>
+<li><code>answer_correctness</code>: Token F1 between generated answer and ground truth</li>
+<li><code>citation_accuracy</code>: Do all cited sources exist?</li>
+<li><strong>Aggregate</strong>: Mean scores across all 50 samples; breakdown by category (ltv, dti, credit, etc.)</li>
+<li><strong>Push to LangSmith</strong>: Named run with full results</li>
+<li><strong>Print report</strong>: Console output with pass/fail indicators</li>
+</ol>
+<p>If mean faithfulness &lt; 0.75, the evaluation script exits with error code 1 — blocks CI/CD deployment until the issue is fixed.</p>
+<hr />
+<p><em>Next: <a href="04_LangChain.md">LangChain Core Concepts →</a></em></p>
+  </div>
+
+  <div class="page-footer">
+    <a href="02_RAG_Retrieval_Pipeline.html" class="footer-nav-btn prev">← Retrieval Pipeline</a>
+    <span class="page-pos">3 / 8</span>
+    <a href="04_LangChain_LangGraph.html" class="footer-nav-btn next">LangChain & LangGraph →</a>
+  </div>
+</main>
+
+</body>
+</html>

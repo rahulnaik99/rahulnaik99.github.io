@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Retrieval Pipeline — Gen AI Study Guide</title>
+<style>
+
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:       #0a0c10;
+  --surface:  #111318;
+  --surface2: #181c23;
+  --border:   #1f2530;
+  --accent:   #00e5ff;
+  --accent2:  #7c3aed;
+  --accent3:  #f59e0b;
+  --text:     #e2e8f0;
+  --muted:    #64748b;
+  --green:    #10b981;
+  --red:      #ef4444;
+  --font-head: 'Syne', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.75;
+  min-height: 100vh;
+}
+
+/* ── Noise texture overlay ── */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none; z-index: 9999;
+  opacity: 0.4;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--accent2); border-radius: 3px; }
+
+/* ── Typography ── */
+h1,h2,h3,h4 { font-family: var(--font-head); line-height: 1.2; }
+
+/* ── Code ── */
+pre, code {
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+code:not(pre code) {
+  background: rgba(0,229,255,0.08);
+  color: var(--accent);
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid rgba(0,229,255,0.15);
+}
+pre {
+  background: #0d1117;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent2);
+  padding: 1.25rem 1.5rem;
+  border-radius: 0 8px 8px 0;
+  overflow-x: auto;
+  margin: 1.25rem 0;
+  position: relative;
+}
+pre code { color: #adbac7; background: none; border: none; padding: 0; }
+
+/* ── Tables ── */
+table { width: 100%; border-collapse: collapse; margin: 1.25rem 0; font-size: 14px; }
+th {
+  background: var(--surface2);
+  color: var(--accent);
+  font-family: var(--font-head);
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  text-align: left;
+}
+td {
+  padding: 9px 14px;
+  border: 1px solid var(--border);
+  color: #c8d3e0;
+  vertical-align: top;
+}
+tr:hover td { background: rgba(255,255,255,0.02); }
+tr:nth-child(even) td { background: rgba(255,255,255,0.01); }
+
+/* ── Blockquotes ── */
+blockquote {
+  border-left: 3px solid var(--accent3);
+  background: rgba(245,158,11,0.05);
+  padding: 1rem 1.25rem;
+  border-radius: 0 8px 8px 0;
+  margin: 1.25rem 0;
+  color: #d4b896;
+  font-style: italic;
+}
+
+/* ── Horizontal rules ── */
+hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 2rem 0;
+}
+
+/* ── Lists ── */
+ul, ol { padding-left: 1.5rem; margin: 0.5rem 0; }
+li { margin: 0.3rem 0; }
+li > strong { color: var(--accent); }
+
+/* ── Links ── */
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ── Strong / Em ── */
+strong { color: #f0f4f8; font-weight: 600; }
+em { color: #a5b4c8; }
+
+
+/* ── LAYOUT ── */
+.sidebar {
+  position: fixed;
+  top: 0; left: 0;
+  width: 260px;
+  height: 100vh;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+  overflow-y: auto;
+}
+
+.sidebar-logo {
+  padding: 1.5rem 1.25rem 1rem;
+  border-bottom: 1px solid var(--border);
+}
+.sidebar-logo a {
+  font-family: var(--font-head);
+  font-weight: 800;
+  font-size: 1rem;
+  color: var(--text);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sidebar-logo a:hover { color: var(--accent); }
+.sidebar-logo a::before {
+  content: '←';
+  font-size: 0.85rem;
+  opacity: 0.5;
+}
+
+.sidebar-nav { padding: 0.75rem 0; flex: 1; }
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 1.25rem;
+  font-size: 13px;
+  color: var(--muted);
+  text-decoration: none;
+  transition: all 0.15s;
+  border-left: 2px solid transparent;
+  line-height: 1.3;
+}
+.nav-item:hover {
+  color: var(--text);
+  background: rgba(255,255,255,0.03);
+}
+.nav-item.active {
+  color: var(--text);
+  border-left-color: var(--page-color, var(--accent));
+  background: rgba(255,255,255,0.04);
+}
+.nav-num {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--page-color, var(--accent));
+  opacity: 0.6;
+  min-width: 22px;
+}
+
+.main {
+  margin-left: 260px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar {
+  padding: 1rem 2.5rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(10,12,16,0.9);
+  backdrop-filter: blur(12px);
+  position: sticky; top: 0; z-index: 50;
+}
+.page-breadcrumb {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 0.05em;
+}
+.page-breadcrumb span {
+  color: var(--page-color, var(--accent));
+}
+
+.nav-pills {
+  display: flex;
+  gap: 6px;
+}
+.nav-pill {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  text-decoration: none;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  transition: all 0.15s;
+}
+.nav-pill:hover {
+  border-color: var(--page-color, var(--accent));
+  color: var(--page-color, var(--accent));
+  text-decoration: none;
+}
+
+/* ── CONTENT ── */
+.content {
+  flex: 1;
+  padding: 3rem 4rem 5rem;
+  max-width: 900px;
+}
+
+/* h1 — page title */
+.content h1 {
+  font-size: 2.2rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--text);
+  margin-bottom: 0.25rem;
+  margin-top: 3rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+.content h1:first-child { margin-top: 0; }
+
+/* h2 — section */
+.content h2 {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--page-color, var(--accent));
+  margin: 2.5rem 0 0.75rem;
+  letter-spacing: -0.01em;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.content h2::before {
+  content: '';
+  display: inline-block;
+  width: 4px;
+  height: 18px;
+  background: var(--page-color, var(--accent));
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+/* h3 — sub-section */
+.content h3 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 1.75rem 0 0.5rem;
+  letter-spacing: -0.01em;
+}
+.content h3::before {
+  content: '// ';
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  font-weight: 400;
+}
+
+/* h4 */
+.content h4 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #94a3b8;
+  margin: 1.25rem 0 0.4rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.content p { margin: 0.6rem 0; color: #c8d3e0; }
+
+/* ── INTERVIEW SECTION highlight ── */
+.content h2[id*="interview"],
+.content h2[id*="question"] {
+  color: var(--accent3);
+  background: rgba(245,158,11,0.05);
+  padding: 0.75rem 1rem;
+  border-radius: 0 8px 8px 0;
+  border-left: 3px solid var(--accent3);
+  margin-top: 3rem;
+}
+.content h2[id*="interview"]::before,
+.content h2[id*="question"]::before {
+  background: var(--accent3);
+}
+
+/* ── FOOTER NAV ── */
+.page-footer {
+  border-top: 1px solid var(--border);
+  padding: 2rem 4rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.footer-nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  text-decoration: none;
+  color: var(--muted);
+  font-size: 13px;
+  transition: all 0.15s;
+  font-family: var(--font-head);
+  font-weight: 600;
+}
+.footer-nav-btn:hover {
+  border-color: var(--page-color, var(--accent));
+  color: var(--page-color, var(--accent));
+  text-decoration: none;
+}
+.footer-nav-btn.next { flex-direction: row-reverse; }
+.page-pos {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted);
+}
+
+/* Glow effects */
+.glow-page {
+  position: fixed;
+  width: 500px; height: 500px;
+  border-radius: 50%;
+  pointer-events: none;
+  top: 10vh; right: -150px;
+  background: radial-gradient(circle, rgba(0,0,0,0) 0%, transparent 100%);
+}
+
+:root { --page-color: #7c3aed; }
+.glow-page { background: radial-gradient(circle, #7c3aed0d 0%, transparent 70%); }
+</style>
+</head>
+<body>
+
+<div class="glow-page"></div>
+
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <a href="index.html">Gen AI Study Guide</a>
+  </div>
+  <nav class="sidebar-nav">
+<a href="01_RAG_Ingestion_Pipeline.html" class="nav-item"><span class="nav-num">01</span>Ingestion Pipeline</a>
+<a href="02_RAG_Retrieval_Pipeline.html" class="nav-item active"><span class="nav-num">02</span>Retrieval Pipeline</a>
+<a href="03_RAG_Generation_RAGAS.html" class="nav-item"><span class="nav-num">03</span>Generation & RAGAS</a>
+<a href="04_LangChain_LangGraph.html" class="nav-item"><span class="nav-num">04</span>LangChain & LangGraph</a>
+<a href="05_Fine_Tuning.html" class="nav-item"><span class="nav-num">05</span>Fine-Tuning</a>
+<a href="06_ML_Concepts_Transformers.html" class="nav-item"><span class="nav-num">06</span>ML & Transformers</a>
+<a href="07_Docker_AWS_Bedrock.html" class="nav-item"><span class="nav-num">07</span>Docker & Bedrock</a>
+<a href="08_Python_System_Design.html" class="nav-item"><span class="nav-num">08</span>Python & System Design</a>
+
+  </nav>
+</aside>
+
+<main class="main">
+  <div class="topbar">
+    <div class="page-breadcrumb">Module <span>02</span> · Retrieval Pipeline</div>
+    <div class="nav-pills">
+      <a href="01_RAG_Ingestion_Pipeline.html" class="nav-pill">← Prev</a>
+      <a href="03_RAG_Generation_RAGAS.html" class="nav-pill">Next →</a>
+    </div>
+  </div>
+
+  <div class="content">
+<h1 id="rag-retrieval-augmented-generation">RAG — Retrieval Augmented Generation</h1>
+<h2 id="module-2-retrieval-pipeline">Module 2: Retrieval Pipeline</h2>
+<blockquote>
+<p><strong>What is the Retrieval Pipeline?</strong>
+After documents are ingested into a vector store, the retrieval pipeline is responsible for finding the most relevant chunks for a given user query. It's the search engine of your RAG system.</p>
+<p>LoanIQ's retrieval pipeline is a 5-stage process:
+<code>Query Rewriting → Dense Search → Sparse Search → RRF Fusion → MMR → Reranking</code></p>
+</blockquote>
+<pre><code>LoanIQ Advanced Retrieval Pipeline
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+User Query
+    │
+    ▼
+[Stage 1] Query Rewriting
+  Multi-query expansion → 3 query variants
+    │
+    ▼ (run all 3 queries)
+[Stage 2a] Dense Retrieval ─────┐
+  Embed → pgvector cosine search │
+  Returns: Top-15 chunks         ├──► [Stage 3] RRF Fusion
+                                 │    Merge + deduplicate
+[Stage 2b] Sparse Retrieval ────┘    Returns: Top-10 chunks
+  BM25 keyword search                   │
+  Returns: Top-15 chunks                ▼
+                                 [Stage 4] MMR Filter
+                                  Diversity selection
+                                  Returns: 7 diverse chunks
+                                       │
+                                       ▼
+                                 [Stage 5] Cross-Encoder Rerank
+                                  Deep scoring of each chunk
+                                  Returns: Top-5 final chunks
+                                       │
+                                       ▼
+                                  LLM Generation
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+</code></pre>
+<hr />
+<h2 id="sub-topic-1-dense-retrieval">Sub-topic 1: Dense Retrieval</h2>
+<h3 id="what-why-how">What, Why, How</h3>
+<p><strong>What:</strong> Dense retrieval converts the user's query into an embedding vector and finds the K chunks with the highest cosine similarity in the vector database.</p>
+<p><strong>Why:</strong> It finds semantically similar content even when the exact words don't match. "What's the maximum debt ratio?" will retrieve chunks about "DTI limit" even though the query uses different words.</p>
+<p><strong>How:</strong>
+1. Embed the query using the same model used during ingestion (critical!)
+2. Run a cosine similarity search in pgvector
+3. Return top-K results sorted by similarity score</p>
+<h3 id="in-loaniq-project">In LoanIQ Project</h3>
+<p>From <code>pdf_ingestion.py → PolicyRetrieverService</code>:</p>
+<pre><code class="language-python">async def retrieve_relevant_policy(self, query, state, loan_type, top_k):
+    # Step 1: Embed the query (same provider as ingestion!)
+    query_embedding = await router.embed_query(query)
+
+    # Step 2: Vector search with state/loan_type filtering
+    results = await self._vector_search(session, query_embedding, state, loan_type, top_k)
+</code></pre>
+<p>SQL using pgvector's <code>&lt;=&gt;</code> cosine distance operator:</p>
+<pre><code class="language-sql">SELECT *, 1 - (pc.embedding &lt;=&gt; CAST(:embedding AS vector)) AS similarity_score
+FROM policy_chunks pc
+JOIN policy_documents pd ON pc.document_id = pd.id
+WHERE
+    pd.is_active = true
+    AND pc.applicable_states @&gt; CAST(:state_filter AS jsonb)
+    AND 1 - (pc.embedding &lt;=&gt; CAST(:embedding AS vector)) &gt;= :threshold  -- 0.7
+ORDER BY pc.embedding &lt;=&gt; CAST(:embedding AS vector)
+LIMIT :top_k
+</code></pre>
+<h3 id="implementation">Implementation</h3>
+<pre><code class="language-python">from sqlalchemy import text as sql_text
+
+async def dense_search(query: str, top_k: int = 15) -&gt; list[dict]:
+    query_embedding = await embed_query(query)
+
+    sql = sql_text(&quot;&quot;&quot;
+        SELECT 
+            chunk_id,
+            content,
+            1 - (embedding &lt;=&gt; CAST(:embedding AS vector)) as similarity
+        FROM policy_chunks
+        WHERE 1 - (embedding &lt;=&gt; CAST(:embedding AS vector)) &gt;= 0.6
+        ORDER BY embedding &lt;=&gt; CAST(:embedding AS vector)
+        LIMIT :top_k
+    &quot;&quot;&quot;)
+
+    result = await session.execute(sql, {
+        &quot;embedding&quot;: str(query_embedding),
+        &quot;top_k&quot;: top_k
+    })
+    return [dict(row) for row in result.fetchall()]
+</code></pre>
+<h3 id="key-concepts">Key Concepts</h3>
+<p><strong>Bi-encoder architecture:</strong> The query and each document are encoded <em>separately</em> by the same model. This is fast because you pre-compute all document embeddings once. But it's less accurate than reading query+document together (that's the reranker's job).</p>
+<p><strong>Similarity threshold:</strong> LoanIQ uses <code>&gt;= 0.7</code> — chunks with similarity below 0.7 are filtered out. This prevents retrieving vaguely related content. Too high → misses relevant chunks. Too low → includes noise.</p>
+<p><strong>Top-K tradeoff:</strong> Higher K = better recall (less likely to miss the answer) but more noise passed downstream, slower reranking, larger LLM context.</p>
+<hr />
+<h2 id="sub-topic-2-sparse-retrieval-bm25">Sub-topic 2: Sparse Retrieval — BM25</h2>
+<h3 id="what-why-how_1">What, Why, How</h3>
+<p><strong>What:</strong> BM25 (Best Match 25) is a classic keyword-based ranking algorithm. It scores documents based on how often query terms appear in them, with adjustments for document length and term rarity.</p>
+<p><strong>Why:</strong> Dense retrieval is great for semantic similarity but terrible at exact matches. If a user asks about "Appendix B, Section 4.2.3" or "FICO score 680", the dense retriever might return chunks about general credit requirements. BM25 finds the <em>exact</em> document containing "4.2.3" or "680."</p>
+<p><strong>How:</strong></p>
+<pre><code>BM25 Score Formula:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                     tf(t,d) × (k₁+1)
+score(d,q) = Σ IDF(t) × ──────────────────────────────────
+              t            tf(t,d) + k₁(1 - b + b × |d|/avgdl)
+
+Where:
+  tf(t,d)  = frequency of term t in document d
+  IDF(t)   = log((N - df(t) + 0.5) / (df(t) + 0.5))  [rare terms score higher]
+  k₁=1.5   = TF saturation parameter
+  b=0.75   = length normalization
+  |d|      = document length
+  avgdl    = average document length in corpus
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+</code></pre>
+<p><strong>TF Saturation:</strong> In BM25, TF is <em>saturated</em> — a word appearing 10 times doesn't score 10x more than a word appearing once. This prevents keyword spam. In TF-IDF, 10 occurrences = 10x score (gameable). In BM25, it asymptotically approaches a ceiling.</p>
+<p><strong>When sparse beats dense:</strong>
+- Exact numbers: "LTV 97.5%"
+- Names: "Freddie Mac 5702"
+- Codes: "HMDA regulation Z"
+- Acronyms: "CLTV", "HLTV", "PMI"
+- Section references: "Appendix A Section 3"</p>
+<h3 id="in-loaniq-project_1">In LoanIQ Project</h3>
+<p>BM25 runs over <code>PolicyChunk.content</code> using the <code>rank_bm25</code> library:</p>
+<pre><code class="language-python">from rank_bm25 import BM25Okapi
+
+class BM25Retriever:
+    def __init__(self, chunks: list[str]):
+        tokenized = [doc.lower().split() for doc in chunks]
+        self.bm25 = BM25Okapi(tokenized)
+        self.chunks = chunks
+
+    def search(self, query: str, top_k: int = 15) -&gt; list[tuple[int, float]]:
+        tokenized_query = query.lower().split()
+        scores = self.bm25.get_scores(tokenized_query)
+        top_indices = scores.argsort()[-top_k:][::-1]
+        return [(idx, float(scores[idx])) for idx in top_indices]
+</code></pre>
+<h3 id="limitation">Limitation</h3>
+<p>BM25 is <strong>in-memory</strong> in LoanIQ. The <code>BM25Okapi</code> index is rebuilt on startup from all policy chunks. This is fine for ~500-1000 chunks but would break at 100K+ chunks.</p>
+<p><strong>Production alternatives:</strong>
+- Elasticsearch/OpenSearch for persistent BM25 at scale
+- PostgreSQL full-text search (<code>tsvector</code>) — built-in, no extra service</p>
+<hr />
+<h2 id="sub-topic-3-rrf-fusion">Sub-topic 3: RRF Fusion</h2>
+<h3 id="what-why-how_2">What, Why, How</h3>
+<p><strong>What:</strong> Reciprocal Rank Fusion (RRF) is an algorithm that merges ranked lists from multiple retrievers into a single unified ranking. It takes the rank (position) of each document in each list and combines them.</p>
+<p><strong>Why:</strong> Dense retrieval and BM25 each have blind spots. RRF combines their results without needing to know the actual scores (which are on different scales and incomparable — cosine similarity vs BM25 scores can't simply be added).</p>
+<p><strong>How:</strong></p>
+<pre><code>RRF Formula:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                     1
+RRF_score(d) = Σ  ───────
+              r   k + rank_r(d)
+
+Where:
+  rank_r(d) = position of document d in ranked list r (1-indexed)
+  k = 60    (constant that dampens the effect of top positions)
+
+Example:
+  Chunk A: rank 1 in dense, rank 5 in BM25
+  → RRF = 1/(60+1) + 1/(60+5) = 0.01639 + 0.01538 = 0.03177
+
+  Chunk B: rank 3 in dense, rank 3 in BM25  
+  → RRF = 1/(60+3) + 1/(60+3) = 0.01587 + 0.01587 = 0.03174
+
+  Both score similarly — appeared in both lists = strong signal!
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+</code></pre>
+<p><strong>Why k=60?</strong> The constant <code>k</code> prevents the top-1 result from dominating too much. Without it, rank 1 = 1.0 and rank 2 = 0.5 — a huge gap. With k=60, rank 1 = 1/61 = 0.0164 and rank 2 = 1/62 = 0.0161 — much smaller difference. This makes the fusion more robust.</p>
+<h3 id="in-loaniq-project_2">In LoanIQ Project</h3>
+<pre><code class="language-python">def reciprocal_rank_fusion(
+    dense_results: list[dict],    # [(chunk_id, score), ...]
+    sparse_results: list[dict],   # [(chunk_id, score), ...]
+    k: int = 60,
+) -&gt; list[dict]:
+    rrf_scores: dict[str, float] = {}
+    chunk_map: dict[str, dict] = {}
+
+    # Score from dense ranking
+    for rank, chunk in enumerate(dense_results, start=1):
+        cid = chunk[&quot;chunk_id&quot;]
+        rrf_scores[cid] = rrf_scores.get(cid, 0) + 1 / (k + rank)
+        chunk_map[cid] = chunk
+
+    # Score from BM25 ranking
+    for rank, chunk in enumerate(sparse_results, start=1):
+        cid = chunk[&quot;chunk_id&quot;]
+        rrf_scores[cid] = rrf_scores.get(cid, 0) + 1 / (k + rank)
+        if cid not in chunk_map:
+            chunk_map[cid] = chunk
+
+    # Sort by RRF score, return merged list
+    sorted_ids = sorted(rrf_scores, key=lambda c: rrf_scores[c], reverse=True)
+    return [{&quot;chunk&quot;: chunk_map[cid], &quot;rrf_score&quot;: rrf_scores[cid]} 
+            for cid in sorted_ids]
+</code></pre>
+<h3 id="why-rrf-over-weighted-sum">Why RRF over Weighted Sum?</h3>
+<ul>
+<li><strong>Weighted sum</strong> requires tuning weights per dataset (e.g., 0.7 × dense + 0.3 × sparse). These weights don't generalize across different document types.</li>
+<li><strong>RRF</strong> only uses ranks (positions), not raw scores. It works reliably across completely different scoring scales without any tuning. k=60 is a universal constant that works well across many domains.</li>
+</ul>
+<hr />
+<h2 id="sub-topic-4-query-rewriting">Sub-topic 4: Query Rewriting</h2>
+<h3 id="what-why-how_3">What, Why, How</h3>
+<p><strong>What:</strong> Instead of searching with the raw user question, query rewriting generates multiple variations of the query (or transforms it) to improve retrieval recall.</p>
+<p><strong>Why:</strong> Users phrase questions in unpredictable ways. "How much can I borrow?" might miss chunks about "maximum loan amount" or "loan limits". Generating 3 variations covers more ground.</p>
+<p><strong>How (Multi-query expansion):</strong></p>
+<pre><code>Original: &quot;What is the maximum LTV for FHA loans?&quot;
+
+Generated variations:
+  1. &quot;FHA loan maximum loan-to-value ratio requirement&quot;
+  2. &quot;What percentage of home value can I borrow with FHA?&quot;
+  3. &quot;FHA LTV limit guideline&quot;
+
+Run all 3 → retrieve 15 chunks each → merge with RRF → deduplicate
+</code></pre>
+<h3 id="query-rewriting-techniques">Query Rewriting Techniques</h3>
+<table>
+<thead>
+<tr>
+<th>Technique</th>
+<th>How</th>
+<th>When to Use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Multi-query expansion</strong></td>
+<td>LLM generates N variants</td>
+<td>Default — LoanIQ uses this</td>
+</tr>
+<tr>
+<td><strong>HyDE</strong></td>
+<td>LLM generates hypothetical answer, embed the answer</td>
+<td>When query is very short/vague</td>
+</tr>
+<tr>
+<td><strong>Step-back prompting</strong></td>
+<td>LLM abstracts the specific question</td>
+<td>Complex multi-hop questions</td>
+</tr>
+<tr>
+<td><strong>Query decomposition</strong></td>
+<td>Break compound question into sub-questions</td>
+<td>"Compare FHA and conventional LTV limits"</td>
+</tr>
+</tbody>
+</table>
+<h3 id="in-loaniq-project_3">In LoanIQ Project</h3>
+<p>The <code>PolicyRetrievalAgent</code> calls the LLM to generate multi-query variants before searching:</p>
+<pre><code class="language-python">query_expansion_prompt = &quot;&quot;&quot;
+Generate 3 different versions of this mortgage policy question.
+Each version should emphasize different aspects.
+Return as JSON array of strings.
+
+Question: {query}
+&quot;&quot;&quot;
+# Returns: [&quot;LTV requirement FHA&quot;, &quot;maximum loan-to-value FHA loan&quot;, &quot;FHA LTV limit&quot;]
+</code></pre>
+<h3 id="hyde-hypothetical-document-embedding">HyDE — Hypothetical Document Embedding</h3>
+<p>HyDE is particularly powerful when queries are very short. Instead of embedding "DTI?", you generate a hypothetical answer like "The maximum debt-to-income ratio for conventional loans is 45%. This includes all monthly debt obligations..." and embed <em>that</em> — which is much richer and closer to the actual policy chunk's semantic space.</p>
+<pre><code class="language-python"># HyDE implementation
+from langchain_openai import ChatOpenAI
+from langchain_core.prompts import ChatPromptTemplate
+
+hyde_prompt = ChatPromptTemplate.from_messages([
+    (&quot;system&quot;, &quot;Generate a hypothetical policy document section that would answer this question.&quot;),
+    (&quot;human&quot;, &quot;{question}&quot;)
+])
+
+llm = ChatOpenAI(model=&quot;gpt-4o-mini&quot;)
+hypothetical_doc = await (hyde_prompt | llm).ainvoke({&quot;question&quot;: query})
+embedding = await embed(hypothetical_doc.content)  # embed the hypothetical answer, not the question
+</code></pre>
+<hr />
+<h2 id="sub-topic-5-mmr-maximal-marginal-relevance">Sub-topic 5: MMR — Maximal Marginal Relevance</h2>
+<h3 id="what-why-how_4">What, Why, How</h3>
+<p><strong>What:</strong> MMR is a diversity filter. After RRF fusion gives you a ranked list of relevant chunks, MMR selects a subset that is both relevant AND diverse — preventing you from passing 5 nearly identical chunks to the LLM.</p>
+<p><strong>Why:</strong> Without MMR, the top-5 chunks might all be slight variations of "LTV must not exceed 80%." This wastes the LLM's context window and provides no additional information. MMR ensures the selected chunks cover different aspects of the topic.</p>
+<p><strong>How:</strong></p>
+<pre><code>MMR Formula:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+MMR(d) = λ × Sim(d, query) - (1 - λ) × max[Sim(d, selected)]
+
+Where:
+  Sim(d, query)        = similarity to the query (relevance)
+  Sim(d, selected)     = max similarity to any already-selected chunk
+  λ = 0.5              = tradeoff (0.5 = equal relevance/diversity)
+
+Algorithm (greedy):
+  selected = []
+  while len(selected) &lt; k:
+    best = argmax MMR(d) for all remaining d
+    selected.append(best)
+    remove best from candidates
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+</code></pre>
+<h3 id="in-loaniq-project_4">In LoanIQ Project</h3>
+<p>From <code>app/services/rag/reranker.py → MMRFilter</code>:</p>
+<pre><code class="language-python">class MMRFilter:
+    def filter(self, chunks, query_embedding, chunk_embeddings, k=5, lambda_=0.5):
+        q_vec = np.array(query_embedding)
+        selected = []
+        selected_vecs = []
+        remaining = list(chunks)
+
+        for _ in range(min(k, len(remaining))):
+            best_chunk, best_score = None, -inf
+
+            for chunk in remaining:
+                c_vec = np.array(chunk_embeddings[chunk.chunk_id])
+                relevance = cosine(q_vec, c_vec)
+
+                if selected_vecs:
+                    max_sim = max(cosine(c_vec, sv) for sv in selected_vecs)
+                else:
+                    max_sim = 0.0
+
+                mmr_score = lambda_ * relevance - (1 - lambda_) * max_sim
+
+                if mmr_score &gt; best_score:
+                    best_score = mmr_score
+                    best_chunk = chunk
+
+            selected.append(best_chunk)
+            selected_vecs.append(np.array(chunk_embeddings[best_chunk.chunk_id]))
+            remaining.remove(best_chunk)
+
+        return selected
+</code></pre>
+<p><strong>λ tuning:</strong>
+- <code>λ=1.0</code> → pure relevance (same as sorting by similarity)
+- <code>λ=0.5</code> → LoanIQ default: equal balance
+- <code>λ=0.3</code> → more diversity (useful for survey-type questions)</p>
+<hr />
+<h2 id="sub-topic-6-reranking">Sub-topic 6: Reranking</h2>
+<h3 id="what-why-how_5">What, Why, How</h3>
+<p><strong>What:</strong> A reranker is a cross-encoder model that reads the query and each candidate chunk <em>together</em> and produces a precise relevance score. It's a second-stage filter after the initial retrieval.</p>
+<p><strong>Why:</strong> Embedding similarity is a bi-encoder approach — query and document are encoded separately and compared via dot product. This is fast but approximate. A cross-encoder reads both together with full attention across both texts — much more accurate, but too slow to run on the full corpus.</p>
+<pre><code>Bi-Encoder vs Cross-Encoder:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Bi-Encoder (embedding):
+  Query  → [ENCODER] → vector_q ─┐
+                                  ├── cosine_sim → score
+  Doc    → [ENCODER] → vector_d ─┘
+
+  Fast: pre-compute doc vectors, only encode query at runtime
+  Approximate: query/doc encoded independently
+
+Cross-Encoder (reranker):
+  [Query + Document] → [ENCODER] → single relevance score
+
+  Slow: must encode each (query, doc) pair together
+  Accurate: full attention across query and document tokens
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+</code></pre>
+<p><strong>Why only rerank top 5-10?</strong> Cross-encoders are slow (~100ms per pair on CPU). Reranking all 1000 chunks would take ~100 seconds. So we use cheap retrieval to get 10-15 candidates, then use the expensive reranker to precisely score just those.</p>
+<h3 id="in-loaniq-project_5">In LoanIQ Project</h3>
+<p>From <code>app/services/rag/reranker.py → CrossEncoderReranker</code>:</p>
+<pre><code class="language-python">class CrossEncoderReranker:
+    def __init__(self):
+        self._model = None   # lazy-loaded on first use
+
+    def rerank(self, query: str, chunks: list, top_k: int = 5) -&gt; list:
+        model = self._load_model()  # cross-encoder/ms-marco-MiniLM-L-6-v2
+
+        # Build (query, chunk_text) pairs
+        pairs = [(query, chunk.content) for chunk in chunks]
+
+        # Run cross-encoder: scores each pair together
+        scores = model.predict(pairs, show_progress_bar=False)
+
+        # Attach scores and sort
+        for chunk, score in zip(chunks, scores):
+            chunk.rerank_score = float(score)
+
+        return sorted(chunks, key=lambda c: c.rerank_score, reverse=True)[:top_k]
+</code></pre>
+<p><strong>Model used:</strong> <code>cross-encoder/ms-marco-MiniLM-L-6-v2</code>
+- Free HuggingFace model, ~25MB
+- Trained on MS MARCO (Microsoft question-answering dataset)
+- Runs on CPU in ~100ms per pair
+- Zero API cost</p>
+<h3 id="alternatives">Alternatives</h3>
+<table>
+<thead>
+<tr>
+<th>Reranker</th>
+<th>Type</th>
+<th>Cost</th>
+<th>Accuracy</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ms-marco-MiniLM-L-6-v2</code></td>
+<td>Local HuggingFace</td>
+<td>Free</td>
+<td>Good</td>
+</tr>
+<tr>
+<td><code>ms-marco-MiniLM-L-12-v2</code></td>
+<td>Local HuggingFace</td>
+<td>Free</td>
+<td>Better</td>
+</tr>
+<tr>
+<td>Cohere Rerank API</td>
+<td>Managed cloud</td>
+<td>~$1/1K queries</td>
+<td>Very high</td>
+</tr>
+<tr>
+<td>ColBERT</td>
+<td>Local, token-level</td>
+<td>Free</td>
+<td>High</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="sub-topic-7-advanced-techniques">Sub-topic 7: Advanced Techniques</h2>
+<h3 id="contextual-retrieval">Contextual Retrieval</h3>
+<p>Instead of embedding raw chunks, prepend a document-level summary to each chunk before embedding:</p>
+<pre><code>Original chunk: &quot;The maximum LTV is 80% for second homes.&quot;
+
+With contextual prefix: 
+&quot;[This chunk is from Section 4: Property Requirements of the Eligibility Policy.
+ Context: This section describes LTV requirements by occupancy type.]
+ The maximum LTV is 80% for second homes.&quot;
+</code></pre>
+<p>This makes the chunk embedding "aware" of its context in the larger document. Significantly improves retrieval for chunks whose meaning depends on context.</p>
+<h3 id="self-querying">Self-Querying</h3>
+<p>LLM generates structured metadata filters from the natural language query:</p>
+<pre><code>User: &quot;What are the LTV requirements for FHA loans in California?&quot;
+
+LLM extracts:
+{
+  &quot;query&quot;: &quot;LTV requirements&quot;,
+  &quot;filters&quot;: {
+    &quot;applicable_loan_types&quot;: [&quot;FHA&quot;],
+    &quot;applicable_states&quot;: [&quot;CA&quot;]
+  }
+}
+</code></pre>
+<p>LoanIQ already stores <code>applicable_states</code> and <code>applicable_loan_types</code> on each chunk — these become WHERE clause filters in the SQL, dramatically reducing the search space before vector comparison.</p>
+<hr />
+<h2 id="sub-topic-8-retrieval-metrics">Sub-topic 8: Retrieval Metrics</h2>
+<h3 id="key-metrics">Key Metrics</h3>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Formula</th>
+<th>What it Measures</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Precision@K</strong></td>
+<td>Relevant in top-K / K</td>
+<td>Of what you returned, how much was useful?</td>
+</tr>
+<tr>
+<td><strong>Recall@K</strong></td>
+<td>Relevant in top-K / Total relevant</td>
+<td>Did you find everything that matters?</td>
+</tr>
+<tr>
+<td><strong>MRR</strong></td>
+<td>mean(1/rank_of_first_relevant)</td>
+<td>How early does the first relevant result appear?</td>
+</tr>
+<tr>
+<td><strong>NDCG</strong></td>
+<td>Sum(relevance/log2(rank))</td>
+<td>Position-weighted graded relevance</td>
+</tr>
+<tr>
+<td><strong>Hit Rate</strong></td>
+<td>1 if any relevant chunk in top-K</td>
+<td>Did you find <em>at least one</em> relevant chunk?</td>
+</tr>
+</tbody>
+</table>
+<h3 id="in-loaniq-project-from-rag_evaluatorpy">In LoanIQ Project (from <code>rag_evaluator.py</code>)</h3>
+<pre><code class="language-python">def _score_context_precision(self, sample, rag_result) -&gt; float:
+    &quot;&quot;&quot;Precision: what fraction of retrieved chunks contain relevant keywords?&quot;&quot;&quot;
+    relevant_count = sum(
+        1 for chunk in rag_result.source_chunks
+        if any(kw.lower() in chunk.content.lower() for kw in sample.context_keywords)
+    )
+    return relevant_count / len(rag_result.source_chunks)
+
+def _score_context_recall(self, sample, rag_result) -&gt; float:
+    &quot;&quot;&quot;Recall: what fraction of expected keywords appear in ANY retrieved chunk?&quot;&quot;&quot;
+    all_context = &quot; &quot;.join(c.content.lower() for c in rag_result.source_chunks)
+    found = sum(1 for kw in sample.context_keywords if kw.lower() in all_context)
+    return found / len(sample.context_keywords)
+</code></pre>
+<p><strong>Interpreting low scores:</strong>
+- Low precision → retrieval is bringing in noisy/irrelevant chunks → tighten similarity threshold or improve chunking
+- Low recall → missing relevant content → increase K, improve chunking, check if content was ingested correctly</p>
+<hr />
+<h2 id="10-interview-questions-rag-retrieval-pipeline">10 Interview Questions — RAG Retrieval Pipeline</h2>
+<p><strong>Q1: What is hybrid retrieval and why does LoanIQ use it?</strong></p>
+<p><strong>A:</strong> Hybrid retrieval combines dense (vector/semantic) search and sparse (BM25/keyword) search to get the best of both worlds.</p>
+<ul>
+<li><strong>Dense retrieval</strong> finds semantically similar content — great when users paraphrase, but misses exact matches for specific numbers, codes, or proper nouns.</li>
+<li><strong>BM25 (sparse retrieval)</strong> finds exact keyword matches — terrible at understanding meaning, but great for "FICO score 620" or "HMDA section 1003.4".</li>
+</ul>
+<p>In LoanIQ, policy documents contain both: general guidelines (better with dense) and specific rule references with exact numbers and acronyms (better with BM25).</p>
+<p>Example: Query "What is the maximum DTI for USDA loans?"
+- Dense: Returns chunks about DTI limits broadly (conceptually similar)
+- BM25: Returns chunks that literally contain "USDA" and "DTI" (keyword match)
+- RRF: Chunks appearing in both lists get boosted — highest confidence</p>
+<hr />
+<p><strong>Q2: Explain the BM25 formula. Why does it outperform simple TF-IDF?</strong></p>
+<p><strong>A:</strong> BM25 builds on TF-IDF with two key improvements:</p>
+<p><strong>TF saturation:</strong> In plain TF-IDF, a word appearing 20 times scores 20× more than a word appearing once. This is gameable and often wrong — the 20th occurrence adds little information. BM25's TF component is: <code>tf / (tf + k₁(1-b+b×|d|/avgdl))</code>, which asymptotically approaches a ceiling. At k₁=1.5, doubling TF gives ~80% more score (not 2×).</p>
+<p><strong>Length normalization:</strong> Shorter documents have higher TF naturally (fewer total words). BM25 normalizes by comparing document length to corpus average length (avgdl). Parameter <code>b=0.75</code> controls this normalization strength.</p>
+<p><strong>IDF stays the same:</strong> Rare terms (appear in few documents) get higher IDF. "Mortgage" in a mortgage corpus would have low IDF; "HECM" (Home Equity Conversion Mortgage) in a general corpus would have high IDF.</p>
+<hr />
+<p><strong>Q3: Walk me through the RRF formula. Why is k=60?</strong></p>
+<p><strong>A:</strong> RRF score for document d: <code>Σ 1/(k + rank_r(d))</code> summed over all retrieval lists r.</p>
+<p>The role of k=60:
+- Without k: rank 1 → score 1.0, rank 2 → 0.5, rank 3 → 0.33. The gap between rank 1 and 2 (0.5) is huge — rank 1 dominates.
+- With k=60: rank 1 → 1/61 = 0.0164, rank 2 → 1/62 = 0.0161. Tiny gap — rankings are treated more equally.</p>
+<p>This means a document that ranks 5th in dense AND 5th in sparse will beat a document that ranks 1st in only one list. "Consistency across retrievers" is rewarded over "best in one retriever."</p>
+<p>The constant k=60 was empirically determined to work well across many datasets. You can tune it but 60 is a safe default.</p>
+<hr />
+<p><strong>Q4: What is the "lost in the middle" problem and how does MMR help?</strong></p>
+<p><strong>A:</strong> Research by Liu et al. (2023) found that LLMs perform significantly worse at retrieving information placed in the middle of a long context. They pay attention to the beginning and end of the context window but "lose" information in the middle.</p>
+<p>MMR doesn't directly solve "lost in the middle" at the generation stage (that's addressed by careful prompt formatting — putting most important chunks first and last). However, MMR prevents a worse problem: redundant chunks.</p>
+<p>Without MMR, if your top-5 chunks all say "LTV must be ≤ 80%" (slightly differently worded), the LLM spends most of its attention window on one fact. With MMR, chunk 1 covers LTV, chunk 2 covers DTI, chunk 3 covers credit score requirements — the context window is used efficiently.</p>
+<hr />
+<p><strong>Q5: Explain bi-encoder vs cross-encoder. Why do we use both in LoanIQ?</strong></p>
+<p><strong>A:</strong></p>
+<p><strong>Bi-encoder</strong>: Query encoded independently from document. Result = two vectors. Score = cosine similarity. Speed: O(1) per query (docs pre-computed). Accuracy: moderate.</p>
+<p><strong>Cross-encoder</strong>: Query and document encoded together in one forward pass. Full attention across all query-document tokens. Speed: O(n) per query (n = number of candidates). Accuracy: high.</p>
+<p>LoanIQ uses both in a two-stage pipeline:
+1. <strong>Stage 1 (bi-encoder):</strong> Dense retrieval finds top-15 candidates fast — eliminates 99.9% of chunks with O(1) embedding comparison
+2. <strong>Stage 2 (cross-encoder):</strong> Reranker reads each of the 15 candidates together with the query — precise scoring of just 15 pairs</p>
+<p>If we used only the cross-encoder, scoring 1000 chunks × 100ms = 100 seconds per query. Unacceptable. The bi-encoder pre-filter makes this feasible.</p>
+<hr />
+<p><strong>Q6: What does MMR's λ parameter control? What would you change it to for different use cases?</strong></p>
+<p><strong>A:</strong> λ controls the tradeoff between relevance and diversity:</p>
+<p><code>MMR(d) = λ × Sim(d, query) - (1-λ) × max_Sim(d, selected)</code></p>
+<ul>
+<li><strong>λ = 1.0</strong>: Pure relevance — same as sorting by similarity score. Use when you want the most relevant chunks regardless of redundancy (e.g., fact extraction for a single specific fact).</li>
+<li><strong>λ = 0.7</strong> (LoanIQ): 70% relevance, 30% diversity. Good default for policy Q&amp;A.</li>
+<li><strong>λ = 0.5</strong>: Equal balance. Use for broad topic questions.</li>
+<li><strong>λ = 0.3</strong>: High diversity. Use for survey questions like "What are all the requirements for FHA loans?" — want to cover many aspects.</li>
+</ul>
+<p>In LoanIQ, the PolicyRetrievalAgent uses λ=0.5 because mortgage policy questions often need multiple policy rules (credit, LTV, DTI, property type) — diversity matters.</p>
+<hr />
+<p><strong>Q7: A user asks "DTI?" and gets no useful results. What's wrong and how would you fix it?</strong></p>
+<p><strong>A:</strong> "DTI?" is too short and vague for both dense and sparse retrieval:
+- <strong>Dense</strong>: The embedding of "DTI?" is a low-information vector — embedding three characters produces a noisy, non-specific vector.
+- <strong>BM25</strong>: "DTI" might match, but without context, it matches every chunk mentioning DTI.</p>
+<p><strong>Fixes:</strong>
+1. <strong>Query expansion/rewriting</strong>: Before retrieval, use an LLM to expand "DTI?" to "What is the maximum debt-to-income ratio requirement for mortgage loans?" This gives both retrievers rich, meaningful input.
+2. <strong>HyDE</strong>: Generate a hypothetical answer and embed that instead. The hypothetical answer will be a rich paragraph about DTI limits — much better for dense retrieval.
+3. <strong>Conversation context</strong>: If this is part of a multi-turn conversation about FHA loans, prepend the conversation context to the query.
+4. <strong>Minimum query length check</strong>: Reject queries shorter than N characters and prompt the user to be more specific.</p>
+<hr />
+<p><strong>Q8: How does LoanIQ filter chunks by state and loan type during retrieval? Why is this important?</strong></p>
+<p><strong>A:</strong> Mortgage regulations vary dramatically by state. A California FHA rule may be completely different from a Texas FHA rule. Retrieving the wrong state's policy and generating an answer based on it would be a compliance violation.</p>
+<p>In the SQL query:</p>
+<pre><code class="language-sql">WHERE pc.applicable_states @&gt; CAST(:state_filter AS jsonb)
+   OR pc.applicable_states @&gt; '[&quot;ALL&quot;]'::jsonb
+</code></pre>
+<p><code>@&gt;</code> is PostgreSQL's JSON containment operator: "this JSON column contains this value."</p>
+<p>Each <code>PolicyChunk</code> has <code>applicable_states = ["CA"]</code> or <code>["ALL"]</code>. The query only returns:
+- Chunks tagged for the specific state
+- Chunks tagged as "ALL" (universal rules)</p>
+<p>This means the LLM only sees policy content relevant to the borrower's actual situation — no risk of applying California rules to a Texas loan.</p>
+<p>This is called <strong>pre-retrieval filtering</strong> — reducing the search space before vector comparison, which also makes the query faster.</p>
+<hr />
+<p><strong>Q9: What is the difference between context precision and context recall in RAGAS?</strong></p>
+<p><strong>A:</strong></p>
+<p><strong>Context Precision</strong>: Of all the chunks you retrieved, what fraction were actually relevant to answering the question? High precision means low noise in your context.</p>
+<p>Example: Retrieve 5 chunks, 4 are about the right topic, 1 is about property insurance (off-topic) → Precision = 4/5 = 0.80</p>
+<p><strong>Context Recall</strong>: Of all the information needed to correctly answer the question, did your retrieval system find it all? High recall means no important information was missed.</p>
+<p>Example: The correct answer requires knowing (a) max LTV and (b) PMI requirements. If retrieval found chunks covering LTV but not PMI → Recall ≈ 0.5</p>
+<p><strong>Fixing low scores:</strong>
+- Low precision → Tighten similarity threshold; improve chunk quality; use better reranking
+- Low recall → Increase top-K; improve chunking (maybe a single chunk was split badly); check if content is in the corpus at all</p>
+<p>In LoanIQ's <code>rag_evaluator.py</code>, both are measured by keyword overlap with expected keywords from the evaluation dataset.</p>
+<hr />
+<p><strong>Q10: BM25 is in-memory in LoanIQ. What breaks at scale and how would you fix it?</strong></p>
+<p><strong>A:</strong> <code>BM25Okapi</code> from <code>rank_bm25</code> is built in-memory at startup from all policy chunks. Problems at scale:</p>
+<ol>
+<li><strong>Memory</strong>: 100K chunks × average 200 tokens × ~4 bytes/token = ~80MB. At 10M chunks → 8GB RAM just for BM25 index.</li>
+<li><strong>Startup time</strong>: Rebuilding index from DB on every restart = slow cold start</li>
+<li><strong>Updates</strong>: New document ingested → entire BM25 index must be rebuilt</li>
+</ol>
+<p><strong>Production fixes:</strong>
+1. <strong>Elasticsearch/OpenSearch</strong>: Persistent, distributed BM25. Supports incremental updates, handles billions of documents, has its own scoring API.
+2. <strong>PostgreSQL full-text search</strong>: <code>tsvector</code> columns with GIN index. Already in the same DB, no extra infrastructure. Less tunable than Elasticsearch but sufficient for most cases.
+3. <strong>Hybrid approach</strong>: Keep BM25 in-memory for small policy corpus (&lt;10K chunks) since performance is fine. Switch to PostgreSQL FTS or Elasticsearch only when chunks exceed 10K.</p>
+<p>In LoanIQ's case (~500-1000 policy chunks), in-memory BM25 is absolutely the right call. Over-engineering here would add complexity with zero benefit.</p>
+<hr />
+<p><em>Next: <a href="03_RAG_Generation_RAGAS.md">RAG Generation &amp; RAGAS Evaluation →</a></em></p>
+  </div>
+
+  <div class="page-footer">
+    <a href="01_RAG_Ingestion_Pipeline.html" class="footer-nav-btn prev">← Ingestion Pipeline</a>
+    <span class="page-pos">2 / 8</span>
+    <a href="03_RAG_Generation_RAGAS.html" class="footer-nav-btn next">Generation & RAGAS →</a>
+  </div>
+</main>
+
+</body>
+</html>
