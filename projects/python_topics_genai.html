@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Python Topics — Loan Decision AI Project</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=IBM+Plex+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #0a0c10;
+    --surface: #111318;
+    --border: #1e2330;
+    --accent1: #00e5a0;
+    --accent2: #6c63ff;
+    --accent3: #ff6b6b;
+    --accent4: #ffd166;
+    --text: #e8ecf4;
+    --muted: #6b7591;
+    --card: #13161f;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 400;
+    line-height: 1.6;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── BACKGROUND GRID ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,229,160,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,229,160,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrapper { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; padding: 60px 24px 100px; }
+
+  /* ── HERO ── */
+  .hero {
+    text-align: center;
+    padding: 60px 0 80px;
+    position: relative;
+  }
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0,229,160,0.08);
+    border: 1px solid rgba(0,229,160,0.25);
+    color: var(--accent1);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    border-radius: 100px;
+    margin-bottom: 24px;
+  }
+  .hero-badge::before { content: '◈'; font-size: 10px; }
+  .hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2.4rem, 5vw, 4.2rem);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 20px;
+  }
+  .hero h1 span.glow {
+    background: linear-gradient(135deg, var(--accent1), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .hero p {
+    color: var(--muted);
+    font-size: 1rem;
+    max-width: 560px;
+    margin: 0 auto 40px;
+    font-weight: 300;
+  }
+
+  /* ── STATS ROW ── */
+  .stats {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: wrap;
+    margin-bottom: 80px;
+  }
+  .stat {
+    text-align: center;
+  }
+  .stat-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 2.6rem;
+    font-weight: 800;
+    line-height: 1;
+    background: linear-gradient(135deg, var(--accent1), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .stat-label {
+    font-size: 0.72rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 4px;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  /* ── SECTION TITLES ── */
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 36px;
+  }
+  .section-header h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+  .section-tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 4px;
+    border: 1px solid;
+  }
+  .tag-green { color: var(--accent1); border-color: rgba(0,229,160,0.3); background: rgba(0,229,160,0.06); }
+  .tag-purple { color: var(--accent2); border-color: rgba(108,99,255,0.3); background: rgba(108,99,255,0.06); }
+
+  /* ── TOPIC GRID ── */
+  .topic-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 80px;
+  }
+  .topic-card {
+    background: var(--card);
+    padding: 24px;
+    position: relative;
+    transition: background 0.2s;
+    cursor: default;
+  }
+  .topic-card:hover { background: #161a25; }
+  .topic-card::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--line-color, var(--accent1));
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .topic-card:hover::after { opacity: 1; }
+
+  .card-icon {
+    font-size: 1.4rem;
+    margin-bottom: 12px;
+    display: block;
+  }
+  .card-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: var(--text);
+  }
+  .card-desc {
+    font-size: 0.8rem;
+    color: var(--muted);
+    line-height: 1.5;
+    margin-bottom: 14px;
+  }
+  .code-tag {
+    display: inline-block;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    color: var(--accent1);
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin: 2px 2px 2px 0;
+  }
+
+  /* ── TWO-COLUMN LAYOUT for essentials ── */
+  .essentials-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 80px;
+  }
+  @media (max-width: 720px) {
+    .essentials-layout { grid-template-columns: 1fr; }
+    .stats { gap: 24px; }
+  }
+
+  .category-block {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+  .category-head {
+    padding: 18px 22px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .category-head .cat-icon { font-size: 1.1rem; }
+  .category-head h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+  }
+  .cat-count {
+    margin-left: auto;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--muted);
+  }
+
+  .skill-list { padding: 10px 0; }
+  .skill-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px 22px;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+    transition: background 0.15s;
+  }
+  .skill-item:last-child { border-bottom: none; }
+  .skill-item:hover { background: rgba(255,255,255,0.02); }
+  .skill-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--dot-color, var(--accent1));
+    margin-top: 7px;
+    flex-shrink: 0;
+  }
+  .skill-name {
+    font-size: 0.83rem;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 2px;
+  }
+  .skill-detail {
+    font-size: 0.73rem;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+
+  /* ── PRIORITY MATRIX ── */
+  .matrix-section { margin-bottom: 80px; }
+  .priority-row {
+    display: grid;
+    grid-template-columns: 160px 1fr 80px;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .priority-row:last-child { border-bottom: none; }
+  .priority-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--text);
+  }
+  .progress-bar {
+    height: 6px;
+    background: var(--border);
+    border-radius: 100px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    border-radius: 100px;
+    background: linear-gradient(90deg, var(--bar-start), var(--bar-end));
+    animation: fill 1.2s ease forwards;
+    width: 0;
+  }
+  @keyframes fill { to { width: var(--target-width); } }
+  .priority-pct {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--muted);
+    text-align: right;
+  }
+
+  /* ── LEARNING PATH ── */
+  .path-section { margin-bottom: 80px; }
+  .path-steps {
+    display: flex;
+    gap: 0;
+    position: relative;
+  }
+  .path-steps::before {
+    content: '';
+    position: absolute;
+    top: 28px;
+    left: 28px;
+    right: 28px;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent1), var(--accent2), var(--accent3), var(--accent4));
+    z-index: 0;
+  }
+  .path-step {
+    flex: 1;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+    padding: 0 8px;
+  }
+  .step-circle {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    margin: 0 auto 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.1rem;
+    border: 2px solid;
+    background: var(--bg);
+    transition: transform 0.2s;
+  }
+  .step-circle:hover { transform: scale(1.1); }
+  .step-1 .step-circle { color: var(--accent1); border-color: var(--accent1); box-shadow: 0 0 20px rgba(0,229,160,0.15); }
+  .step-2 .step-circle { color: var(--accent2); border-color: var(--accent2); box-shadow: 0 0 20px rgba(108,99,255,0.15); }
+  .step-3 .step-circle { color: var(--accent3); border-color: var(--accent3); box-shadow: 0 0 20px rgba(255,107,107,0.15); }
+  .step-4 .step-circle { color: var(--accent4); border-color: var(--accent4); box-shadow: 0 0 20px rgba(255,209,102,0.15); }
+
+  .step-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .step-desc {
+    font-size: 0.72rem;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+  @media (max-width: 600px) {
+    .path-steps { flex-direction: column; gap: 24px; }
+    .path-steps::before { display: none; }
+  }
+
+  /* ── FOOTER ── */
+  .footer {
+    text-align: center;
+    padding-top: 40px;
+    border-top: 1px solid var(--border);
+    font-size: 0.75rem;
+    color: var(--muted);
+    font-family: 'IBM Plex Mono', monospace;
+  }
+  .footer span { color: var(--accent1); }
+
+  /* ── ANIMATIONS ── */
+  .fade-up {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeUp 0.6s ease forwards;
+  }
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .d1 { animation-delay: 0.1s; }
+  .d2 { animation-delay: 0.2s; }
+  .d3 { animation-delay: 0.3s; }
+  .d4 { animation-delay: 0.4s; }
+  .d5 { animation-delay: 0.5s; }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <!-- HERO -->
+  <div class="hero fade-up d1">
+    <div class="hero-badge">Loan Decision AI · Python Analysis</div>
+    <h1>Python Topics<br /><span class="glow">Mapped & Mastered</span></h1>
+    <p>Every Python concept used in the Loan Decision project — plus the essential topics every Gen AI Engineer must know.</p>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats fade-up d2">
+    <div class="stat"><div class="stat-num">28</div><div class="stat-label">Topics in Project</div></div>
+    <div class="stat"><div class="stat-num">7</div><div class="stat-label">Agents Built</div></div>
+    <div class="stat"><div class="stat-num">8</div><div class="stat-label">RAG Stages</div></div>
+    <div class="stat"><div class="stat-num">35+</div><div class="stat-label">GenAI Essentials</div></div>
+  </div>
+
+  <!-- ── SECTION 1: PROJECT TOPICS ── -->
+  <div class="section-header fade-up d2">
+    <h2>📂 Python Topics Used in the Project</h2>
+    <span class="section-tag tag-green">From Source Code</span>
+  </div>
+
+  <div class="topic-grid fade-up d3">
+
+    <!-- 1 -->
+    <div class="topic-card" style="--line-color: var(--accent1)">
+      <span class="card-icon">⚡</span>
+      <div class="card-title">Async / Await (asyncio)</div>
+      <div class="card-desc">The entire API, agent pipeline, DB calls, and LLM requests are non-blocking async coroutines — the backbone of the whole system.</div>
+      <span class="code-tag">async def</span>
+      <span class="code-tag">await</span>
+      <span class="code-tag">asyncio</span>
+      <span class="code-tag">ainvoke()</span>
+    </div>
+
+    <!-- 2 -->
+    <div class="topic-card" style="--line-color: var(--accent2)">
+      <span class="card-icon">🏗️</span>
+      <div class="card-title">FastAPI Web Framework</div>
+      <div class="card-desc">REST API creation, route decorators, middleware, dependency injection, CORS, lifespan events, and JSON responses.</div>
+      <span class="code-tag">@app.get</span>
+      <span class="code-tag">@app.post</span>
+      <span class="code-tag">middleware</span>
+      <span class="code-tag">lifespan</span>
+    </div>
+
+    <!-- 3 -->
+    <div class="topic-card" style="--line-color: var(--accent3)">
+      <span class="card-icon">📐</span>
+      <div class="card-title">Pydantic v2 & Type Validation</div>
+      <div class="card-desc">All request/response schemas, settings loading, and data contracts use Pydantic BaseModel and BaseSettings for runtime validation.</div>
+      <span class="code-tag">BaseModel</span>
+      <span class="code-tag">BaseSettings</span>
+      <span class="code-tag">Field</span>
+      <span class="code-tag">model_config</span>
+    </div>
+
+    <!-- 4 -->
+    <div class="topic-card" style="--line-color: var(--accent4)">
+      <span class="card-icon">🗄️</span>
+      <div class="card-title">SQLAlchemy ORM (Async)</div>
+      <div class="card-desc">Async database engine, session management, DeclarativeBase models, relationships, and mapped columns for PostgreSQL.</div>
+      <span class="code-tag">AsyncSession</span>
+      <span class="code-tag">Mapped</span>
+      <span class="code-tag">relationship</span>
+      <span class="code-tag">create_async_engine</span>
+    </div>
+
+    <!-- 5 -->
+    <div class="topic-card" style="--line-color: var(--accent1)">
+      <span class="card-icon">🧬</span>
+      <div class="card-title">TypedDict & Type Hints</div>
+      <div class="card-desc">LangGraph state is defined using TypedDict with Annotated reducers. Full use of Optional, Literal, and generic types throughout.</div>
+      <span class="code-tag">TypedDict</span>
+      <span class="code-tag">Annotated</span>
+      <span class="code-tag">Optional</span>
+      <span class="code-tag">Literal</span>
+    </div>
+
+    <!-- 6 -->
+    <div class="topic-card" style="--line-color: var(--accent2)">
+      <span class="card-icon">🤖</span>
+      <div class="card-title">LangGraph Multi-Agent Orchestration</div>
+      <div class="card-desc">StateGraph with nodes, conditional edges, fan-out/fan-in parallel execution, and custom deduplication reducers for shared state.</div>
+      <span class="code-tag">StateGraph</span>
+      <span class="code-tag">add_node</span>
+      <span class="code-tag">add_conditional_edges</span>
+      <span class="code-tag">compile()</span>
+    </div>
+
+    <!-- 7 -->
+    <div class="topic-card" style="--line-color: var(--accent3)">
+      <span class="card-icon">🔗</span>
+      <div class="card-title">LangChain RAG Pipeline</div>
+      <div class="card-desc">LangChain chains, LLM wrappers (ChatOpenAI, ChatBedrock, ChatOllama), text splitters, embeddings, and vectorstore integration.</div>
+      <span class="code-tag">ChatOpenAI</span>
+      <span class="code-tag">langchain_core</span>
+      <span class="code-tag">text_splitters</span>
+      <span class="code-tag">RunnableChain</span>
+    </div>
+
+    <!-- 8 -->
+    <div class="topic-card" style="--line-color: var(--accent4)">
+      <span class="card-icon">🔒</span>
+      <div class="card-title">OOP & Class Design</div>
+      <div class="card-desc">Agent classes with inheritance, BaseAgent pattern, singleton instances, and the LLMRouter class with provider abstraction.</div>
+      <span class="code-tag">class</span>
+      <span class="code-tag">__init__</span>
+      <span class="code-tag">inheritance</span>
+      <span class="code-tag">@staticmethod</span>
+    </div>
+
+    <!-- 9 -->
+    <div class="topic-card" style="--line-color: var(--accent1)">
+      <span class="card-icon">🎯</span>
+      <div class="card-title">Decorators</div>
+      <div class="card-desc">Custom decorators and third-party ones: @asynccontextmanager, @traceable (LangSmith), @lru_cache, @app.middleware, @app.get.</div>
+      <span class="code-tag">@lru_cache</span>
+      <span class="code-tag">@traceable</span>
+      <span class="code-tag">@asynccontextmanager</span>
+    </div>
+
+    <!-- 10 -->
+    <div class="topic-card" style="--line-color: var(--accent2)">
+      <span class="card-icon">⚙️</span>
+      <div class="card-title">Environment & Config Management</div>
+      <div class="card-desc">.env file loading, pydantic-settings, @lru_cache singleton for settings, and os.getenv() for dynamic agent model overrides.</div>
+      <span class="code-tag">pydantic_settings</span>
+      <span class="code-tag">os.getenv</span>
+      <span class="code-tag">.env</span>
+    </div>
+
+    <!-- 11 -->
+    <div class="topic-card" style="--line-color: var(--accent3)">
+      <span class="card-icon">📊</span>
+      <div class="card-title">JSON Handling</div>
+      <div class="card-desc">Parsing LLM JSON responses, stripping markdown fences, robust json.loads() with fallbacks, and structured prompt design for JSON output.</div>
+      <span class="code-tag">json.loads</span>
+      <span class="code-tag">json.dumps</span>
+      <span class="code-tag">JSONDecodeError</span>
+    </div>
+
+    <!-- 12 -->
+    <div class="topic-card" style="--line-color: var(--accent4)">
+      <span class="card-icon">🔄</span>
+      <div class="card-title">Exception Handling & Retry Logic</div>
+      <div class="card-desc">Try/except with specific exception types, graceful fallback states, tenacity for LLM retry policies, and error propagation through the pipeline.</div>
+      <span class="code-tag">try/except</span>
+      <span class="code-tag">tenacity</span>
+      <span class="code-tag">@retry</span>
+    </div>
+
+    <!-- 13 -->
+    <div class="topic-card" style="--line-color: var(--accent1)">
+      <span class="card-icon">📝</span>
+      <div class="card-title">Structured Logging (structlog)</div>
+      <div class="card-desc">Context-aware structured logging with key-value pairs, log levels, sentry integration, and per-module logger instances.</div>
+      <span class="code-tag">structlog</span>
+      <span class="code-tag">get_logger</span>
+      <span class="code-tag">logger.info()</span>
+    </div>
+
+    <!-- 14 -->
+    <div class="topic-card" style="--line-color: var(--accent2)">
+      <span class="card-icon">📦</span>
+      <div class="card-title">Dataclasses</div>
+      <div class="card-desc">@dataclass used in advanced_rag_pipeline.py to define RAGResult — a clean data container with field() defaults and optional fields.</div>
+      <span class="code-tag">@dataclass</span>
+      <span class="code-tag">field()</span>
+      <span class="code-tag">dataclasses</span>
+    </div>
+
+    <!-- 15 -->
+    <div class="topic-card" style="--line-color: var(--accent3)">
+      <span class="card-icon">🔢</span>
+      <div class="card-title">Enums</div>
+      <div class="card-desc">str.Enum subclasses for LoanType, LoanPurpose, PropertyType, DecisionOutcome — providing type-safe controlled vocabularies for DB columns.</div>
+      <span class="code-tag">import enum</span>
+      <span class="code-tag">str, enum.Enum</span>
+    </div>
+
+    <!-- 16 -->
+    <div class="topic-card" style="--line-color: var(--accent4)">
+      <span class="card-icon">🐋</span>
+      <div class="card-title">Docker & Containerization</div>
+      <div class="card-desc">Dockerfile and docker-compose.yml for packaging the FastAPI app with PostgreSQL, pgvector, and Redis services.</div>
+      <span class="code-tag">Dockerfile</span>
+      <span class="code-tag">docker-compose</span>
+      <span class="code-tag">uvicorn</span>
+    </div>
+
+    <!-- 17 -->
+    <div class="topic-card" style="--line-color: var(--accent1)">
+      <span class="card-icon">🧪</span>
+      <div class="card-title">Unit Testing (pytest)</div>
+      <div class="card-desc">pytest and pytest-asyncio for testing ratio calculator and agent logic, with async test cases, fixtures, and assert patterns.</div>
+      <span class="code-tag">pytest</span>
+      <span class="code-tag">pytest-asyncio</span>
+      <span class="code-tag">@pytest.mark.asyncio</span>
+    </div>
+
+    <!-- 18 -->
+    <div class="topic-card" style="--line-color: var(--accent2)">
+      <span class="card-icon">⚡</span>
+      <div class="card-title">Concurrency (run_in_executor)</div>
+      <div class="card-desc">Bridging sync boto3 AWS SDK calls into the async event loop using asyncio.get_event_loop().run_in_executor() for non-blocking I/O.</div>
+      <span class="code-tag">run_in_executor</span>
+      <span class="code-tag">asyncio.gather</span>
+    </div>
+
+    <!-- 19 -->
+    <div class="topic-card" style="--line-color: var(--accent3)">
+      <span class="card-icon">🧮</span>
+      <div class="card-title">Numeric Computation & Math</div>
+      <div class="card-desc">Financial ratio calculations (DTI, LTV, HLTV, CLTV), mortgage payment formulas, and numpy for vector similarity in the RAG pipeline.</div>
+      <span class="code-tag">numpy</span>
+      <span class="code-tag">Decimal</span>
+      <span class="code-tag">math formulas</span>
+    </div>
+
+    <!-- 20 -->
+    <div class="topic-card" style="--line-color: var(--accent4)">
+      <span class="card-icon">📜</span>
+      <div class="card-title">Comprehensions & Functional Tools</div>
+      <div class="card-desc">List/dict comprehensions used throughout for filtering chunks, deduplication in reducers, batching embeddings, and mapping results.</div>
+      <span class="code-tag">list comp</span>
+      <span class="code-tag">dict comp</span>
+      <span class="code-tag">filter()</span>
+      <span class="code-tag">map()</span>
+    </div>
+
+    <!-- 21 -->
+    <div class="topic-card" style="--line-color: var(--accent1)">
+      <span class="card-icon">🗃️</span>
+      <div class="card-title">UUID & Datetime</div>
+      <div class="card-desc">uuid.uuid4() for session/application IDs, datetime.utcnow().isoformat() for timestamps throughout state tracking and audit logs.</div>
+      <span class="code-tag">uuid</span>
+      <span class="code-tag">datetime</span>
+      <span class="code-tag">isoformat()</span>
+    </div>
+
+    <!-- 22 -->
+    <div class="topic-card" style="--line-color: var(--accent2)">
+      <span class="card-icon">📂</span>
+      <div class="card-title">Package & Module System</div>
+      <div class="card-desc">Well-structured __init__.py hierarchy, relative vs absolute imports, and noqa import guards for SQLAlchemy model registration.</div>
+      <span class="code-tag">__init__.py</span>
+      <span class="code-tag">from app.x import y</span>
+      <span class="code-tag">noqa</span>
+    </div>
+
+    <!-- 23 -->
+    <div class="topic-card" style="--line-color: var(--accent3)">
+      <span class="card-icon">🌐</span>
+      <div class="card-title">HTTP Client (httpx / openai SDK)</div>
+      <div class="card-desc">Async HTTP requests via the OpenAI AsyncClient, httpx for external calls, and Ollama's OpenAI-compatible endpoint integration.</div>
+      <span class="code-tag">httpx</span>
+      <span class="code-tag">AsyncOpenAI</span>
+      <span class="code-tag">base_url</span>
+    </div>
+
+    <!-- 24 -->
+    <div class="topic-card" style="--line-color: var(--accent4)">
+      <span class="card-icon">🔑</span>
+      <div class="card-title">Security (JWT & Bcrypt)</div>
+      <div class="card-desc">JWT token generation with python-jose, password hashing with passlib bcrypt, and HS256 algorithm config in settings.</div>
+      <span class="code-tag">python-jose</span>
+      <span class="code-tag">passlib</span>
+      <span class="code-tag">bcrypt</span>
+    </div>
+
+    <!-- 25 -->
+    <div class="topic-card" style="--line-color: var(--accent1)">
+      <span class="card-icon">⏱️</span>
+      <div class="card-title">Performance Timing & Profiling</div>
+      <div class="card-desc">time.time() used in every agent and the pipeline runner for latency tracking; metadata dicts return tokens_used and latency_ms.</div>
+      <span class="code-tag">time.time()</span>
+      <span class="code-tag">latency_ms</span>
+    </div>
+
+    <!-- 26 -->
+    <div class="topic-card" style="--line-color: var(--accent2)">
+      <span class="card-icon">📄</span>
+      <div class="card-title">PDF Processing</div>
+      <div class="card-desc">PyMuPDF and pypdf for parsing loan policy PDFs — extracting text, chunking, and ingesting into the pgvector vectorstore.</div>
+      <span class="code-tag">pymupdf</span>
+      <span class="code-tag">pypdf</span>
+      <span class="code-tag">pdf_ingestion</span>
+    </div>
+
+    <!-- 27 -->
+    <div class="topic-card" style="--line-color: var(--accent3)">
+      <span class="card-icon">🔄</span>
+      <div class="card-title">Caching (Redis & lru_cache)</div>
+      <div class="card-desc">Redis for distributed caching of RAG results, and @lru_cache for in-process caching of the settings singleton and compiled graph.</div>
+      <span class="code-tag">redis</span>
+      <span class="code-tag">@lru_cache</span>
+      <span class="code-tag">cache_ttl</span>
+    </div>
+
+    <!-- 28 -->
+    <div class="topic-card" style="--line-color: var(--accent4)">
+      <span class="card-icon">🔬</span>
+      <div class="card-title">ML Inference (sentence-transformers)</div>
+      <div class="card-desc">Local cross-encoder reranker using HuggingFace sentence-transformers + torch for CPU inference on query-chunk pairs.</div>
+      <span class="code-tag">sentence_transformers</span>
+      <span class="code-tag">CrossEncoder</span>
+      <span class="code-tag">torch</span>
+    </div>
+
+  </div><!-- end topic-grid -->
+
+
+  <!-- ── SECTION 2: ESSENTIAL GENAI ENGINEER TOPICS ── -->
+  <div class="section-header fade-up d3">
+    <h2>🚀 Essential Python for a Gen AI Engineer</h2>
+    <span class="section-tag tag-purple">Career Roadmap</span>
+  </div>
+
+  <div class="essentials-layout fade-up d4">
+
+    <!-- CORE PYTHON -->
+    <div class="category-block">
+      <div class="category-head">
+        <span class="cat-icon">🐍</span>
+        <h3>Core Python Foundations</h3>
+        <span class="cat-count">9 topics</span>
+      </div>
+      <div class="skill-list">
+        <div class="skill-item">
+          <div class="skill-dot" style="--dot-color: var(--accent1)"></div>
+          <div><div class="skill-name">Async / Await & asyncio</div><div class="skill-detail">All GenAI I/O is async — LLM calls, DB, APIs. Non-negotiable.</div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-dot" style="--dot-color: var(--accent1)"></div>
+          <div><div class="skill-name">Type Hints & Annotations</div><div class="skill-detail">TypedDict, Optional, Literal, Annotated — used in LangGraph state heavily.</div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-dot" style="--dot-color: var(--accent1)"></div>
+          <div><div class="skill-name">OOP — Classes & Inheritance</div><div class="skill-detail">Agent base classes, router abstraction, and service layer design.</div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-dot" style="--dot-color: var(--accent1)"></div>
+          <div><div class="skill-name">Decorators & Context Managers</div><div class="skill-detail">@traceable, @lru_cache, @asynccontextmanager are everywhere.</div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-dot" style="--dot-color: var(--accent1)"></div>
+          <div><div class="skill-name">Exception Handling & Retry</div><div class="skill-detail">Robust LLM retry policies with tenacity; graceful pipeline failures.</div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-dot" style="--dot-color: var(--accent1)"></div>
+          <div><div class="skill-name">Comprehensions & Generators</div><div class="skill-detail">Batch processing, deduplication, and memory-efficient data pipelines.</div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-dot" style="--dot-color: var(--accent1)"></div>
+          <div><div class="skill-name">Dataclasses & Pydantic Models</div><div class="skill-detail">Schema validation is critical — Pydantic v2 is the industry standard.</div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-dot" style="--dot-color: var(--accent1)"></div>
+          <div><div class="skill-name">JSON & String Manipulation</div><div class="skill-detail">Parsing LLM JSON, stripping fences, prompt template f-strings.</div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-dot" style="--dot-color: var(--accent1)"></div>
+          <div><div class="skill-name">Package & Module Structure</div><div class="skill-detail">Organising multi-file GenAI projects with clean import hierarchies.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI/ML STACK -->
+    <div class="category-block">
+      <div class="category-head">
+        <span class="cat-icon">🧠</span>
+        <h3>AI / ML Libraries</h3>
+        <span class="cat-count">8 topics</span>
+      </div>
+      <div class="skill-list">
+        <div class="skill-item">
+          <div class="skill-dot" style="--dot-color: var(--accent2)"></div>
+          <div><div class="skill-name">OpenAI SDK (Async)</div><div class="skill-detail">chat.completions, embeddings, streaming, json_mode, tool calling.</div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-dot" style="--dot-color: var(--accent2)"></div>
+          <div><div class="skill-name">LangChain Core</div><div class="skill-detail">Chains, prompts, parsers, LLM wrappers, memory — foundational layer.</div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-dot" style="--dot-color: var(--accent2)"></div>
+          <div><div class="skill-name">LangGraph</div><div class="skill-detail">Multi-agent graphs, state management, conditional routing, parallel nodes.</div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-dot" style="--dot-color: var(--accent2)"></div>
+          <div><div class="skill-name">Embeddings & Vector Search</div><div class="skill-detail">OpenAI/Titan embeddings, pgvector, cosine similarity, FAISS basics.</div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-dot" style="--dot-color: var(--accent2)"></div>
+          <div><div class="skill-name">RAG Pipeline Design</div><div class="skill-detail">Chunking, retrieval, reranking, MMR, context building, answer generation.</div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-dot" style="--dot-color: var(--accent2)"></div>
+          <div><div class="skill-name">HuggingFace / Transformers</div><div class="skill-detail">sentence-transformers, cross-encoders, loading models for local inference.</div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-dot" style="--dot-color: var(--accent2)"></div>
+          <div><div class="skill-name">Prompt Engineering (Python)</div><div class="skill-detail">System/user message formatting, JSON mode, structured output design.</div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-dot" style="--dot-color: var(--accent2)"></div>
+          <div><div class="skill-name">LangSmith / Observability</div><div class="skill-detail">Tracing with @traceable, RAGAS eval, prompt versioning, A/B testing.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BACKEND INFRA -->
+    <div class="category-block">
+      <div class="category-head">
+        <span class="cat-icon">🏗️</span>
+        <h3>Backend & API Engineering</h3>
+        <span class="cat-count">8 topics</span>
+      </div>
+      <div class="skill-list">
+        <div class="skill-item">
+          <div class="skill-dot" style="--dot-color: var(--accent3)"></div>
+          <div><div class="skill-name">FastAPI</div><div class="skill-detail">Routes, middleware, dependency injection, lifespan, background tasks.</div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-dot" style="--dot-color: var(--accent3)"></div>
+          <div><div class="skill-name">SQLAlchemy (Async ORM)</div><div class="skill-detail">Async sessions, models, relationships, Alembic migrations.</div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-dot" style="--dot-color: var(--accent3)"></div>
+          <div><div class="skill-name">PostgreSQL + pgvector</div><div class="skill-detail">Storing both relational data and vector embeddings in one DB.</div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-dot" style="--dot-color: var(--accent3)"></div>
+          <div><div class="skill-name">Redis Caching</div><div class="skill-detail">Caching LLM responses to reduce cost and latency in production.</div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-dot" style="--dot-color: var(--accent3)"></div>
+          <div><div class="skill-name">Docker & docker-compose</div><div class="skill-detail">Containerising GenAI apps with multi-service stacks (DB, cache, LLM).</div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-dot" style="--dot-color: var(--accent3)"></div>
+          <div><div class="skill-name">Environment Config (.env)</div><div class="skill-detail">Secrets management, multi-env settings, provider switching via env vars.</div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-dot" style="--dot-color: var(--accent3)"></div>
+          <div><div class="skill-name">Structured Logging & Monitoring</div><div class="skill-detail">structlog, Sentry, request tracing — critical for debugging AI systems.</div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-dot" style="--dot-color: var(--accent3)"></div>
+          <div><div class="skill-name">Security (JWT, Bcrypt, HTTPS)</div><div class="skill-detail">Auth patterns for APIs that handle sensitive data processed by LLMs.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADVANCED GENAI -->
+    <div class="category-block">
+      <div class="category-head">
+        <span class="cat-icon">🎯</span>
+        <h3>Advanced GenAI Engineering</h3>
+        <span class="cat-count">10 topics</span>
+      </div>
+      <div class="skill-list">
+        <div class="skill-item">
+          <div class="skill-dot" style="--dot-color: var(--accent4)"></div>
+          <div><div class="skill-name">Multi-Agent Systems</div><div class="skill-detail">Agent orchestration, state machines, parallel execution, routing logic.</div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-dot" style="--dot-color: var(--accent4)"></div>
+          <div><div class="skill-name">Hybrid Retrieval (BM25 + Dense)</div><div class="skill-detail">Combining keyword and semantic search with Reciprocal Rank Fusion.</div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-dot" style="--dot-color: var(--accent4)"></div>
+          <div><div class="skill-name">LLM Provider Routing</div><div class="skill-detail">Multi-provider abstraction (OpenAI, Bedrock, Ollama) with fallbacks.</div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-dot" style="--dot-color: var(--accent4)"></div>
+          <div><div class="skill-name">Fine-tuning & Training Data</div><div class="skill-detail">Generate synthetic training data, fine-tune with OpenAI Jobs API.</div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-dot" style="--dot-color: var(--accent4)"></div>
+          <div><div class="skill-name">RAG Evaluation (RAGAS)</div><div class="skill-detail">Faithfulness, relevancy, context precision — measuring RAG quality.</div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-dot" style="--dot-color: var(--accent4)"></div>
+          <div><div class="skill-name">Tool Use / Function Calling</div><div class="skill-detail">Defining tools for LLMs to call external APIs and structured actions.</div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-dot" style="--dot-color: var(--accent4)"></div>
+          <div><div class="skill-name">PDF & Document Ingestion</div><div class="skill-detail">PyMuPDF, chunking strategies, metadata extraction for RAG indexing.</div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-dot" style="--dot-color: var(--accent4)"></div>
+          <div><div class="skill-name">Cost & Token Optimization</div><div class="skill-detail">Token counting, cheap models for simple tasks, caching, batching.</div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-dot" style="--dot-color: var(--accent4)"></div>
+          <div><div class="skill-name">Compliance & Safety in AI</div><div class="skill-detail">Output validation, ECOA compliance, hallucination detection, PII routing.</div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-dot" style="--dot-color: var(--accent4)"></div>
+          <div><div class="skill-name">AWS Bedrock / Cloud AI</div><div class="skill-detail">boto3, Converse API, Titan Embeddings, Claude on Bedrock for PII data.</div></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end essentials-layout -->
+
+
+  <!-- ── PRIORITY MATRIX ── -->
+  <div class="section-header fade-up d4">
+    <h2>📊 Topic Priority for GenAI Engineers</h2>
+    <span class="section-tag tag-green">Importance Rating</span>
+  </div>
+
+  <div class="matrix-section fade-up d5">
+    <div class="priority-row">
+      <div class="priority-label">Async / Await</div>
+      <div class="progress-bar"><div class="progress-fill" style="--target-width:98%; --bar-start:#00e5a0; --bar-end:#00b37a;"></div></div>
+      <div class="priority-pct">98%</div>
+    </div>
+    <div class="priority-row">
+      <div class="priority-label">LLM APIs (OpenAI)</div>
+      <div class="progress-bar"><div class="progress-fill" style="--target-width:97%; --bar-start:#00e5a0; --bar-end:#6c63ff;"></div></div>
+      <div class="priority-pct">97%</div>
+    </div>
+    <div class="priority-row">
+      <div class="priority-label">RAG Pipeline</div>
+      <div class="progress-bar"><div class="progress-fill" style="--target-width:95%; --bar-start:#6c63ff; --bar-end:#a78bfa;"></div></div>
+      <div class="priority-pct">95%</div>
+    </div>
+    <div class="priority-row">
+      <div class="priority-label">Pydantic v2</div>
+      <div class="progress-bar"><div class="progress-fill" style="--target-width:93%; --bar-start:#6c63ff; --bar-end:#ff6b6b;"></div></div>
+      <div class="priority-pct">93%</div>
+    </div>
+    <div class="priority-row">
+      <div class="priority-label">FastAPI</div>
+      <div class="progress-bar"><div class="progress-fill" style="--target-width:90%; --bar-start:#ff6b6b; --bar-end:#ff9a3c;"></div></div>
+      <div class="priority-pct">90%</div>
+    </div>
+    <div class="priority-row">
+      <div class="priority-label">Multi-Agent (LangGraph)</div>
+      <div class="progress-bar"><div class="progress-fill" style="--target-width:88%; --bar-start:#ff9a3c; --bar-end:#ffd166;"></div></div>
+      <div class="priority-pct">88%</div>
+    </div>
+    <div class="priority-row">
+      <div class="priority-label">Type Hints & TypedDict</div>
+      <div class="progress-bar"><div class="progress-fill" style="--target-width:85%; --bar-start:#ffd166; --bar-end:#00e5a0;"></div></div>
+      <div class="priority-pct">85%</div>
+    </div>
+    <div class="priority-row">
+      <div class="priority-label">SQLAlchemy / Databases</div>
+      <div class="progress-bar"><div class="progress-fill" style="--target-width:82%; --bar-start:#00e5a0; --bar-end:#6c63ff;"></div></div>
+      <div class="priority-pct">82%</div>
+    </div>
+    <div class="priority-row">
+      <div class="priority-label">Docker / Infra</div>
+      <div class="progress-bar"><div class="progress-fill" style="--target-width:78%; --bar-start:#6c63ff; --bar-end:#ff6b6b;"></div></div>
+      <div class="priority-pct">78%</div>
+    </div>
+    <div class="priority-row">
+      <div class="priority-label">Fine-tuning / Evaluation</div>
+      <div class="progress-bar"><div class="progress-fill" style="--target-width:72%; --bar-start:#ff6b6b; --bar-end:#ffd166;"></div></div>
+      <div class="priority-pct">72%</div>
+    </div>
+  </div>
+
+
+  <!-- ── LEARNING PATH ── -->
+  <div class="section-header fade-up d4">
+    <h2>🗺️ Recommended Learning Path</h2>
+    <span class="section-tag tag-purple">4 Phases</span>
+  </div>
+
+  <div class="path-section fade-up d5">
+    <div class="path-steps">
+      <div class="path-step step-1">
+        <div class="step-circle">1</div>
+        <div class="step-title">Python Core</div>
+        <div class="step-desc">async/await, OOP, type hints, decorators, exceptions, JSON handling</div>
+      </div>
+      <div class="path-step step-2">
+        <div class="step-circle">2</div>
+        <div class="step-title">LLM APIs & RAG</div>
+        <div class="step-desc">OpenAI SDK, embeddings, vector search, chunking, retrieval pipelines</div>
+      </div>
+      <div class="path-step step-3">
+        <div class="step-circle">3</div>
+        <div class="step-title">Backend + Infra</div>
+        <div class="step-desc">FastAPI, SQLAlchemy, PostgreSQL, Redis, Docker, environment config</div>
+      </div>
+      <div class="path-step step-4">
+        <div class="step-circle">4</div>
+        <div class="step-title">Advanced GenAI</div>
+        <div class="step-desc">LangGraph agents, fine-tuning, RAGAS eval, cloud AI, cost optimisation</div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- FOOTER -->
+  <div class="footer fade-up d5">
+    Generated from <span>Loan_DECISION</span> project source code &nbsp;·&nbsp; 28 project topics &nbsp;·&nbsp; 35+ GenAI essentials
+  </div>
+
+</div><!-- end wrapper -->
+</body>
+</html>
