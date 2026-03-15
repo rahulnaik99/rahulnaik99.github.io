@@ -919,36 +919,6 @@
       <div class="evo-icon">🗺️</div>
     </a>
   </div>
-<!-- ── MARKET DASHBOARD ── -->
-<section class="about-section" id="market">
-
-  <div class="section-header">
-    <div class="section-eyebrow">Market Widget</div>
-    <h2 class="section-title">NIFTY IT Dashboard</h2>
-  </div>
-
-  <div class="about-inner">
-
-    <div>
-      <h3 style="margin-bottom:10px;color:var(--cyan)">NIFTY IT INDEX</h3>
-      <div id="niftyit" style="font-size:28px;font-weight:700;color:var(--cyan)">Loading...</div>
-    </div>
-
-    <div>
-      <table style="width:100%;border-collapse:collapse">
-        <thead>
-          <tr style="color:var(--muted);text-align:left">
-            <th style="padding:8px">Stock</th>
-            <th style="padding:8px">Price</th>
-          </tr>
-        </thead>
-        <tbody id="stocks"></tbody>
-      </table>
-    </div>
-
-  </div>
-
-</section>
   <!-- ── CONTACT ── -->
   <section class="contact-section" id="contact">
     <h2>Let's build something <span class="gradient-text">intelligent</span></h2>
@@ -1013,59 +983,6 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
     }
   });
 });
-</script>
-  <script>
-
-const stocks = {
-"TCS":"TCS.NS",
-"Infosys":"INFY.NS",
-"HCL Tech":"HCLTECH.NS",
-"Wipro":"WIPRO.NS",
-"Tech Mahindra":"TECHM.NS",
-"LTIMindtree":"LTIM.NS",
-"Mphasis":"MPHASIS.NS",
-"Persistent":"PERSISTENT.NS",
-"Coforge":"COFORGE.NS"
-}
-
-async function getPrice(symbol){
-
-let url = "https://api.allorigins.win/raw?url=" +
-`https://query1.finance.yahoo.com/v7/finance/quote?symbols=${symbol}`
-
-let res = await fetch(url)
-let data = await res.json()
-
-return data.quoteResponse.result[0].regularMarketPrice
-}
-
-async function loadMarket(){
-
-let indexPrice = await getPrice("^CNXIT")
-
-document.getElementById("niftyit").innerHTML = "₹ " + indexPrice
-
-let rows = ""
-
-for(const name in stocks){
-
-let price = await getPrice(stocks[name])
-
-rows += `
-<tr>
-<td style="padding:8px">${name}</td>
-<td style="padding:8px">₹ ${price}</td>
-</tr>`
-}
-
-document.getElementById("stocks").innerHTML = rows
-
-}
-
-loadMarket()
-
-setInterval(loadMarket,30000)
-
 </script>
 </body>
 </html>
