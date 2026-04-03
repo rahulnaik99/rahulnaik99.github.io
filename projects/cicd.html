@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CI/CD Pipeline Guide — Rahul</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0c10;
+    --surface: #111318;
+    --surface2: #181c24;
+    --border: #1e2330;
+    --accent: #00d4ff;
+    --accent2: #ff6b35;
+    --accent3: #a8ff3e;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --code-bg: #0d1117;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Animated grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Header */
+  header {
+    text-align: center;
+    padding: 60px 0 50px;
+    position: relative;
+  }
+
+  .header-badge {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    padding: 4px 14px;
+    border-radius: 2px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    animation: fadeDown 0.6s ease both;
+  }
+
+  h1 {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 800;
+    line-height: 1.1;
+    animation: fadeDown 0.6s 0.1s ease both;
+  }
+
+  h1 span.glow {
+    color: var(--accent);
+    text-shadow: 0 0 30px rgba(0,212,255,0.5);
+  }
+
+  .subtitle {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 14px;
+    letter-spacing: 1px;
+    animation: fadeDown 0.6s 0.2s ease both;
+  }
+
+  /* Pipeline flow visualization */
+  .pipeline-flow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    flex-wrap: wrap;
+    margin: 50px 0 60px;
+    animation: fadeDown 0.6s 0.3s ease both;
+  }
+
+  .flow-node {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    position: relative;
+  }
+
+  .flow-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 18px;
+    font-size: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--muted);
+    transition: all 0.25s;
+    white-space: nowrap;
+  }
+
+  .flow-node:hover .flow-box,
+  .flow-node.active .flow-box {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(0,212,255,0.06);
+    box-shadow: 0 0 16px rgba(0,212,255,0.15);
+  }
+
+  .flow-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--muted);
+    letter-spacing: 1px;
+  }
+
+  .flow-arrow {
+    color: var(--border);
+    font-size: 18px;
+    padding: 0 4px;
+    margin-bottom: 18px;
+    transition: color 0.25s;
+  }
+
+  /* Sections */
+  .sections-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .section-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  .section-card:hover {
+    border-color: #2a3040;
+  }
+
+  .section-card.open {
+    border-color: var(--accent);
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 24px;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.2s;
+  }
+
+  .section-header:hover {
+    background: rgba(255,255,255,0.02);
+  }
+
+  .section-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    background: rgba(0,212,255,0.08);
+    border: 1px solid rgba(0,212,255,0.2);
+    padding: 2px 8px;
+    border-radius: 3px;
+    min-width: 36px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .section-title {
+    font-size: 15px;
+    font-weight: 700;
+    flex: 1;
+    letter-spacing: 0.3px;
+  }
+
+  .section-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    background: var(--surface2);
+    padding: 3px 8px;
+    border-radius: 3px;
+    display: none;
+  }
+
+  @media (min-width: 600px) { .section-tag { display: block; } }
+
+  .chevron {
+    width: 18px;
+    height: 18px;
+    color: var(--muted);
+    transition: transform 0.3s, color 0.2s;
+    flex-shrink: 0;
+  }
+
+  .section-card.open .chevron {
+    transform: rotate(180deg);
+    color: var(--accent);
+  }
+
+  .section-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  .section-card.open .section-body {
+    max-height: 2000px;
+  }
+
+  .section-inner {
+    padding: 0 24px 24px;
+    border-top: 1px solid var(--border);
+    margin-top: 0;
+  }
+
+  .section-inner p {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.7;
+    margin: 16px 0 12px;
+  }
+
+  /* Code blocks */
+  .code-block {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin: 12px 0;
+    overflow: hidden;
+  }
+
+  .code-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 14px;
+    background: #0a0f1a;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .code-filename {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent2);
+    letter-spacing: 0.5px;
+  }
+
+  .copy-btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    background: none;
+    border: 1px solid var(--border);
+    padding: 3px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 1px;
+  }
+
+  .copy-btn:hover { color: var(--accent); border-color: var(--accent); }
+  .copy-btn.copied { color: var(--accent3); border-color: var(--accent3); }
+
+  pre {
+    padding: 16px;
+    overflow-x: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    line-height: 1.7;
+    color: #c9d1d9;
+  }
+
+  .kw { color: #ff7b72; }
+  .str { color: #a5d6ff; }
+  .cmt { color: #484f58; font-style: italic; }
+  .var { color: #ffa657; }
+  .fn { color: var(--accent3); }
+  .val { color: #79c0ff; }
+
+  /* Info boxes */
+  .tip-box {
+    display: flex;
+    gap: 12px;
+    background: rgba(168,255,62,0.05);
+    border: 1px solid rgba(168,255,62,0.15);
+    border-radius: 6px;
+    padding: 14px 16px;
+    margin: 14px 0;
+  }
+
+  .tip-box .tip-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+  .tip-box p { margin: 0; color: #a8ff3e; font-size: 13px; }
+
+  .warn-box {
+    display: flex;
+    gap: 12px;
+    background: rgba(255,107,53,0.05);
+    border: 1px solid rgba(255,107,53,0.15);
+    border-radius: 6px;
+    padding: 14px 16px;
+    margin: 14px 0;
+  }
+
+  .warn-box .tip-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+  .warn-box p { margin: 0; color: var(--accent2); font-size: 13px; }
+
+  /* Step lists */
+  .step-list {
+    list-style: none;
+    margin: 14px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .step-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-size: 13.5px;
+    color: var(--text);
+    line-height: 1.5;
+  }
+
+  .step-list li::before {
+    content: '→';
+    color: var(--accent);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  /* Two-column layout */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 14px 0;
+  }
+
+  @media (max-width: 600px) { .two-col { grid-template-columns: 1fr; } }
+
+  .iam-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px;
+  }
+
+  .iam-card h4 {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 10px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .iam-card ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .iam-card ul li {
+    font-size: 12px;
+    color: var(--muted);
+    padding-left: 12px;
+    position: relative;
+    line-height: 1.5;
+  }
+
+  .iam-card ul li::before {
+    content: '·';
+    position: absolute;
+    left: 0;
+    color: var(--accent2);
+  }
+
+  /* Pipeline diagram */
+  .pipeline-diagram {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    margin: 20px 0;
+  }
+
+  .pipe-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 400px;
+  }
+
+  .pipe-box {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px 20px;
+    text-align: center;
+    font-size: 13px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--text);
+    transition: all 0.2s;
+    cursor: default;
+  }
+
+  .pipe-box:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(0,212,255,0.05);
+  }
+
+  .pipe-down {
+    width: 1px;
+    height: 24px;
+    background: var(--border);
+    position: relative;
+  }
+
+  .pipe-down::after {
+    content: '▼';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 10px;
+    color: var(--muted);
+  }
+
+  /* Secrets table */
+  .secrets-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 14px 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+  }
+
+  .secrets-table th {
+    text-align: left;
+    padding: 8px 12px;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+    font-weight: 600;
+    letter-spacing: 1px;
+    font-size: 10px;
+    text-transform: uppercase;
+  }
+
+  .secrets-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid rgba(30,35,48,0.5);
+    color: var(--text);
+    vertical-align: top;
+  }
+
+  .secrets-table tr:last-child td { border-bottom: none; }
+
+  .tag-secret {
+    display: inline-block;
+    background: rgba(255,107,53,0.1);
+    border: 1px solid rgba(255,107,53,0.2);
+    color: var(--accent2);
+    padding: 2px 7px;
+    border-radius: 3px;
+    font-size: 10px;
+  }
+
+  /* Expand/collapse all */
+  .controls {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .ctrl-btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 5px 14px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .ctrl-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* Footer */
+  footer {
+    text-align: center;
+    margin-top: 60px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 1px;
+  }
+
+  /* Animations */
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .section-card:nth-child(1) { animation-delay: 0.05s; }
+  .section-card:nth-child(2) { animation-delay: 0.10s; }
+  .section-card:nth-child(3) { animation-delay: 0.15s; }
+  .section-card:nth-child(4) { animation-delay: 0.20s; }
+  .section-card:nth-child(5) { animation-delay: 0.25s; }
+  .section-card:nth-child(6) { animation-delay: 0.30s; }
+  .section-card:nth-child(7) { animation-delay: 0.35s; }
+  .section-card:nth-child(8) { animation-delay: 0.40s; }
+  .section-card:nth-child(9) { animation-delay: 0.45s; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="header-badge">reference guide</div>
+    <h1>CI/CD Pipeline<br><span class="glow">Complete Reference</span></h1>
+    <p class="subtitle">Docker → GitHub Actions → AWS ECR → ECS</p>
+  </header>
+
+  <!-- Pipeline flow -->
+  <div class="pipeline-flow" id="pipelineFlow">
+    <div class="flow-node" onclick="scrollToSection(0)">
+      <div class="flow-box">Dockerfile</div>
+      <span class="flow-num">①</span>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node" onclick="scrollToSection(2)">
+      <div class="flow-box">GitHub Actions</div>
+      <span class="flow-num">③</span>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node" onclick="scrollToSection(5)">
+      <div class="flow-box">AWS ECR</div>
+      <span class="flow-num">⑥</span>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node" onclick="scrollToSection(6)">
+      <div class="flow-box">AWS ECS</div>
+      <span class="flow-num">⑦</span>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node" onclick="scrollToSection(8)">
+      <div class="flow-box">Live API</div>
+      <span class="flow-num">⑨</span>
+    </div>
+  </div>
+
+  <!-- Controls -->
+  <div class="controls">
+    <button class="ctrl-btn" onclick="toggleAll(true)">Expand All</button>
+    <button class="ctrl-btn" onclick="toggleAll(false)">Collapse All</button>
+  </div>
+
+  <!-- Sections -->
+  <div class="sections-grid" id="sections">
+
+    <!-- 1. Dockerfile -->
+    <div class="section-card" id="card-0">
+      <div class="section-header" onclick="toggle(0)">
+        <span class="section-num">①</span>
+        <span class="section-title">Dockerfile — Every Line Explained</span>
+        <span class="section-tag">docker build</span>
+        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="section-body">
+        <div class="section-inner">
+          <p>The Dockerfile defines your container image. Layer ordering matters — put stable layers first to maximize cache reuse.</p>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-filename">Dockerfile</span>
+              <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+            </div>
+            <pre><span class="cmt"># Base image — Python 3.11 minimal</span>
+<span class="kw">FROM</span> python:3.11-slim
+
+<span class="cmt"># Set working directory inside container</span>
+<span class="kw">WORKDIR</span> /app
+
+<span class="cmt"># Copy requirements FIRST — enables layer caching</span>
+<span class="kw">COPY</span> requirements.txt .
+
+<span class="cmt"># Install dependencies (--no-cache-dir keeps image small)</span>
+<span class="kw">RUN</span> pip install --no-cache-dir -r requirements.txt
+
+<span class="cmt"># Copy app source code (after pip — code changes don't bust pip cache)</span>
+<span class="kw">COPY</span> ./app ./app
+
+<span class="cmt"># Tell Docker the app listens on port 8000</span>
+<span class="kw">EXPOSE</span> 8000
+
+<span class="cmt"># Start FastAPI with uvicorn</span>
+<span class="kw">CMD</span> [<span class="str">"uvicorn"</span>, <span class="str">"app.main:app"</span>, <span class="str">"--host"</span>, <span class="str">"0.0.0.0"</span>, <span class="str">"--port"</span>, <span class="str">"8000"</span>]</pre>
+          </div>
+          <div class="tip-box">
+            <span class="tip-icon">⚡</span>
+            <p><strong>Layer caching tip:</strong> COPY requirements.txt before COPY ./app. If code changes but requirements don't, pip install is reused from cache. Rebuild: 5 min → 5 sec.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. .env -->
+    <div class="section-card" id="card-1">
+      <div class="section-header" onclick="toggle(1)">
+        <span class="section-num">②</span>
+        <span class="section-title">.env File — Local Secrets</span>
+        <span class="section-tag">secrets</span>
+        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="section-body">
+        <div class="section-inner">
+          <p>Store all secrets locally in a <code>.env</code> file. Never commit this to GitHub.</p>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-filename">AWS_bedrock_chatbot/.env</span>
+              <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+            </div>
+            <pre><span class="cmt"># AWS credentials (from IAM user access key)</span>
+<span class="var">aws_access_key_id</span>=<span class="str">AKIA6XXXXXXXXXX</span>
+<span class="var">aws_secret_access_key</span>=<span class="str">your_secret_here</span>
+<span class="var">aws_session_token</span>=
+<span class="var">region_name</span>=<span class="str">ap-southeast-2</span>
+
+<span class="cmt"># Bedrock model IDs</span>
+<span class="var">BEDROCK_CHAT_MODEL</span>=<span class="str">amazon.titan-text-express-v1</span>
+<span class="var">BEDROCK_EMBEDDING_MODEL</span>=<span class="str">amazon.titan-embed-text-v2:0</span></pre>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-filename">AWS_bedrock_chatbot/.gitignore</span>
+              <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+            </div>
+            <pre><span class="cmt"># Never commit secrets to GitHub</span>
+.env
+.venv/
+__pycache__/
+*.pyc</pre>
+          </div>
+          <div class="warn-box">
+            <span class="tip-icon">🔒</span>
+            <p><strong>Critical:</strong> The .env file is for local dev only. In production, inject secrets as ECS task definition environment variables (see Section ⑧).</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. GitHub Actions -->
+    <div class="section-card" id="card-2">
+      <div class="section-header" onclick="toggle(2)">
+        <span class="section-num">③</span>
+        <span class="section-title">GitHub Actions Workflow</span>
+        <span class="section-tag">CI/CD</span>
+        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="section-body">
+        <div class="section-inner">
+          <p>The workflow triggers on push to <code>main</code>, runs tests, then builds and pushes the Docker image to ECR.</p>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-filename">.github/workflows/deploy.yml</span>
+              <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+            </div>
+            <pre><span class="kw">name</span>: CI/CD Pipeline
+
+<span class="kw">on</span>:
+  <span class="kw">push</span>:
+    <span class="kw">branches</span>: [main]
+
+<span class="kw">jobs</span>:
+  <span class="fn">test</span>:
+    <span class="kw">runs-on</span>: ubuntu-latest
+    <span class="kw">steps</span>:
+      - <span class="kw">uses</span>: actions/checkout@v4
+      - <span class="kw">uses</span>: actions/setup-python@v5
+        <span class="kw">with</span>:
+          <span class="kw">python-version</span>: <span class="str">'3.11'</span>
+      - <span class="kw">run</span>: pip install -r requirements.txt
+      - <span class="kw">run</span>: echo <span class="str">"tests pass"</span>
+
+  <span class="fn">build-and-push</span>:
+    <span class="kw">needs</span>: test  <span class="cmt"># only runs if tests pass</span>
+    <span class="kw">runs-on</span>: ubuntu-latest
+    <span class="kw">steps</span>:
+      - <span class="kw">uses</span>: actions/checkout@v4
+      - <span class="kw">uses</span>: aws-actions/configure-aws-credentials@v2
+        <span class="kw">with</span>:
+          <span class="kw">aws-access-key-id</span>: ${{ <span class="var">secrets.AWS_ACCESS_KEY_ID</span> }}
+          <span class="kw">aws-secret-access-key</span>: ${{ <span class="var">secrets.AWS_SECRET_ACCESS_KEY</span> }}
+          <span class="kw">aws-region</span>: ap-southeast-2
+      - <span class="kw">uses</span>: aws-actions/amazon-ecr-login@v1
+        <span class="kw">id</span>: login-ecr
+      - <span class="kw">run</span>: |
+          docker build -t <span class="var">$ECR</span>/<span class="var">$REPO</span>:<span class="var">$TAG</span> .
+          docker push <span class="var">$ECR</span>/<span class="var">$REPO</span>:<span class="var">$TAG</span>
+        <span class="kw">env</span>:
+          <span class="var">ECR</span>: ${{ <span class="var">steps.login-ecr.outputs.registry</span> }}
+          <span class="var">REPO</span>: sebi-policy
+          <span class="var">TAG</span>: ${{ <span class="var">github.sha</span> }}</pre>
+          </div>
+          <div class="tip-box">
+            <span class="tip-icon">💡</span>
+            <p>Each image is tagged with <strong>github.sha</strong> — the commit hash. This makes every push traceable and lets you roll back to any previous version in ECR.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. IAM -->
+    <div class="section-card" id="card-3">
+      <div class="section-header" onclick="toggle(3)">
+        <span class="section-num">④</span>
+        <span class="section-title">AWS IAM — Two Users to Create</span>
+        <span class="section-tag">IAM</span>
+        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="section-body">
+        <div class="section-inner">
+          <p>You need two separate IAM users — one for your daily work, one for the CI/CD bot. Never use root credentials.</p>
+          <div class="two-col">
+            <div class="iam-card">
+              <h4>rahul-admin</h4>
+              <ul>
+                <li>IAM → Users → Create user</li>
+                <li>Name: <code>rahul-admin</code></li>
+                <li>Enable console access + set password</li>
+                <li>Policy: <strong>AdministratorAccess</strong></li>
+                <li>Use this for daily AWS work — never root</li>
+              </ul>
+            </div>
+            <div class="iam-card">
+              <h4>github-actions-user</h4>
+              <ul>
+                <li>IAM → Users → Create user</li>
+                <li>Name: <code>github-actions-user</code></li>
+                <li>No console access needed</li>
+                <li>Policy: AmazonEC2ContainerRegistryFullAccess</li>
+                <li>Policy: AmazonECS_FullAccess</li>
+                <li>Security credentials → Create access key</li>
+                <li>Use case: Application outside AWS</li>
+                <li>Download CSV immediately — secret shown once!</li>
+              </ul>
+            </div>
+          </div>
+          <div class="warn-box">
+            <span class="tip-icon">⚠️</span>
+            <p>Download the CSV for <code>github-actions-user</code> immediately. The secret access key is only shown once and cannot be retrieved again.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. GitHub Secrets -->
+    <div class="section-card" id="card-4">
+      <div class="section-header" onclick="toggle(4)">
+        <span class="section-num">⑤</span>
+        <span class="section-title">GitHub Secrets — Path + Values</span>
+        <span class="section-tag">secrets</span>
+        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="section-body">
+        <div class="section-inner">
+          <p>Add secrets so GitHub Actions can authenticate with AWS without hardcoding credentials in the workflow file.</p>
+          <ul class="step-list">
+            <li>Go to <strong>github.com → your repo → Settings</strong> (top tab)</li>
+            <li>Click <strong>Secrets and variables → Actions</strong> (left sidebar)</li>
+            <li>Click <strong>New repository secret</strong> and add one by one</li>
+          </ul>
+          <table class="secrets-table">
+            <thead>
+              <tr>
+                <th>Secret Name</th>
+                <th>Value Source</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="tag-secret">AWS_ACCESS_KEY_ID</span></td>
+                <td>From <code>github-actions-user</code> CSV</td>
+              </tr>
+              <tr>
+                <td><span class="tag-secret">AWS_SECRET_ACCESS_KEY</span></td>
+                <td>From <code>github-actions-user</code> CSV</td>
+              </tr>
+              <tr>
+                <td><span class="tag-secret">OPENAI_API_KEY</span></td>
+                <td>Only if used in tests</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6. ECR -->
+    <div class="section-card" id="card-5">
+      <div class="section-header" onclick="toggle(5)">
+        <span class="section-num">⑥</span>
+        <span class="section-title">AWS ECR — Create Repository</span>
+        <span class="section-tag">ECR</span>
+        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="section-body">
+        <div class="section-inner">
+          <p>ECR (Elastic Container Registry) is AWS's private Docker registry where your built images are stored.</p>
+          <ul class="step-list">
+            <li>AWS Console → search <strong>ECR</strong> → Elastic Container Registry</li>
+            <li>Repositories → <strong>Create repository</strong></li>
+            <li>Visibility: <strong>Private</strong></li>
+            <li>Name: <strong>sebi-policy</strong></li>
+            <li>Everything else: leave default → Create repository</li>
+            <li>Copy the URI shown — paste into deploy.yml</li>
+          </ul>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-filename">Your ECR URI</span>
+              <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+            </div>
+            <pre><span class="val">982479882450</span>.dkr.ecr.<span class="var">ap-southeast-2</span>.amazonaws.com/<span class="fn">sebi-policy</span></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7. ECS -->
+    <div class="section-card" id="card-6">
+      <div class="section-header" onclick="toggle(6)">
+        <span class="section-num">⑦</span>
+        <span class="section-title">AWS ECS — Cluster → Task → Service</span>
+        <span class="section-tag">ECS · Fargate</span>
+        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="section-body">
+        <div class="section-inner">
+          <p>ECS runs your container on AWS. Three things to create: a cluster, a task definition (blueprint), and a service (keeps it running).</p>
+
+          <div style="background:rgba(0,212,255,0.04); border:1px solid rgba(0,212,255,0.1); border-radius:6px; padding:14px 16px; margin:12px 0;">
+            <p style="color:var(--accent); font-size:12px; font-weight:700; margin:0 0 10px; font-family:'JetBrains Mono',monospace;">STEP 1 — Create ECS Cluster</p>
+            <ul class="step-list">
+              <li>AWS Console → search <strong>ECS</strong> → Elastic Container Service</li>
+              <li>Clusters → <strong>Create cluster</strong></li>
+              <li>Cluster name: <strong>loaniq-cluster</strong></li>
+              <li>Infrastructure: <strong>AWS Fargate</strong> (serverless — no EC2 to manage)</li>
+              <li>Create</li>
+            </ul>
+          </div>
+
+          <div style="background:rgba(0,212,255,0.04); border:1px solid rgba(0,212,255,0.1); border-radius:6px; padding:14px 16px; margin:12px 0;">
+            <p style="color:var(--accent); font-size:12px; font-weight:700; margin:0 0 10px; font-family:'JetBrains Mono',monospace;">STEP 2 — Create Task Definition</p>
+            <ul class="step-list">
+              <li>ECS → Task definitions → <strong>Create new task definition</strong></li>
+              <li>Family name: <strong>loaniq-task</strong></li>
+              <li>Infrastructure: AWS Fargate, Linux/X86_64</li>
+              <li>CPU: <strong>1 vCPU</strong>, Memory: <strong>2 GB</strong></li>
+              <li>Container name: <strong>sebi-policy</strong></li>
+              <li>Image URI: <code style="font-size:11px">982479882450.dkr.ecr.ap-southeast-2.amazonaws.com/sebi-policy:latest</code></li>
+              <li>Port mappings: <strong>8000</strong></li>
+              <li>Environment variables → Add all from .env (see Section ⑧)</li>
+            </ul>
+          </div>
+
+          <div style="background:rgba(0,212,255,0.04); border:1px solid rgba(0,212,255,0.1); border-radius:6px; padding:14px 16px; margin:12px 0;">
+            <p style="color:var(--accent); font-size:12px; font-weight:700; margin:0 0 10px; font-family:'JetBrains Mono',monospace;">STEP 3 — Create Service</p>
+            <ul class="step-list">
+              <li>Cluster → Services tab → <strong>Create</strong></li>
+              <li>Compute: Launch type → <strong>Fargate</strong></li>
+              <li>Task definition: loaniq-task, Revision: Latest</li>
+              <li>Service name: <strong>loaniq-service</strong></li>
+              <li>Desired tasks: <strong>1</strong></li>
+              <li>Networking: VPC default, select all subnets</li>
+              <li>Security group: Create new, port 8000, source <code>0.0.0.0/0</code></li>
+              <li>Public IP: <strong>Turned ON</strong></li>
+              <li>Create service</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 8. Env Vars in ECS -->
+    <div class="section-card" id="card-7">
+      <div class="section-header" onclick="toggle(7)">
+        <span class="section-num">⑧</span>
+        <span class="section-title">Env Vars in ECS Task Definition</span>
+        <span class="section-tag">config</span>
+        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="section-body">
+        <div class="section-inner">
+          <p>In production, secrets are injected directly into the ECS task definition — not via a .env file.</p>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-filename">ECS Task Definition → Container → Environment Variables</span>
+              <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+            </div>
+            <pre><span class="var">aws_access_key_id</span>      → your rahul-admin key
+<span class="var">aws_secret_access_key</span>  → your rahul-admin secret
+<span class="var">region_name</span>            → ap-southeast-2
+<span class="var">BEDROCK_CHAT_MODEL</span>     → amazon.titan-text-express-v1
+<span class="var">BEDROCK_EMBEDDING_MODEL</span> → amazon.titan-embed-text-v2:0</pre>
+          </div>
+          <div class="warn-box">
+            <span class="tip-icon">⚠️</span>
+            <p>For production workloads, consider using <strong>AWS Secrets Manager</strong> or <strong>SSM Parameter Store</strong> instead of plain env vars in the task definition.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 9. Full Pipeline -->
+    <div class="section-card" id="card-8">
+      <div class="section-header" onclick="toggle(8)">
+        <span class="section-num">⑨</span>
+        <span class="section-title">Full Pipeline at a Glance</span>
+        <span class="section-tag">overview</span>
+        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="section-body">
+        <div class="section-inner">
+          <p>The complete end-to-end flow from a git push to a live API endpoint.</p>
+          <div class="pipeline-diagram">
+            <div class="pipe-step">
+              <div class="pipe-box">git push to main</div>
+              <div class="pipe-down"></div>
+            </div>
+            <div class="pipe-step">
+              <div class="pipe-box">GitHub Actions triggers automatically</div>
+              <div class="pipe-down"></div>
+            </div>
+            <div class="pipe-step">
+              <div class="pipe-box">pip install + tests run on ubuntu-latest</div>
+              <div class="pipe-down"></div>
+            </div>
+            <div class="pipe-step">
+              <div class="pipe-box">docker build -t image .</div>
+              <div class="pipe-down"></div>
+            </div>
+            <div class="pipe-step">
+              <div class="pipe-box">docker push → ECR (tagged with commit SHA)</div>
+              <div class="pipe-down"></div>
+            </div>
+            <div class="pipe-step">
+              <div class="pipe-box">ECS pulls new image and restarts container</div>
+              <div class="pipe-down"></div>
+            </div>
+            <div class="pipe-step">
+              <div class="pipe-box" style="border-color: var(--accent3); color: var(--accent3);">✓ FastAPI live at http://public-ip:8000/docs</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /sections-grid -->
+
+  <footer>Built by Rahul · LoanIQ / SEBI Policy Chatbot · AWS Bedrock + FastAPI + Docker</footer>
+
+</div><!-- /container -->
+
+<script>
+  function toggle(index) {
+    const card = document.getElementById('card-' + index);
+    card.classList.toggle('open');
+  }
+
+  function toggleAll(open) {
+    document.querySelectorAll('.section-card').forEach(card => {
+      open ? card.classList.add('open') : card.classList.remove('open');
+    });
+  }
+
+  function scrollToSection(index) {
+    const card = document.getElementById('card-' + index);
+    if (card) {
+      card.classList.add('open');
+      card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
+
+  function copyCode(btn) {
+    const pre = btn.closest('.code-block').querySelector('pre');
+    const text = pre.innerText;
+    navigator.clipboard.writeText(text).then(() => {
+      btn.textContent = 'COPIED';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.textContent = 'COPY';
+        btn.classList.remove('copied');
+      }, 2000);
+    });
+  }
+
+  // Open first card by default
+  document.getElementById('card-0').classList.add('open');
+</script>
+</body>
+</html>
