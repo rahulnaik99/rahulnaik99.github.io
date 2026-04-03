@@ -1,0 +1,1686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GenAI + RAG Complete Ecosystem — Architecture Poster</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+:root {
+  --bg: #050812;
+  --bg2: #080d1a;
+  --surface: #0d1428;
+  --surface2: #111930;
+  --border: #1e2d50;
+  --border2: #243660;
+
+  --c-blue:    #3b82f6;
+  --c-cyan:    #06b6d4;
+  --c-teal:    #14b8a6;
+  --c-green:   #22c55e;
+  --c-lime:    #84cc16;
+  --c-yellow:  #eab308;
+  --c-orange:  #f97316;
+  --c-red:     #ef4444;
+  --c-pink:    #ec4899;
+  --c-violet:  #8b5cf6;
+  --c-indigo:  #6366f1;
+  --c-sky:     #0ea5e9;
+
+  --text-primary: #e8edf8;
+  --text-secondary: #8899bb;
+  --text-muted: #445577;
+
+  --font-head: 'Syne', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  --r: 8px;
+  --r2: 12px;
+  --r3: 16px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  background: var(--bg);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 11px;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+body {
+  padding: 0;
+  min-width: 1400px;
+}
+
+/* ── POSTER WRAPPER ── */
+.poster {
+  width: 2400px;
+  padding: 40px;
+  background: var(--bg);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle grid bg */
+.poster::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(59,130,246,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59,130,246,0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+}
+
+/* ── HEADER ── */
+.header {
+  text-align: center;
+  margin-bottom: 36px;
+  position: relative;
+}
+.header h1 {
+  font-family: var(--font-head);
+  font-size: 42px;
+  font-weight: 800;
+  letter-spacing: -1px;
+  background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 40%, #34d399 80%, #fbbf24 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1.1;
+}
+.header .sub {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-secondary);
+  letter-spacing: 3px;
+  margin-top: 8px;
+  text-transform: uppercase;
+}
+.header-line {
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #3b82f6, #8b5cf6, #06b6d4, transparent);
+  margin: 16px auto 0;
+  width: 80%;
+  border-radius: 2px;
+}
+
+/* ── MAIN GRID ── */
+.grid-master {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 14px;
+}
+
+/* ── SECTION CARD ── */
+.sec {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r3);
+  padding: 14px;
+  position: relative;
+  overflow: hidden;
+}
+.sec::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  border-radius: var(--r3) var(--r3) 0 0;
+}
+
+/* Color accents per section */
+.accent-blue::before   { background: linear-gradient(90deg, var(--c-blue), var(--c-cyan)); }
+.accent-violet::before { background: linear-gradient(90deg, var(--c-violet), var(--c-pink)); }
+.accent-teal::before   { background: linear-gradient(90deg, var(--c-teal), var(--c-green)); }
+.accent-orange::before { background: linear-gradient(90deg, var(--c-orange), var(--c-yellow)); }
+.accent-cyan::before   { background: linear-gradient(90deg, var(--c-cyan), var(--c-sky)); }
+.accent-green::before  { background: linear-gradient(90deg, var(--c-green), var(--c-lime)); }
+.accent-red::before    { background: linear-gradient(90deg, var(--c-red), var(--c-orange)); }
+.accent-pink::before   { background: linear-gradient(90deg, var(--c-pink), var(--c-violet)); }
+.accent-indigo::before { background: linear-gradient(90deg, var(--c-indigo), var(--c-blue)); }
+.accent-yellow::before { background: linear-gradient(90deg, var(--c-yellow), var(--c-orange)); }
+
+/* span helpers */
+.col-span-2 { grid-column: span 2; }
+.col-span-3 { grid-column: span 3; }
+.col-span-4 { grid-column: span 4; }
+.col-span-5 { grid-column: span 5; }
+
+/* ── SEC HEADER ── */
+.sec-num {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text-muted);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+.sec-title {
+  font-family: var(--font-head);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 10px;
+  line-height: 1.2;
+}
+.sec-title .highlight {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  display: block;
+  font-family: var(--font-body);
+}
+
+/* ── SUBSECTION ── */
+.sub-sec {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r2);
+  padding: 10px 12px;
+  margin-bottom: 8px;
+}
+.sub-sec-title {
+  font-family: var(--font-head);
+  font-size: 11px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.sub-sec-title .dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ── LABELS / TAGS ── */
+.tag {
+  display: inline-block;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.tag-blue   { background: rgba(59,130,246,0.15);  color: #60a5fa; border: 1px solid rgba(59,130,246,0.3); }
+.tag-violet { background: rgba(139,92,246,0.15); color: #a78bfa; border: 1px solid rgba(139,92,246,0.3); }
+.tag-teal   { background: rgba(20,184,166,0.15);  color: #2dd4bf; border: 1px solid rgba(20,184,166,0.3); }
+.tag-orange { background: rgba(249,115,22,0.15);  color: #fb923c; border: 1px solid rgba(249,115,22,0.3); }
+.tag-green  { background: rgba(34,197,94,0.15);   color: #4ade80; border: 1px solid rgba(34,197,94,0.3); }
+.tag-red    { background: rgba(239,68,68,0.15);   color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
+.tag-pink   { background: rgba(236,72,153,0.15);  color: #f472b6; border: 1px solid rgba(236,72,153,0.3); }
+.tag-cyan   { background: rgba(6,182,212,0.15);   color: #22d3ee; border: 1px solid rgba(6,182,212,0.3); }
+.tag-yellow { background: rgba(234,179,8,0.15);   color: #facc15; border: 1px solid rgba(234,179,8,0.3); }
+.tag-indigo { background: rgba(99,102,241,0.15);  color: #818cf8; border: 1px solid rgba(99,102,241,0.3); }
+
+/* ── ITEMS LIST ── */
+.items {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.item {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  font-size: 10px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+.item .arrow {
+  color: var(--c-blue);
+  flex-shrink: 0;
+  font-size: 9px;
+  margin-top: 1px;
+}
+.item strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+/* ── CHIPS ROW ── */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+/* ── KV ROWS (WHAT / HOW / USE CASE) ── */
+.kv {
+  display: grid;
+  grid-template-columns: 60px 1fr;
+  gap: 2px 6px;
+  font-size: 9.5px;
+}
+.kv-key {
+  font-family: var(--font-mono);
+  font-size: 8.5px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding-top: 1px;
+  font-weight: 600;
+}
+.kv-val {
+  color: var(--text-secondary);
+  line-height: 1.35;
+}
+.kv-val strong { color: var(--text-primary); font-weight: 600; }
+
+/* ── FLOW PIPELINE ── */
+.pipeline {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.pipe-step {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+}
+.pipe-num {
+  width: 22px;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  font-weight: 700;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.pipe-content {
+  flex: 1;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 7px 10px;
+  margin-bottom: 4px;
+  position: relative;
+}
+.pipe-content::after {
+  content: '↓';
+  position: absolute;
+  bottom: -11px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 10px;
+  color: var(--text-muted);
+  z-index: 1;
+  background: var(--bg);
+  padding: 0 3px;
+}
+.pipe-step:last-child .pipe-content::after { display: none; }
+
+.pipe-name {
+  font-family: var(--font-head);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+.pipe-desc {
+  font-size: 9px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+  line-height: 1.3;
+}
+
+/* ── FORMULA BOX ── */
+.formula {
+  background: rgba(0,0,0,0.4);
+  border: 1px solid var(--border2);
+  border-radius: var(--r);
+  padding: 8px 10px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: #22d3ee;
+  text-align: center;
+  margin: 6px 0;
+  letter-spacing: 0.3px;
+}
+
+/* ── GRID 2 COLS ── */
+.g2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+.g3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 6px;
+}
+.g4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+
+/* ── SWIMLANE ── */
+.swimlane {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.swim-row {
+  display: grid;
+  grid-template-columns: 90px 1fr;
+  gap: 6px;
+  align-items: center;
+}
+.swim-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-align: right;
+  padding-right: 6px;
+  border-right: 2px solid var(--border2);
+}
+.swim-items {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.swim-box {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 5px 9px;
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+.swim-arrow {
+  color: var(--text-muted);
+  font-size: 10px;
+}
+
+/* ── METRIC BOX ── */
+.metric {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 8px;
+  text-align: center;
+}
+.metric-val {
+  font-family: var(--font-head);
+  font-size: 18px;
+  font-weight: 800;
+}
+.metric-label {
+  font-size: 8.5px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 2px;
+  font-family: var(--font-mono);
+}
+
+/* ── MINI TABLE ── */
+.mtable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 9px;
+}
+.mtable th {
+  background: rgba(255,255,255,0.04);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 8px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 5px 7px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+.mtable td {
+  padding: 5px 7px;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border);
+  line-height: 1.3;
+  vertical-align: top;
+}
+.mtable td strong { color: var(--text-primary); }
+.mtable tr:last-child td { border-bottom: none; }
+
+/* ── DIVIDER ── */
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 8px 0;
+}
+
+/* ── NODE BOX (for LangGraph) ── */
+.node-box {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 6px 10px;
+  font-size: 9.5px;
+  text-align: center;
+  position: relative;
+}
+.node-box.start-end {
+  border-radius: 20px;
+  border-color: var(--c-green);
+  color: var(--c-green);
+}
+
+/* ── COLUMN LAYOUT within section ── */
+.col-flex {
+  display: flex;
+  gap: 8px;
+}
+.col-flex > * { flex: 1; min-width: 0; }
+
+/* ── ARCH FLOW ── */
+.arch-flow {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+.arch-box {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 5px 10px;
+  font-size: 9.5px;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-align: center;
+  flex-shrink: 0;
+}
+.arch-arrow {
+  color: var(--text-muted);
+  font-size: 11px;
+  flex-shrink: 0;
+}
+
+/* ── BADGE ── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 1px 6px;
+  border-radius: 10px;
+  font-size: 8.5px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+}
+.badge-blue   { background: rgba(59,130,246,0.2);  color: #93c5fd; }
+.badge-violet { background: rgba(139,92,246,0.2); color: #c4b5fd; }
+.badge-green  { background: rgba(34,197,94,0.2);   color: #86efac; }
+.badge-orange { background: rgba(249,115,22,0.2);  color: #fdba74; }
+.badge-red    { background: rgba(239,68,68,0.2);   color: #fca5a5; }
+.badge-cyan   { background: rgba(6,182,212,0.2);   color: #67e8f9; }
+.badge-pink   { background: rgba(236,72,153,0.2);  color: #f9a8d4; }
+.badge-yellow { background: rgba(234,179,8,0.2);   color: #fde047; }
+
+/* ── FOOTER ── */
+.footer {
+  margin-top: 28px;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text-muted);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+/* ── PRINT ── */
+@media print {
+  html { font-size: 10px; }
+  .poster { padding: 20px; }
+  body { min-width: unset; }
+}
+
+/* Utility */
+.mt4 { margin-top: 4px; }
+.mt6 { margin-top: 6px; }
+.mt8 { margin-top: 8px; }
+.gap4 { gap: 4px; }
+.small { font-size: 9px; color: var(--text-muted); }
+</style>
+</head>
+<body>
+<div class="poster">
+
+<!-- ═══════════════════════════════════════════════ HEADER -->
+<div class="header">
+  <div class="sec-num">Complete Reference Poster · v2025</div>
+  <h1>Generative AI + RAG Complete Ecosystem</h1>
+  <div class="sub">Transformers · Retrieval-Augmented Generation · Agents · Fine-Tuning · Production</div>
+  <div class="header-line"></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ MASTER GRID -->
+<div class="grid-master">
+
+<!-- ──────────────────────────────────── ROW 1 -->
+
+<!-- SEC 1–2: Transformer Architecture -->
+<div class="sec accent-blue col-span-2">
+  <div class="sec-num">01 – 02</div>
+  <div class="sec-title">Transformer Architecture <span class="highlight">Self-Attention · Encoder–Decoder · Training</span></div>
+
+  <div class="g2">
+    <!-- Self-Attention -->
+    <div class="sub-sec">
+      <div class="sub-sec-title"><span class="dot" style="background:#3b82f6"></span><span style="color:#60a5fa">Self-Attention Mechanism</span></div>
+      <div class="items">
+        <div class="item"><span class="arrow">▸</span><span><strong>Q, K, V</strong> — Query, Key, Value projections of input embedding X via weight matrices W<sub>Q</sub>, W<sub>K</sub>, W<sub>V</sub></span></div>
+        <div class="item"><span class="arrow">▸</span><span><strong>Scaled Dot-Product:</strong> Attention(Q,K,V) = softmax(QKᵀ/√d_k)·V</span></div>
+        <div class="item"><span class="arrow">▸</span><span><strong>Scaling √d_k</strong> prevents vanishing gradients for large d_k</span></div>
+        <div class="item"><span class="arrow">▸</span><span><strong>Multi-Head:</strong> h parallel attention heads → concat → project. Each head learns different relationship types</span></div>
+        <div class="item"><span class="arrow">▸</span><span><strong>Positional Encoding</strong> — sinusoidal or learned (ROPE for LLaMA), injected at embedding layer</span></div>
+      </div>
+      <div class="formula">Attn(Q,K,V) = softmax( QKᵀ / √d_k ) · V</div>
+      <div class="chips">
+        <span class="tag tag-blue">d_model=512</span>
+        <span class="tag tag-blue">h=8 heads</span>
+        <span class="tag tag-blue">d_k=64</span>
+        <span class="tag tag-cyan">Flash Attn 2</span>
+        <span class="tag tag-cyan">Grouped Query Attn</span>
+      </div>
+    </div>
+    <!-- Encoder-Decoder -->
+    <div class="sub-sec">
+      <div class="sub-sec-title"><span class="dot" style="background:#8b5cf6"></span><span style="color:#a78bfa">Encoder–Decoder Flow</span></div>
+      <div class="arch-flow" style="flex-direction:column;align-items:flex-start;gap:3px;">
+        <div style="display:flex;align-items:center;gap:4px;">
+          <div class="arch-box" style="border-color:#3b82f6;background:rgba(59,130,246,0.1)">Input Tokens</div>
+          <span class="arch-arrow">→</span>
+          <div class="arch-box">Token + Pos Embedding</div>
+          <span class="arch-arrow">→</span>
+          <div class="arch-box" style="border-color:#8b5cf6">Encoder × N</div>
+        </div>
+        <div class="small" style="padding-left:8px;">↳ Multi-head Self-Attn → Add&Norm → FFN → Add&Norm</div>
+        <div style="display:flex;align-items:center;gap:4px;margin-top:4px;">
+          <div class="arch-box" style="border-color:#14b8a6;background:rgba(20,184,166,0.1)">Target Tokens</div>
+          <span class="arch-arrow">→</span>
+          <div class="arch-box" style="border-color:#14b8a6">Decoder × N</div>
+          <span class="arch-arrow">→</span>
+          <div class="arch-box">Linear+Softmax</div>
+        </div>
+        <div class="small" style="padding-left:8px;">↳ Masked Self-Attn → Cross-Attn (enc output) → FFN</div>
+      </div>
+      <div class="divider"></div>
+      <div class="sub-sec-title" style="margin-bottom:4px;"><span class="dot" style="background:#f97316"></span><span style="color:#fb923c">Training Pipeline</span></div>
+      <div class="items">
+        <div class="item"><span class="arrow">▸</span><span><strong>Loss:</strong> Cross-entropy on next-token prediction (CLM) or masked (MLM)</span></div>
+        <div class="item"><span class="arrow">▸</span><span><strong>Masking:</strong> Causal mask (decoder) prevents attending to future tokens</span></div>
+        <div class="item"><span class="arrow">▸</span><span><strong>Backprop:</strong> AdamW optimizer, gradient clipping, LR warmup+cosine decay</span></div>
+        <div class="item"><span class="arrow">▸</span><span><strong>Mixed Precision:</strong> BF16 + gradient checkpointing to save VRAM</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SEC 3: RAG Data Ingestion -->
+<div class="sec accent-teal col-span-3">
+  <div class="sec-num">03</div>
+  <div class="sec-title">RAG — Data Ingestion Pipeline <span class="highlight">16+ Loaders · Full Preprocessing</span></div>
+
+  <div class="g2">
+    <div>
+      <div class="sub-sec">
+        <div class="sub-sec-title"><span class="dot" style="background:#14b8a6"></span><span style="color:#2dd4bf">Document Loaders (16+)</span></div>
+        <div class="g2 gap4" style="margin-top:2px;">
+          <div class="items">
+            <div class="item"><span class="arrow">▸</span><span><strong>PDF</strong> — PyPDF, PyMuPDF, Unstructured</span></div>
+            <div class="item"><span class="arrow">▸</span><span><strong>DOCX/PPT/XLS</strong> — python-docx, openpyxl</span></div>
+            <div class="item"><span class="arrow">▸</span><span><strong>HTML/Web</strong> — BeautifulSoup, Playwright</span></div>
+            <div class="item"><span class="arrow">▸</span><span><strong>REST APIs</strong> — OpenAPI spec, JSONLoader</span></div>
+            <div class="item"><span class="arrow">▸</span><span><strong>Databases</strong> — SQLLoader, Mongo, Postgres</span></div>
+            <div class="item"><span class="arrow">▸</span><span><strong>Email/Slack</strong> — Gmail, Outlook, Slack API</span></div>
+            <div class="item"><span class="arrow">▸</span><span><strong>Code</strong> — Git repos, GitHub, Jira</span></div>
+            <div class="item"><span class="arrow">▸</span><span><strong>S3 / GCS</strong> — cloud storage loaders</span></div>
+          </div>
+          <div class="items">
+            <div class="item"><span class="arrow">▸</span><span><strong>Markdown / RST</strong> — docs sites</span></div>
+            <div class="item"><span class="arrow">▸</span><span><strong>CSV / JSON</strong> — structured data</span></div>
+            <div class="item"><span class="arrow">▸</span><span><strong>YouTube / Video</strong> — transcript loaders</span></div>
+            <div class="item"><span class="arrow">▸</span><span><strong>Wikipedia</strong> — WikipediaLoader</span></div>
+            <div class="item"><span class="arrow">▸</span><span><strong>Confluence / Notion</strong> — knowledge bases</span></div>
+            <div class="item"><span class="arrow">▸</span><span><strong>Arxiv / PubMed</strong> — research papers</span></div>
+            <div class="item"><span class="arrow">▸</span><span><strong>OCR</strong> — Tesseract, AWS Textract</span></div>
+            <div class="item"><span class="arrow">▸</span><span><strong>Audio</strong> — Whisper transcription</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="sub-sec">
+        <div class="sub-sec-title"><span class="dot" style="background:#22c55e"></span><span style="color:#4ade80">Preprocessing Pipeline</span></div>
+        <div class="pipeline">
+          <div class="pipe-step">
+            <div class="pipe-num">1</div>
+            <div class="pipe-content">
+              <div class="pipe-name">🧹 Cleaning</div>
+              <div class="pipe-desc">Strip HTML tags, remove headers/footers/boilerplate, fix encoding issues (UTF-8), normalize whitespace, remove control chars</div>
+            </div>
+          </div>
+          <div class="pipe-step">
+            <div class="pipe-num">2</div>
+            <div class="pipe-content">
+              <div class="pipe-name">🔍 Deduplication</div>
+              <div class="pipe-desc">MinHash LSH for near-duplicates, exact MD5/SHA hashing, semantic dedup via embedding cosine similarity threshold (&gt;0.95)</div>
+            </div>
+          </div>
+          <div class="pipe-step">
+            <div class="pipe-num">3</div>
+            <div class="pipe-content">
+              <div class="pipe-name">🏷️ Metadata Enrichment</div>
+              <div class="pipe-desc">Source URL, doc type, author, date, page number, section title, language detection (langdetect), content category, doc ID</div>
+            </div>
+          </div>
+          <div class="pipe-step">
+            <div class="pipe-num">4</div>
+            <div class="pipe-content">
+              <div class="pipe-name">🔧 Normalization</div>
+              <div class="pipe-desc">Unicode NFC normalization, lowercasing (optional), entity resolution, date standardization, abbreviation expansion</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ──────────────────────────────────── ROW 2 -->
+
+<!-- SEC 4: Chunking Strategies -->
+<div class="sec accent-orange col-span-3">
+  <div class="sec-num">04</div>
+  <div class="sec-title">RAG — Chunking Strategies <span class="highlight">9 Strategies · WHAT / HOW / USE CASE / PARAMS</span></div>
+
+  <div class="g3">
+    <!-- Recursive -->
+    <div class="sub-sec">
+      <div class="sub-sec-title"><span class="dot" style="background:#f97316"></span><span style="color:#fb923c">1. Recursive Character</span></div>
+      <div class="kv">
+        <div class="kv-key">WHAT</div><div class="kv-val">Split on hierarchy of separators, recursing until size limit</div>
+        <div class="kv-key">HOW</div><div class="kv-val">Try ["\n\n", "\n", ". ", " "] in order, recurse if chunk still too large</div>
+        <div class="kv-key">USE</div><div class="kv-val"><strong>General prose docs</strong> — maintains paragraph structure</div>
+        <div class="kv-key">PARAMS</div><div class="kv-val">chunk_size=1000, chunk_overlap=200, separators list</div>
+      </div>
+    </div>
+    <!-- Token -->
+    <div class="sub-sec">
+      <div class="sub-sec-title"><span class="dot" style="background:#eab308"></span><span style="color:#facc15">2. Token-Based</span></div>
+      <div class="kv">
+        <div class="kv-key">WHAT</div><div class="kv-val">Split at exact token boundaries using tokenizer (tiktoken/HF)</div>
+        <div class="kv-key">HOW</div><div class="kv-val">Tokenize text → slice at N tokens → decode back to string</div>
+        <div class="kv-key">USE</div><div class="kv-val"><strong>LLM context windows</strong> — precise token budget control</div>
+        <div class="kv-key">PARAMS</div><div class="kv-val">chunk_size=512 tokens, overlap=50 tokens, model="cl100k"</div>
+      </div>
+    </div>
+    <!-- Semantic -->
+    <div class="sub-sec">
+      <div class="sub-sec-title"><span class="dot" style="background:#3b82f6"></span><span style="color:#60a5fa">3. Semantic</span></div>
+      <div class="kv">
+        <div class="kv-key">WHAT</div><div class="kv-val">Embed sentences, split where cosine similarity drops (topic shift)</div>
+        <div class="kv-key">HOW</div><div class="kv-val">Embed consecutive sentences → detect similarity valleys → split</div>
+        <div class="kv-key">USE</div><div class="kv-val"><strong>Mixed-topic documents</strong> — Wikipedia, reports</div>
+        <div class="kv-key">PARAMS</div><div class="kv-val">threshold=0.3 drop, window=3 sentences, min_chunk=100</div>
+      </div>
+    </div>
+    <!-- Sliding Window -->
+    <div class="sub-sec">
+      <div class="sub-sec-title"><span class="dot" style="background:#8b5cf6"></span><span style="color:#a78bfa">4. Sliding Window</span></div>
+      <div class="kv">
+        <div class="kv-key">WHAT</div><div class="kv-val">Fixed-size window sliding with stride over document</div>
+        <div class="kv-key">HOW</div><div class="kv-val">Chunk[i] = text[i*stride : i*stride + size]</div>
+        <div class="kv-key">USE</div><div class="kv-val"><strong>Dense technical content</strong> where context spans boundaries</div>
+        <div class="kv-key">PARAMS</div><div class="kv-val">window=512, stride=256 (50% overlap), max_chunks=100</div>
+      </div>
+    </div>
+    <!-- Parent-Child -->
+    <div class="sub-sec">
+      <div class="sub-sec-title"><span class="dot" style="background:#14b8a6"></span><span style="color:#2dd4bf">5. Parent–Child</span></div>
+      <div class="kv">
+        <div class="kv-key">WHAT</div><div class="kv-val">Small chunks indexed, large parent retrieved on match</div>
+        <div class="kv-key">HOW</div><div class="kv-val">Index child chunks (128 tok); retrieve parent (512 tok) for LLM</div>
+        <div class="kv-key">USE</div><div class="kv-val"><strong>Precision + context</strong> — legal, medical, long docs</div>
+        <div class="kv-key">PARAMS</div><div class="kv-val">child_size=128, parent_size=512, docstore required</div>
+      </div>
+    </div>
+    <!-- Markdown Header -->
+    <div class="sub-sec">
+      <div class="sub-sec-title"><span class="dot" style="background:#22c55e"></span><span style="color:#4ade80">6. Markdown Header</span></div>
+      <div class="kv">
+        <div class="kv-key">WHAT</div><div class="kv-val">Split on markdown H1/H2/H3 heading boundaries</div>
+        <div class="kv-key">HOW</div><div class="kv-val">Regex detect headings → split, inherit header hierarchy in metadata</div>
+        <div class="kv-key">USE</div><div class="kv-val"><strong>Documentation sites</strong>, READMEs, structured wikis</div>
+        <div class="kv-key">PARAMS</div><div class="kv-val">headers=["#","##","###"], include_header_in_chunk=True</div>
+      </div>
+    </div>
+    <!-- Sentence -->
+    <div class="sub-sec">
+      <div class="sub-sec-title"><span class="dot" style="background:#ec4899"></span><span style="color:#f472b6">7. Sentence-Level</span></div>
+      <div class="kv">
+        <div class="kv-key">WHAT</div><div class="kv-val">Split at sentence boundaries using spaCy/NLTK</div>
+        <div class="kv-key">HOW</div><div class="kv-val">Sentence tokenize → group N sentences → overlap M</div>
+        <div class="kv-key">USE</div><div class="kv-val"><strong>QA tasks</strong> where answers fit within 1–3 sentences</div>
+        <div class="kv-key">PARAMS</div><div class="kv-val">sentences_per_chunk=5, overlap=1, min_length=50</div>
+      </div>
+    </div>
+    <!-- Agentic/Proposition -->
+    <div class="sub-sec">
+      <div class="sub-sec-title"><span class="dot" style="background:#6366f1"></span><span style="color:#818cf8">8. Proposition</span></div>
+      <div class="kv">
+        <div class="kv-key">WHAT</div><div class="kv-val">LLM extracts atomic, self-contained factual statements</div>
+        <div class="kv-key">HOW</div><div class="kv-val">LLM prompt: "Extract all facts as standalone sentences"</div>
+        <div class="kv-key">USE</div><div class="kv-val"><strong>Dense factual QA</strong> — scientific papers, knowledge bases</div>
+        <div class="kv-key">PARAMS</div><div class="kv-val">model=gpt-4o-mini, max_props=20, dedup=True</div>
+      </div>
+    </div>
+    <!-- Code -->
+    <div class="sub-sec">
+      <div class="sub-sec-title"><span class="dot" style="background:#06b6d4"></span><span style="color:#22d3ee">9. Code-Aware</span></div>
+      <div class="kv">
+        <div class="kv-key">WHAT</div><div class="kv-val">AST-based split at function/class boundaries</div>
+        <div class="kv-key">HOW</div><div class="kv-val">Parse AST → split at top-level defs, preserve docstrings</div>
+        <div class="kv-key">USE</div><div class="kv-val"><strong>Code search, debugging</strong> — GitHub Copilot style RAG</div>
+        <div class="kv-key">PARAMS</div><div class="kv-val">language=python, max_lines=100, include_imports=True</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SEC 5: Embeddings -->
+<div class="sec accent-violet col-span-2">
+  <div class="sec-num">05</div>
+  <div class="sec-title">RAG — Embeddings <span class="highlight">Dense · Sparse · Hybrid · MMR · Multi-vector</span></div>
+
+  <div class="sub-sec">
+    <div class="sub-sec-title"><span class="dot" style="background:#8b5cf6"></span><span style="color:#a78bfa">Dense Embedding Models</span></div>
+    <table class="mtable">
+      <tr><th>Model</th><th>Dims</th><th>Notes</th></tr>
+      <tr><td><strong>text-embedding-3-small</strong></td><td>1536</td><td>OpenAI, cost-efficient, strong</td></tr>
+      <tr><td><strong>text-embedding-3-large</strong></td><td>3072</td><td>OpenAI, best quality</td></tr>
+      <tr><td><strong>BGE-M3</strong></td><td>1024</td><td>Open source, multilingual SOTA</td></tr>
+      <tr><td><strong>E5-Mistral-7B</strong></td><td>4096</td><td>LLM-based, top MTEB scores</td></tr>
+      <tr><td><strong>Cohere Embed v3</strong></td><td>1024</td><td>Optimized for retrieval</td></tr>
+      <tr><td><strong>Jina v3</strong></td><td>1024</td><td>Task-specific, 8192 ctx</td></tr>
+    </table>
+  </div>
+
+  <div class="sub-sec mt6">
+    <div class="sub-sec-title"><span class="dot" style="background:#f97316"></span><span style="color:#fb923c">Sparse — BM25</span></div>
+    <div class="formula">score(D,Q) = Σ IDF(qᵢ) · f(qᵢ,D)·(k+1) / (f(qᵢ,D)+k·(1-b+b·|D|/avgdl))</div>
+    <div class="items">
+      <div class="item"><span class="arrow">▸</span><span>Term frequency weighted by document length, great for keyword-heavy queries</span></div>
+      <div class="item"><span class="arrow">▸</span><span>Params: k1=1.2–2.0, b=0.75, no ML training needed</span></div>
+    </div>
+  </div>
+
+  <div class="sub-sec mt6">
+    <div class="sub-sec-title"><span class="dot" style="background:#06b6d4"></span><span style="color:#22d3ee">Hybrid Retrieval — RRF Fusion</span></div>
+    <div class="formula">RRF(d) = Σ 1 / (k + rank_i(d)) &nbsp;&nbsp; k=60</div>
+    <div class="items">
+      <div class="item"><span class="arrow">▸</span><span>Combine dense + BM25 rankings without score normalization</span></div>
+      <div class="item"><span class="arrow">▸</span><span><strong>MMR</strong> — Maximal Marginal Relevance: balance relevance vs diversity</span></div>
+      <div class="item"><span class="arrow">▸</span><span>MMR(d) = λ·sim(q,d) − (1-λ)·max[sim(d,dⱼ)] for already-selected dⱼ</span></div>
+    </div>
+  </div>
+
+  <div class="sub-sec mt6">
+    <div class="sub-sec-title"><span class="dot" style="background:#22c55e"></span><span style="color:#4ade80">Multi-Vector Representations</span></div>
+    <div class="items">
+      <div class="item"><span class="arrow">▸</span><span><strong>ColBERT:</strong> per-token vectors, late interaction MaxSim</span></div>
+      <div class="item"><span class="arrow">▸</span><span><strong>SPLADE:</strong> sparse expansion via MLM head, hybrid of BM25+dense</span></div>
+      <div class="item"><span class="arrow">▸</span><span><strong>Summary + Dense:</strong> embed chunk summary for retrieval, return full chunk</span></div>
+      <div class="item"><span class="arrow">▸</span><span><strong>Hypothetical Questions:</strong> LLM generates Qs → embed Qs → store with chunk</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ──────────────────────────────────── ROW 3 -->
+
+<!-- SEC 6: Vector DBs + Indexing -->
+<div class="sec accent-cyan col-span-2">
+  <div class="sec-num">06</div>
+  <div class="sec-title">Vector Databases + Indexing <span class="highlight">Pinecone · Weaviate · FAISS · HNSW · IVF</span></div>
+
+  <div class="g2">
+    <div class="sub-sec">
+      <div class="sub-sec-title"><span class="dot" style="background:#06b6d4"></span><span style="color:#22d3ee">Vector Databases</span></div>
+      <table class="mtable">
+        <tr><th>DB</th><th>Strength</th><th>Best For</th></tr>
+        <tr><td><strong>Pinecone</strong></td><td>Managed, fast</td><td>Production SaaS</td></tr>
+        <tr><td><strong>Weaviate</strong></td><td>GraphQL API, hybrid</td><td>Rich metadata filter</td></tr>
+        <tr><td><strong>FAISS</strong></td><td>In-memory, CPU+GPU</td><td>Research, prototyping</td></tr>
+        <tr><td><strong>Chroma</strong></td><td>Lightweight, local</td><td>Dev/local RAG</td></tr>
+        <tr><td><strong>pgvector</strong></td><td>PostgreSQL native</td><td>Existing PG infra</td></tr>
+        <tr><td><strong>Qdrant</strong></td><td>Payload filtering</td><td>Metadata-heavy search</td></tr>
+        <tr><td><strong>Milvus</strong></td><td>Open, scalable</td><td>Billion-scale search</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="sub-sec">
+        <div class="sub-sec-title"><span class="dot" style="background:#0ea5e9"></span><span style="color:#38bdf8">HNSW Algorithm</span></div>
+        <div class="items">
+          <div class="item"><span class="arrow">▸</span><span>Hierarchical Navigable Small World graph — O(log N) search</span></div>
+          <div class="item"><span class="arrow">▸</span><span>M=16 connections per node, efConstruction=200 build-time</span></div>
+          <div class="item"><span class="arrow">▸</span><span>ef=100 query-time accuracy/speed tradeoff</span></div>
+        </div>
+      </div>
+      <div class="sub-sec mt6">
+        <div class="sub-sec-title"><span class="dot" style="background:#14b8a6"></span><span style="color:#2dd4bf">IVF (Inverted File)</span></div>
+        <div class="items">
+          <div class="item"><span class="arrow">▸</span><span>K-means clusters (nlist=1024) → search top nprobe clusters</span></div>
+          <div class="item"><span class="arrow">▸</span><span>IVF+PQ: product quantization compresses vectors 4–8× for RAM</span></div>
+          <div class="item"><span class="arrow">▸</span><span>Billion-scale: FAISS IVF256,PQ48 = 48 bytes/vec</span></div>
+        </div>
+      </div>
+      <div class="sub-sec mt6">
+        <div class="sub-sec-title"><span class="dot" style="background:#8b5cf6"></span><span style="color:#a78bfa">ScaNN + Annoy</span></div>
+        <div class="items">
+          <div class="item"><span class="arrow">▸</span><span><strong>ScaNN</strong> (Google) — anisotropic quantization, best MTEB recall</span></div>
+          <div class="item"><span class="arrow">▸</span><span><strong>Annoy</strong> (Spotify) — forest of binary trees, static index, read-heavy</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SEC 7: Advanced Retrieval -->
+<div class="sec accent-indigo col-span-2">
+  <div class="sec-num">07</div>
+  <div class="sec-title">Advanced Retrieval Techniques <span class="highlight">HyDE · Step-Back · Multi-Query · Decomposition</span></div>
+
+  <div class="sub-sec">
+    <div class="sub-sec-title"><span class="dot" style="background:#6366f1"></span><span style="color:#818cf8">HyDE — Hypothetical Document Embeddings</span></div>
+    <div class="kv">
+      <div class="kv-key">HOW</div><div class="kv-val">LLM generates hypothetical answer → embed answer → retrieve real docs by proximity</div>
+      <div class="kv-key">WHY</div><div class="kv-val">Bridges query–document embedding space mismatch; better semantic alignment</div>
+    </div>
+    <div class="arch-flow mt4">
+      <div class="arch-box">User Query</div><span class="arch-arrow">→</span>
+      <div class="arch-box" style="border-color:#6366f1">LLM: Generate Hypothetical Doc</div><span class="arch-arrow">→</span>
+      <div class="arch-box">Embed Hypothesis</div><span class="arch-arrow">→</span>
+      <div class="arch-box" style="border-color:#22c55e">Retrieve Real Docs</div>
+    </div>
+  </div>
+
+  <div class="g2 mt6">
+    <div class="sub-sec">
+      <div class="sub-sec-title"><span class="dot" style="background:#3b82f6"></span><span style="color:#60a5fa">Step-Back Prompting</span></div>
+      <div class="items">
+        <div class="item"><span class="arrow">▸</span><span>Reframe specific question → abstract principle question → retrieve both</span></div>
+        <div class="item"><span class="arrow">▸</span><span>"What physics principle governs X?" before retrieving X specifics</span></div>
+        <div class="item"><span class="arrow">▸</span><span>Improves grounding for reasoning-heavy queries</span></div>
+      </div>
+    </div>
+    <div class="sub-sec">
+      <div class="sub-sec-title"><span class="dot" style="background:#ec4899"></span><span style="color:#f472b6">Multi-Query</span></div>
+      <div class="items">
+        <div class="item"><span class="arrow">▸</span><span>LLM generates N paraphrased versions of original query</span></div>
+        <div class="item"><span class="arrow">▸</span><span>Retrieve for each variant → union + deduplicate results</span></div>
+        <div class="item"><span class="arrow">▸</span><span>Covers vocabulary mismatch, broader recall</span></div>
+      </div>
+    </div>
+    <div class="sub-sec">
+      <div class="sub-sec-title"><span class="dot" style="background:#f97316"></span><span style="color:#fb923c">Query Expansion</span></div>
+      <div class="items">
+        <div class="item"><span class="arrow">▸</span><span>Add synonyms, related terms (WordNet, LLM) to query</span></div>
+        <div class="item"><span class="arrow">▸</span><span>Pseudo-Relevance Feedback: expand from top-K initial results</span></div>
+      </div>
+    </div>
+    <div class="sub-sec">
+      <div class="sub-sec-title"><span class="dot" style="background:#14b8a6"></span><span style="color:#2dd4bf">Query Decomposition</span></div>
+      <div class="items">
+        <div class="item"><span class="arrow">▸</span><span>Split complex query into sub-questions → answer each → synthesize</span></div>
+        <div class="item"><span class="arrow">▸</span><span><strong>Self-Query Retriever:</strong> LLM extracts metadata filters from query (date &gt; 2023, category=finance)</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SEC 8: Re-ranking -->
+<div class="sec accent-red col-span-1">
+  <div class="sec-num">08</div>
+  <div class="sec-title">Re-ranking <span class="highlight">Cross-Encoders · ColBERT Deep Dive</span></div>
+
+  <div class="sub-sec">
+    <div class="sub-sec-title"><span class="dot" style="background:#ef4444"></span><span style="color:#f87171">Cross-Encoders</span></div>
+    <div class="items">
+      <div class="item"><span class="arrow">▸</span><span>Concatenate query+doc → full attention → single relevance score</span></div>
+      <div class="item"><span class="arrow">▸</span><span>Much more accurate than bi-encoders but O(N) latency per doc</span></div>
+      <div class="item"><span class="arrow">▸</span><span><strong>Models:</strong> ms-marco-MiniLM-L6, BGE-reranker, Cohere Rerank API</span></div>
+      <div class="item"><span class="arrow">▸</span><span><strong>Strategy:</strong> retrieve top-100 (bi-encoder) → rerank → take top-5</span></div>
+    </div>
+  </div>
+
+  <div class="sub-sec mt6">
+    <div class="sub-sec-title"><span class="dot" style="background:#f97316"></span><span style="color:#fb923c">ColBERT — Deep Dive</span></div>
+    <div class="items">
+      <div class="item"><span class="arrow">▸</span><span><strong>Architecture:</strong> BERT encodes Q and D independently → per-token vectors</span></div>
+      <div class="item"><span class="arrow">▸</span><span><strong>Late Interaction:</strong> No full cross-attn at query time (fast!)</span></div>
+    </div>
+    <div class="formula">MaxSim(Q,D) = Σ_q max_d ( q·dᵀ )</div>
+    <div class="items">
+      <div class="item"><span class="arrow">▸</span><span>Each query token matches its best passage token → sum scores</span></div>
+      <div class="item"><span class="arrow">▸</span><span><strong>PLAID:</strong> Centroid interaction pruning for billion-scale ColBERT</span></div>
+      <div class="item"><span class="arrow">▸</span><span><strong>ColBERTv2:</strong> Residual compression 64→32 bytes/token, quantized</span></div>
+    </div>
+    <div class="chips mt4">
+      <span class="tag tag-red">colbert-v2.0</span>
+      <span class="tag tag-orange">RAGatouille</span>
+      <span class="tag tag-orange">PLAID engine</span>
+    </div>
+  </div>
+</div>
+
+<!-- ──────────────────────────────────── ROW 4 -->
+
+<!-- SEC 9: Context Optimization -->
+<div class="sec accent-teal col-span-1">
+  <div class="sec-num">09</div>
+  <div class="sec-title">Context Optimization <span class="highlight">Compression · MMR · Lost-in-Middle</span></div>
+
+  <div class="sub-sec">
+    <div class="sub-sec-title"><span class="dot" style="background:#14b8a6"></span><span style="color:#2dd4bf">Contextual Compression</span></div>
+    <div class="items">
+      <div class="item"><span class="arrow">▸</span><span><strong>LLMChainExtractor:</strong> LLM extracts only relevant sentences from chunk</span></div>
+      <div class="item"><span class="arrow">▸</span><span><strong>EmbeddingsFilter:</strong> Keep only sentences above cosine similarity threshold</span></div>
+      <div class="item"><span class="arrow">▸</span><span><strong>DocumentCompressorPipeline:</strong> Chain multiple compressors</span></div>
+    </div>
+  </div>
+
+  <div class="sub-sec mt6">
+    <div class="sub-sec-title"><span class="dot" style="background:#22c55e"></span><span style="color:#4ade80">Lost-in-the-Middle Problem</span></div>
+    <div class="items">
+      <div class="item"><span class="arrow">▸</span><span>LLMs recall beginning + end best; middle chunks are "lost"</span></div>
+      <div class="item"><span class="arrow">▸</span><span><strong>Fix 1:</strong> Place most relevant chunks at start/end of context</span></div>
+      <div class="item"><span class="arrow">▸</span><span><strong>Fix 2:</strong> Reduce context window — fewer, higher-quality chunks</span></div>
+      <div class="item"><span class="arrow">▸</span><span><strong>Fix 3:</strong> Recursive summarization of long contexts</span></div>
+      <div class="item"><span class="arrow">▸</span><span><strong>Fix 4:</strong> LongContext models (Gemini 1M, Claude 200K)</span></div>
+    </div>
+  </div>
+
+  <div class="sub-sec mt6">
+    <div class="sub-sec-title"><span class="dot" style="background:#3b82f6"></span><span style="color:#60a5fa">Context Building Strategies</span></div>
+    <div class="items">
+      <div class="item"><span class="arrow">▸</span><span><strong>Contextual Retrieval:</strong> Prepend doc-level summary to each chunk before embed</span></div>
+      <div class="item"><span class="arrow">▸</span><span><strong>Context-Aware Reranking:</strong> Score with full retrieved context, not individual chunks</span></div>
+      <div class="item"><span class="arrow">▸</span><span><strong>Conversation history</strong> integration for multi-turn RAG</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- SEC 10: Full Query Pipeline -->
+<div class="sec accent-blue col-span-2">
+  <div class="sec-num">10</div>
+  <div class="sec-title">Full Query Pipeline — 9 Stages <span class="highlight">User Query → Response</span></div>
+
+  <div class="pipeline">
+    <div class="pipe-step">
+      <div class="pipe-num">①</div>
+      <div class="pipe-content" style="border-color:#3b82f6;background:rgba(59,130,246,0.08)">
+        <div class="pipe-name" style="color:#60a5fa">User Query Input</div>
+        <div class="pipe-desc">Natural language query received → log, timestamp, session_id attach</div>
+      </div>
+    </div>
+    <div class="pipe-step">
+      <div class="pipe-num">②</div>
+      <div class="pipe-content" style="border-color:#8b5cf6">
+        <div class="pipe-name" style="color:#a78bfa">Query Preprocessing</div>
+        <div class="pipe-desc">Clean input → HyDE / expansion / decomposition / self-query metadata extraction</div>
+      </div>
+    </div>
+    <div class="pipe-step">
+      <div class="pipe-num">③</div>
+      <div class="pipe-content" style="border-color:#06b6d4">
+        <div class="pipe-name" style="color:#22d3ee">Hybrid Retrieval</div>
+        <div class="pipe-desc">Dense vector search (top-100) + BM25 sparse (top-100) → RRF fusion → top-50</div>
+      </div>
+    </div>
+    <div class="pipe-step">
+      <div class="pipe-num">④</div>
+      <div class="pipe-content" style="border-color:#14b8a6">
+        <div class="pipe-name" style="color:#2dd4bf">Metadata Filtering</div>
+        <div class="pipe-desc">Apply pre-filter (date range, source, category) before or after ANN search</div>
+      </div>
+    </div>
+    <div class="pipe-step">
+      <div class="pipe-num">⑤</div>
+      <div class="pipe-content" style="border-color:#ef4444">
+        <div class="pipe-name" style="color:#f87171">Cross-Encoder Re-ranking</div>
+        <div class="pipe-desc">Score top-50 with cross-encoder → sort → select top-K (K=5–10)</div>
+      </div>
+    </div>
+    <div class="pipe-step">
+      <div class="pipe-num">⑥</div>
+      <div class="pipe-content" style="border-color:#f97316">
+        <div class="pipe-name" style="color:#fb923c">Context Optimization</div>
+        <div class="pipe-desc">Compress chunks → MMR diversity filter → order (best first/last) → fit context window</div>
+      </div>
+    </div>
+    <div class="pipe-step">
+      <div class="pipe-num">⑦</div>
+      <div class="pipe-content" style="border-color:#eab308">
+        <div class="pipe-name" style="color:#facc15">Prompt Assembly</div>
+        <div class="pipe-desc">System prompt + context chunks + conversation history + user query → final prompt</div>
+      </div>
+    </div>
+    <div class="pipe-step">
+      <div class="pipe-num">⑧</div>
+      <div class="pipe-content" style="border-color:#22c55e">
+        <div class="pipe-name" style="color:#4ade80">LLM Generation</div>
+        <div class="pipe-desc">Streaming inference → temperature=0.1, top_p=0.9, max_tokens=1024</div>
+      </div>
+    </div>
+    <div class="pipe-step">
+      <div class="pipe-num">⑨</div>
+      <div class="pipe-content" style="border-color:#ec4899;background:rgba(236,72,153,0.08)">
+        <div class="pipe-name" style="color:#f472b6">Response + Citations</div>
+        <div class="pipe-desc">Return answer + source citations + confidence score → log for RAGAS evaluation</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SEC 11: Graph RAG -->
+<div class="sec accent-green col-span-1">
+  <div class="sec-num">11</div>
+  <div class="sec-title">Graph RAG <span class="highlight">Microsoft Style · Knowledge Graphs</span></div>
+
+  <div class="sub-sec">
+    <div class="sub-sec-title"><span class="dot" style="background:#22c55e"></span><span style="color:#4ade80">Architecture</span></div>
+    <div class="arch-flow" style="flex-direction:column;align-items:flex-start;gap:4px;">
+      <div style="display:flex;gap:4px;align-items:center;">
+        <div class="arch-box">Raw Docs</div><span class="arch-arrow">→</span>
+        <div class="arch-box" style="border-color:#22c55e">Entity Extraction LLM</div>
+      </div>
+      <div style="display:flex;gap:4px;align-items:center;">
+        <div class="arch-box" style="border-color:#22c55e">Knowledge Graph</div><span class="arch-arrow">→</span>
+        <div class="arch-box">Community Detection</div>
+      </div>
+      <div style="display:flex;gap:4px;align-items:center;">
+        <div class="arch-box">Community Reports</div><span class="arch-arrow">→</span>
+        <div class="arch-box" style="border-color:#4ade80">Graph Traversal Search</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sub-sec mt6">
+    <div class="sub-sec-title"><span class="dot" style="background:#84cc16"></span><span style="color:#a3e635">Key Concepts</span></div>
+    <div class="items">
+      <div class="item"><span class="arrow">▸</span><span><strong>Entities:</strong> Named nodes (Person, Org, Concept) extracted by LLM</span></div>
+      <div class="item"><span class="arrow">▸</span><span><strong>Relations:</strong> Typed edges between entities with weights</span></div>
+      <div class="item"><span class="arrow">▸</span><span><strong>Communities:</strong> Leiden algorithm clusters → summarized as text</span></div>
+      <div class="item"><span class="arrow">▸</span><span><strong>Local search:</strong> Entity-centric — find neighbors, traverse edges</span></div>
+      <div class="item"><span class="arrow">▸</span><span><strong>Global search:</strong> Map-reduce over community reports for holistic QA</span></div>
+      <div class="item"><span class="arrow">▸</span><span><strong>DRIFT search:</strong> Dynamic Reasoning with Iterative Feedback Traversal</span></div>
+      <div class="item"><span class="arrow">▸</span><span><strong>Tools:</strong> Microsoft GraphRAG, LightRAG, Neo4j GraphRAG</span></div>
+    </div>
+  </div>
+
+  <div class="sub-sec mt6">
+    <div class="sub-sec-title"><span class="dot" style="background:#06b6d4"></span><span style="color:#22d3ee">When to Use</span></div>
+    <div class="items">
+      <div class="item"><span class="arrow">▸</span><span>Multi-hop reasoning across entities (who knows whom, causal chains)</span></div>
+      <div class="item"><span class="arrow">▸</span><span>Corpus-level summarization, thematic analysis</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- SEC 12: Agentic RAG -->
+<div class="sec accent-pink col-span-1">
+  <div class="sec-num">12</div>
+  <div class="sec-title">Agentic RAG <span class="highlight">Self-RAG · CRAG · FLARE · ReAct</span></div>
+
+  <div class="sub-sec">
+    <div class="sub-sec-title"><span class="dot" style="background:#ec4899"></span><span style="color:#f472b6">Self-RAG</span></div>
+    <div class="items">
+      <div class="item"><span class="arrow">▸</span><span>LLM decides IF to retrieve (Retrieve token), evaluates relevance (IsRel), and checks support (IsSup)</span></div>
+      <div class="item"><span class="arrow">▸</span><span>Trained with special reflection tokens as discrete actions</span></div>
+    </div>
+  </div>
+
+  <div class="sub-sec mt6">
+    <div class="sub-sec-title"><span class="dot" style="background:#8b5cf6"></span><span style="color:#a78bfa">CRAG — Corrective RAG</span></div>
+    <div class="items">
+      <div class="item"><span class="arrow">▸</span><span>Evaluator grades retrieved docs: Correct / Ambiguous / Incorrect</span></div>
+      <div class="item"><span class="arrow">▸</span><span>If incorrect → web search fallback → knowledge refinement before generation</span></div>
+    </div>
+  </div>
+
+  <div class="sub-sec mt6">
+    <div class="sub-sec-title"><span class="dot" style="background:#f97316"></span><span style="color:#fb923c">Adaptive RAG</span></div>
+    <div class="items">
+      <div class="item"><span class="arrow">▸</span><span>Classifies query complexity → routes to: No RAG / Single-step RAG / Multi-step RAG</span></div>
+    </div>
+  </div>
+
+  <div class="sub-sec mt6">
+    <div class="sub-sec-title"><span class="dot" style="background:#eab308"></span><span style="color:#facc15">FLARE</span></div>
+    <div class="items">
+      <div class="item"><span class="arrow">▸</span><span>Forward-Looking Active REtrieval — retrieves when model is uncertain (low probability tokens)</span></div>
+    </div>
+  </div>
+
+  <div class="sub-sec mt6">
+    <div class="sub-sec-title"><span class="dot" style="background:#3b82f6"></span><span style="color:#60a5fa">ReAct + Multi-Agent</span></div>
+    <div class="items">
+      <div class="item"><span class="arrow">▸</span><span><strong>ReAct:</strong> Reason → Act → Observe loop with tool calls</span></div>
+      <div class="item"><span class="arrow">▸</span><span><strong>Multi-agent:</strong> Orchestrator delegates to specialist RAG agents (legal, financial, HR)</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ──────────────────────────────────── ROW 5 -->
+
+<!-- SEC 13: LLM Routing -->
+<div class="sec accent-yellow col-span-1">
+  <div class="sec-num">13</div>
+  <div class="sec-title">LLM Routing <span class="highlight">Semantic · Model · MoE · Tool</span></div>
+
+  <div class="sub-sec">
+    <div class="sub-sec-title"><span class="dot" style="background:#eab308"></span><span style="color:#facc15">Semantic Router</span></div>
+    <div class="items">
+      <div class="item"><span class="arrow">▸</span><span>Embed query → cosine sim to route exemplars → classify intent → select handler</span></div>
+      <div class="item"><span class="arrow">▸</span><span><strong>Tool:</strong> semantic-router library (Auburn Uni) — fast, no LLM needed</span></div>
+    </div>
+  </div>
+
+  <div class="sub-sec mt6">
+    <div class="sub-sec-title"><span class="dot" style="background:#f97316"></span><span style="color:#fb923c">Model Routing</span></div>
+    <div class="items">
+      <div class="item"><span class="arrow">▸</span><span><strong>Simple query</strong> → GPT-3.5 / Haiku (cheap, fast)</span></div>
+      <div class="item"><span class="arrow">▸</span><span><strong>Complex reasoning</strong> → GPT-4o / Claude Opus (capable)</span></div>
+      <div class="item"><span class="arrow">▸</span><span><strong>LLM-router:</strong> meta-model predicts best model per query</span></div>
+      <div class="item"><span class="arrow">▸</span><span><strong>RouteLLM:</strong> trained preference-based router (LMSYS)</span></div>
+    </div>
+  </div>
+
+  <div class="sub-sec mt6">
+    <div class="sub-sec-title"><span class="dot" style="background:#3b82f6"></span><span style="color:#60a5fa">Mixture of Experts (MoE)</span></div>
+    <div class="items">
+      <div class="item"><span class="arrow">▸</span><span><strong>Gating network</strong> assigns tokens to top-K expert FFN layers</span></div>
+      <div class="item"><span class="arrow">▸</span><span>Sparse activation — only K/N experts fire per token (efficient)</span></div>
+      <div class="item"><span class="arrow">▸</span><span><strong>Models:</strong> Mixtral 8×7B, GPT-4 (rumoured MoE), Grok 1</span></div>
+      <div class="item"><span class="arrow">▸</span><span>Auxiliary load-balancing loss prevents expert collapse</span></div>
+    </div>
+  </div>
+
+  <div class="sub-sec mt6">
+    <div class="sub-sec-title"><span class="dot" style="background:#14b8a6"></span><span style="color:#2dd4bf">Tool Routing</span></div>
+    <div class="items">
+      <div class="item"><span class="arrow">▸</span><span>LLM decides which tool to call (search, calculator, code, DB)</span></div>
+      <div class="item"><span class="arrow">▸</span><span>Function calling (OpenAI) / tool_use (Anthropic) as structured routing</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- SEC 14: LangChain -->
+<div class="sec accent-orange col-span-1">
+  <div class="sec-num">14</div>
+  <div class="sec-title">LangChain <span class="highlight">LCEL · Chains · Agents · Memory</span></div>
+
+  <div class="sub-sec">
+    <div class="sub-sec-title"><span class="dot" style="background:#f97316"></span><span style="color:#fb923c">LCEL — LangChain Expression Language</span></div>
+    <div class="items">
+      <div class="item"><span class="arrow">▸</span><span>Declarative pipe syntax: <strong>chain = prompt | model | parser</strong></span></div>
+      <div class="item"><span class="arrow">▸</span><span>Streaming, async, batch built-in via Runnable interface</span></div>
+      <div class="item"><span class="arrow">▸</span><span>RunnablePassthrough, RunnableParallel for fan-out patterns</span></div>
+    </div>
+  </div>
+
+  <div class="sub-sec mt6">
+    <div class="sub-sec-title"><span class="dot" style="background:#eab308"></span><span style="color:#facc15">Chain Types</span></div>
+    <div class="items">
+      <div class="item"><span class="arrow">▸</span><span><strong>RetrievalQA:</strong> retriever → stuffing/map_reduce/refine → LLM</span></div>
+      <div class="item"><span class="arrow">▸</span><span><strong>ConversationalRetrievalChain:</strong> chat history + RAG</span></div>
+      <div class="item"><span class="arrow">▸</span><span><strong>MapReduceDocumentsChain:</strong> parallel map → reduce for long docs</span></div>
+      <div class="item"><span class="arrow">▸</span><span><strong>RefineChain:</strong> sequential refinement over docs</span></div>
+    </div>
+  </div>
+
+  <div class="sub-sec mt6">
+    <div class="sub-sec-title"><span class="dot" style="background:#22c55e"></span><span style="color:#4ade80">Agents + Memory</span></div>
+    <div class="items">
+      <div class="item"><span class="arrow">▸</span><span><strong>Agent types:</strong> Zero-shot ReAct, OpenAI Functions, Structured Input, Plan-Execute</span></div>
+      <div class="item"><span class="arrow">▸</span><span><strong>Memory:</strong> ConversationBufferMemory, ConversationSummaryMemory, VectorStoreRetrieverMemory, EntityMemory</span></div>
+      <div class="item"><span class="arrow">▸</span><span><strong>Tools:</strong> Search, Python REPL, SQL, Wikipedia, custom functions</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- SEC 15: LangGraph -->
+<div class="sec accent-blue col-span-2">
+  <div class="sec-num">15</div>
+  <div class="sec-title">LangGraph <span class="highlight">Nodes · State · Checkpointing · Multi-Agent</span></div>
+
+  <div class="g2">
+    <div>
+      <div class="sub-sec">
+        <div class="sub-sec-title"><span class="dot" style="background:#3b82f6"></span><span style="color:#60a5fa">Core Concepts</span></div>
+        <div class="items">
+          <div class="item"><span class="arrow">▸</span><span><strong>StateGraph:</strong> Directed graph where nodes are Python functions transforming TypedDict state</span></div>
+          <div class="item"><span class="arrow">▸</span><span><strong>Nodes:</strong> <code>graph.add_node("intake", intake_agent)</code> — pure functions: state_in → state_out</span></div>
+          <div class="item"><span class="arrow">▸</span><span><strong>Edges:</strong> <code>add_edge</code>, <code>add_conditional_edges</code> for branching</span></div>
+          <div class="item"><span class="arrow">▸</span><span><strong>START/END:</strong> Built-in entry/exit nodes for graph lifecycle</span></div>
+          <div class="item"><span class="arrow">▸</span><span><strong>Parallel fan-out:</strong> Multiple edges from one node → concurrent execution</span></div>
+        </div>
+      </div>
+
+      <div class="sub-sec mt6">
+        <div class="sub-sec-title"><span class="dot" style="background:#6366f1"></span><span style="color:#818cf8">LoanIQ Graph Architecture</span></div>
+        <div class="pipeline" style="margin-top:4px;">
+          <div class="pipe-step"><div class="pipe-num">S</div><div class="pipe-content" style="border-color:#22c55e;background:rgba(34,197,94,0.08)"><div class="pipe-name" style="color:#4ade80">START → intake_agent</div><div class="pipe-desc">Parse loan application, validate fields</div></div></div>
+          <div class="pipe-step"><div class="pipe-num">↓</div><div class="pipe-content" style="border-color:#6366f1"><div class="pipe-name" style="color:#818cf8">route_after_intake()</div><div class="pipe-desc">Conditional: valid → parallel | invalid → END</div></div></div>
+          <div class="pipe-step"><div class="pipe-num">∥</div><div class="pipe-content" style="border-color:#f97316"><div class="pipe-name" style="color:#fb923c">ratio_calc ‖ policy_retrieval ‖ compliance</div><div class="pipe-desc">Fan-out parallel — Annotated[list, operator.add] merges</div></div></div>
+          <div class="pipe-step"><div class="pipe-num">↓</div><div class="pipe-content" style="border-color:#ef4444"><div class="pipe-name" style="color:#f87171">underwriting_agent → decision → audit</div><div class="pipe-desc">Final decisioning, audit trail, END</div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="sub-sec">
+        <div class="sub-sec-title"><span class="dot" style="background:#14b8a6"></span><span style="color:#2dd4bf">State Management</span></div>
+        <div class="items">
+          <div class="item"><span class="arrow">▸</span><span><strong>TypedDict state:</strong> <code>LoanApplicationState</code> — type-safe, immutable per-turn</span></div>
+          <div class="item"><span class="arrow">▸</span><span><strong>Annotated reducers:</strong> <code>Annotated[list, operator.add]</code> for parallel-safe list merging</span></div>
+          <div class="item"><span class="arrow">▸</span><span><strong>State isolation:</strong> Each node receives full state snapshot, returns partial update</span></div>
+        </div>
+      </div>
+
+      <div class="sub-sec mt6">
+        <div class="sub-sec-title"><span class="dot" style="background:#ec4899"></span><span style="color:#f472b6">Checkpointing + Persistence</span></div>
+        <div class="items">
+          <div class="item"><span class="arrow">▸</span><span><strong>MemorySaver:</strong> In-memory, dev/test only</span></div>
+          <div class="item"><span class="arrow">▸</span><span><strong>SqliteSaver:</strong> Local persistence, single-user</span></div>
+          <div class="item"><span class="arrow">▸</span><span><strong>PostgresSaver:</strong> Production, multi-tenant</span></div>
+          <div class="item"><span class="arrow">▸</span><span><strong>Thread IDs:</strong> <code>config={"configurable":{"thread_id":"loan_123"}}</code></span></div>
+          <div class="item"><span class="arrow">▸</span><span><strong>Time travel:</strong> Replay from any checkpoint snapshot</span></div>
+          <div class="item"><span class="arrow">▸</span><span><strong>Human-in-loop:</strong> <code>interrupt_before=["decision_agent"]</code> for approval gates</span></div>
+        </div>
+      </div>
+
+      <div class="sub-sec mt6">
+        <div class="sub-sec-title"><span class="dot" style="background:#22c55e"></span><span style="color:#4ade80">Multi-Agent Patterns</span></div>
+        <div class="items">
+          <div class="item"><span class="arrow">▸</span><span><strong>Supervisor:</strong> LLM orchestrator routes to worker agents</span></div>
+          <div class="item"><span class="arrow">▸</span><span><strong>Swarm:</strong> Agents hand off to each other peer-to-peer</span></div>
+          <div class="item"><span class="arrow">▸</span><span><strong>Subgraphs:</strong> Compose graphs within graphs (modular)</span></div>
+          <div class="item"><span class="arrow">▸</span><span><strong>LangGraph Platform:</strong> Deploy, scale, stream via REST+WS</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SEC 16–17: Fine-Tuning -->
+<div class="sec accent-violet col-span-2">
+  <div class="sec-num">16 – 17</div>
+  <div class="sec-title">Fine-Tuning <span class="highlight">LoRA · QLoRA · RLHF · DPO · Alignment · Serving</span></div>
+
+  <div class="g2">
+    <div>
+      <div class="sub-sec">
+        <div class="sub-sec-title"><span class="dot" style="background:#8b5cf6"></span><span style="color:#a78bfa">Methods</span></div>
+        <table class="mtable">
+          <tr><th>Method</th><th>VRAM</th><th>Approach</th></tr>
+          <tr><td><strong>Full FT</strong></td><td>High</td><td>All weights updated, best quality, most data</td></tr>
+          <tr><td><strong>LoRA</strong></td><td>Low</td><td>Low-rank ΔW=BA (r=8–64) added to frozen weights</td></tr>
+          <tr><td><strong>QLoRA</strong></td><td>Lowest</td><td>4-bit NF4 quantized base + bf16 LoRA adapters</td></tr>
+          <tr><td><strong>Prefix/Prompt FT</strong></td><td>Minimal</td><td>Only prepended soft prompt tokens trained</td></tr>
+        </table>
+        <div class="formula" style="font-size:9px;margin-top:6px;">LoRA: W' = W₀ + α/r · B·A &nbsp;|&nbsp; B∈ℝ^(d×r), A∈ℝ^(r×k)</div>
+      </div>
+
+      <div class="sub-sec mt6">
+        <div class="sub-sec-title"><span class="dot" style="background:#06b6d4"></span><span style="color:#22d3ee">Data Requirements</span></div>
+        <div class="items">
+          <div class="item"><span class="arrow">▸</span><span><strong>Format:</strong> instruction/input/output triplets, chat format, preference pairs</span></div>
+          <div class="item"><span class="arrow">▸</span><span><strong>Size:</strong> Task-specific: 100–10K examples. General: 100K+</span></div>
+          <div class="item"><span class="arrow">▸</span><span><strong>Quality &gt; Quantity:</strong> Self-Instruct, Alpaca, ShareGPT style</span></div>
+          <div class="item"><span class="arrow">▸</span><span><strong>Tools:</strong> Unsloth (fast LoRA), Axolotl, TRL, HF Transformers</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="sub-sec">
+        <div class="sub-sec-title"><span class="dot" style="background:#ec4899"></span><span style="color:#f472b6">Training + Alignment</span></div>
+        <div class="items">
+          <div class="item"><span class="arrow">▸</span><span><strong>SFT:</strong> Supervised fine-tuning on demonstrations (cross-entropy loss)</span></div>
+          <div class="item"><span class="arrow">▸</span><span><strong>RLHF:</strong> 1) SFT 2) Train reward model on human preferences 3) PPO optimize policy vs reward − β·KL(π||π_ref)</span></div>
+          <div class="item"><span class="arrow">▸</span><span><strong>DPO:</strong> Direct Preference Optimization — no RL needed. Implicit reward via preference pairs. β-regulated KL penalty baked into loss</span></div>
+          <div class="item"><span class="arrow">▸</span><span><strong>ORPO:</strong> Combined SFT+alignment in one pass, no reference model</span></div>
+          <div class="item"><span class="arrow">▸</span><span><strong>Constitutional AI:</strong> Self-critique + revision against principles (Anthropic)</span></div>
+        </div>
+        <div class="formula" style="font-size:9px;margin-top:6px;">DPO: L = -log σ( β log π(y_w)/π_ref(y_w) - β log π(y_l)/π_ref(y_l) )</div>
+      </div>
+
+      <div class="sub-sec mt6">
+        <div class="sub-sec-title"><span class="dot" style="background:#22c55e"></span><span style="color:#4ade80">Serving Considerations</span></div>
+        <div class="items">
+          <div class="item"><span class="arrow">▸</span><span><strong>vLLM:</strong> PagedAttention, continuous batching, OpenAI-compatible API</span></div>
+          <div class="item"><span class="arrow">▸</span><span><strong>GGUF/llama.cpp:</strong> CPU inference with Q4_K_M quantization</span></div>
+          <div class="item"><span class="arrow">▸</span><span><strong>AWQ/GPTQ:</strong> 4-bit GPU-efficient weight quantization post-FT</span></div>
+          <div class="item"><span class="arrow">▸</span><span><strong>Speculative decoding:</strong> Draft model + verifier for 2–3× throughput</span></div>
+          <div class="item"><span class="arrow">▸</span><span><strong>Merge adapters:</strong> <code>merge_and_unload()</code> → single model for serving</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ──────────────────────────────────── ROW 6 -->
+
+<!-- SEC 18: Production -->
+<div class="sec accent-red col-span-2">
+  <div class="sec-num">18</div>
+  <div class="sec-title">Production Layer <span class="highlight">API · Caching · Guardrails · Safety</span></div>
+
+  <div class="g3">
+    <div class="sub-sec">
+      <div class="sub-sec-title"><span class="dot" style="background:#ef4444"></span><span style="color:#f87171">API Layer</span></div>
+      <div class="items">
+        <div class="item"><span class="arrow">▸</span><span><strong>FastAPI</strong> — async, OpenAPI auto-docs, Pydantic validation</span></div>
+        <div class="item"><span class="arrow">▸</span><span><strong>Streaming:</strong> Server-Sent Events (SSE) via EventSourceResponse</span></div>
+        <div class="item"><span class="arrow">▸</span><span><strong>Auth:</strong> JWT/OAuth2, API key middleware, rate limiting (slowapi)</span></div>
+        <div class="item"><span class="arrow">▸</span><span><strong>LoanIQ stack:</strong> FastAPI + uvicorn + LangGraph compiled graph singleton</span></div>
+        <div class="item"><span class="arrow">▸</span><span><strong>Horizontal scaling:</strong> Kubernetes, load balanced, stateless API pods</span></div>
+      </div>
+    </div>
+    <div class="sub-sec">
+      <div class="sub-sec-title"><span class="dot" style="background:#f97316"></span><span style="color:#fb923c">Caching Layers</span></div>
+      <div class="items">
+        <div class="item"><span class="arrow">▸</span><span><strong>Semantic cache:</strong> Embed query → check Redis/Faiss for similar past queries (cosine &gt;0.97)</span></div>
+        <div class="item"><span class="arrow">▸</span><span><strong>Exact cache:</strong> MD5 hash of (query+context) → Redis TTL cache</span></div>
+        <div class="item"><span class="arrow">▸</span><span><strong>Embedding cache:</strong> Store computed embeddings for re-used chunks in Redis</span></div>
+        <div class="item"><span class="arrow">▸</span><span><strong>LangChain GPTCache:</strong> Drop-in semantic caching layer</span></div>
+        <div class="item"><span class="arrow">▸</span><span>Typical savings: 40–80% LLM call reduction on repeated queries</span></div>
+      </div>
+    </div>
+    <div class="sub-sec">
+      <div class="sub-sec-title"><span class="dot" style="background:#eab308"></span><span style="color:#facc15">Guardrails + Safety</span></div>
+      <div class="items">
+        <div class="item"><span class="arrow">▸</span><span><strong>Input guardrails:</strong> Prompt injection detection, topic filter, PII redaction</span></div>
+        <div class="item"><span class="arrow">▸</span><span><strong>Output guardrails:</strong> Hallucination detector, toxicity filter (Perspective API), citation validator</span></div>
+        <div class="item"><span class="arrow">▸</span><span><strong>NeMo Guardrails:</strong> Colang policy language, dialog rails, fact-checking rail</span></div>
+        <div class="item"><span class="arrow">▸</span><span><strong>Llama Guard:</strong> Fine-tuned safety classifier for input/output</span></div>
+        <div class="item"><span class="arrow">▸</span><span><strong>PII:</strong> Presidio (Microsoft) for detect + anonymize before embedding</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SEC 19: Monitoring + Evaluation -->
+<div class="sec accent-teal col-span-3">
+  <div class="sec-num">19</div>
+  <div class="sec-title">Monitoring &amp; Evaluation <span class="highlight">RAGAS · Observability · Feedback · Human-in-Loop</span></div>
+
+  <div class="g2">
+    <div>
+      <div class="sub-sec">
+        <div class="sub-sec-title"><span class="dot" style="background:#14b8a6"></span><span style="color:#2dd4bf">RAGAS Evaluation Metrics</span></div>
+        <table class="mtable">
+          <tr><th>Metric</th><th>Measures</th><th>How</th></tr>
+          <tr><td><strong>Faithfulness</strong></td><td>Hallucination rate</td><td>Claims in answer supported by context? LLM-judged</td></tr>
+          <tr><td><strong>Answer Relevancy</strong></td><td>On-topic quality</td><td>Reverse generate Qs from answer → cosine sim to original Q</td></tr>
+          <tr><td><strong>Context Precision</strong></td><td>Retrieval signal/noise</td><td>How much retrieved context is actually relevant?</td></tr>
+          <tr><td><strong>Context Recall</strong></td><td>Coverage</td><td>Ground truth claims found in retrieved context?</td></tr>
+          <tr><td><strong>Context Relevancy</strong></td><td>Retrieval accuracy</td><td>Retrieved chunks relevant to the query?</td></tr>
+          <tr><td><strong>Answer Correctness</strong></td><td>Factual accuracy</td><td>Semantic similarity + factual overlap vs ground truth</td></tr>
+        </table>
+      </div>
+    </div>
+    <div>
+      <div class="sub-sec">
+        <div class="sub-sec-title"><span class="dot" style="background:#22c55e"></span><span style="color:#4ade80">Observability Stack</span></div>
+        <div class="items">
+          <div class="item"><span class="arrow">▸</span><span><strong>LangSmith:</strong> Trace every LangChain/LangGraph run, latency, token cost per node</span></div>
+          <div class="item"><span class="arrow">▸</span><span><strong>Arize Phoenix:</strong> LLM observability, embedding drift, retrieval quality dashboards</span></div>
+          <div class="item"><span class="arrow">▸</span><span><strong>OpenTelemetry:</strong> OpenInference semantic conventions for LLM spans</span></div>
+          <div class="item"><span class="arrow">▸</span><span><strong>Prometheus + Grafana:</strong> p50/p95/p99 latency, token/s, cost/query, error rate</span></div>
+          <div class="item"><span class="arrow">▸</span><span><strong>Key metrics:</strong> TTFT (time-to-first-token), E2E latency, retrieval hit rate, faithfulness score</span></div>
+        </div>
+        <div class="divider"></div>
+        <div class="sub-sec-title" style="margin-bottom:4px;"><span class="dot" style="background:#3b82f6"></span><span style="color:#60a5fa">Feedback Loops + Human-in-Loop</span></div>
+        <div class="items">
+          <div class="item"><span class="arrow">▸</span><span><strong>Thumbs up/down:</strong> Log preference signal → fine-tune reward model (RLHF loop)</span></div>
+          <div class="item"><span class="arrow">▸</span><span><strong>A/B testing:</strong> Route % of traffic to candidate model → compare RAGAS scores</span></div>
+          <div class="item"><span class="arrow">▸</span><span><strong>LangGraph HIL:</strong> <code>interrupt_before</code> nodes pause for human approval (LoanIQ: underwriting decisions)</span></div>
+          <div class="item"><span class="arrow">▸</span><span><strong>Active learning:</strong> Flag low-confidence responses for human annotation → training data</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ──────────────────────────────────── ROW 7 -->
+
+<!-- SEC 20: End-to-End Swimlane -->
+<div class="sec accent-indigo col-span-3">
+  <div class="sec-num">20</div>
+  <div class="sec-title">End-to-End System Diagram — Swimlane <span class="highlight">User → Backend → Retrieval → LLM → Monitoring</span></div>
+
+  <div class="swimlane" style="margin-top:6px;">
+    <div class="swim-row">
+      <div class="swim-label" style="color:#60a5fa;border-color:#3b82f6;">USER</div>
+      <div class="swim-items">
+        <div class="swim-box" style="border-color:#3b82f6;color:#93c5fd;">Type Query</div>
+        <span class="swim-arrow">→</span>
+        <div class="swim-box" style="border-color:#3b82f6;color:#93c5fd;">HTTPS POST /ask</div>
+        <span class="swim-arrow">→→→→→→→→→→→→→→→→→→→→→→→→→→</span>
+        <div class="swim-box" style="border-color:#3b82f6;color:#93c5fd;">Stream Response</div>
+        <span class="swim-arrow">→</span>
+        <div class="swim-box" style="border-color:#3b82f6;color:#93c5fd;">Rate Answer 👍/👎</div>
+      </div>
+    </div>
+    <div class="swim-row">
+      <div class="swim-label" style="color:#a78bfa;border-color:#8b5cf6;">BACKEND</div>
+      <div class="swim-items">
+        <div class="swim-box" style="border-color:#8b5cf6;color:#c4b5fd;">FastAPI Auth</div>
+        <span class="swim-arrow">→</span>
+        <div class="swim-box" style="border-color:#8b5cf6;color:#c4b5fd;">Cache Check</div>
+        <span class="swim-arrow">→</span>
+        <div class="swim-box" style="border-color:#8b5cf6;color:#c4b5fd;">Guardrails Input</div>
+        <span class="swim-arrow">→</span>
+        <div class="swim-box" style="border-color:#8b5cf6;color:#c4b5fd;">Query Preprocess</div>
+        <span class="swim-arrow">→</span>
+        <div class="swim-box" style="border-color:#8b5cf6;color:#c4b5fd;">Prompt Assembly</div>
+        <span class="swim-arrow">→</span>
+        <div class="swim-box" style="border-color:#8b5cf6;color:#c4b5fd;">Guardrails Output</div>
+        <span class="swim-arrow">→</span>
+        <div class="swim-box" style="border-color:#8b5cf6;color:#c4b5fd;">Cache Set</div>
+      </div>
+    </div>
+    <div class="swim-row">
+      <div class="swim-label" style="color:#2dd4bf;border-color:#14b8a6;">RETRIEVAL</div>
+      <div class="swim-items">
+        <div class="swim-box" style="border-color:#14b8a6;color:#5eead4;">Embed Query</div>
+        <span class="swim-arrow">→</span>
+        <div class="swim-box" style="border-color:#14b8a6;color:#5eead4;">ANN Search (pgvector)</div>
+        <span class="swim-arrow">→</span>
+        <div class="swim-box" style="border-color:#14b8a6;color:#5eead4;">BM25 Sparse</div>
+        <span class="swim-arrow">→</span>
+        <div class="swim-box" style="border-color:#14b8a6;color:#5eead4;">RRF Fusion</div>
+        <span class="swim-arrow">→</span>
+        <div class="swim-box" style="border-color:#14b8a6;color:#5eead4;">Cross-Encoder Rerank</div>
+        <span class="swim-arrow">→</span>
+        <div class="swim-box" style="border-color:#14b8a6;color:#5eead4;">Top-K Chunks</div>
+      </div>
+    </div>
+    <div class="swim-row">
+      <div class="swim-label" style="color:#fb923c;border-color:#f97316;">LLM</div>
+      <div class="swim-items">
+        <div class="swim-box" style="border-color:#f97316;color:#fdba74;">Router: Model Select</div>
+        <span class="swim-arrow">→</span>
+        <div class="swim-box" style="border-color:#f97316;color:#fdba74;">OpenAI / Claude API</div>
+        <span class="swim-arrow">→</span>
+        <div class="swim-box" style="border-color:#f97316;color:#fdba74;">Streaming Tokens</div>
+        <span class="swim-arrow">→</span>
+        <div class="swim-box" style="border-color:#f97316;color:#fdba74;">Tool Calls (optional)</div>
+        <span class="swim-arrow">→</span>
+        <div class="swim-box" style="border-color:#f97316;color:#fdba74;">Final Answer + Citations</div>
+      </div>
+    </div>
+    <div class="swim-row">
+      <div class="swim-label" style="color:#4ade80;border-color:#22c55e;">MONITOR</div>
+      <div class="swim-items">
+        <div class="swim-box" style="border-color:#22c55e;color:#86efac;">LangSmith Trace</div>
+        <span class="swim-arrow">→</span>
+        <div class="swim-box" style="border-color:#22c55e;color:#86efac;">RAGAS Score</div>
+        <span class="swim-arrow">→</span>
+        <div class="swim-box" style="border-color:#22c55e;color:#86efac;">Prometheus Metrics</div>
+        <span class="swim-arrow">→</span>
+        <div class="swim-box" style="border-color:#22c55e;color:#86efac;">Grafana Dashboard</div>
+        <span class="swim-arrow">→</span>
+        <div class="swim-box" style="border-color:#22c55e;color:#86efac;">Feedback → RLHF</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SEC 21: Model + Tool Selection Guide -->
+<div class="sec accent-yellow col-span-2">
+  <div class="sec-num">21</div>
+  <div class="sec-title">Reference — Model + Tool Selection Guide <span class="highlight">When to use which</span></div>
+
+  <table class="mtable">
+    <tr><th>Task / Scenario</th><th>Recommended Model / Tool</th><th>Rationale</th></tr>
+    <tr><td><strong>Production RAG (cost-sensitive)</strong></td><td>GPT-4o-mini + text-embedding-3-small</td><td>80% quality at 10% cost vs GPT-4o</td></tr>
+    <tr><td><strong>Complex reasoning / agent</strong></td><td>Claude 3.5 Sonnet / GPT-4o</td><td>Best long-context, tool use, reasoning</td></tr>
+    <tr><td><strong>Local / private deployment</strong></td><td>Llama 3.1 8B / Mistral 7B via Ollama</td><td>No data leaves premises, free</td></tr>
+    <tr><td><strong>Code generation</strong></td><td>Claude 3.5 Sonnet / DeepSeek Coder</td><td>Top HumanEval scores</td></tr>
+    <tr><td><strong>Embeddings (best quality)</strong></td><td>text-embedding-3-large / E5-Mistral-7B</td><td>Highest MTEB BEIR scores</td></tr>
+    <tr><td><strong>Embeddings (open source)</strong></td><td>BGE-M3 / Jina v3</td><td>Multilingual, self-hosted, strong</td></tr>
+    <tr><td><strong>Re-ranking</strong></td><td>Cohere Rerank v3 / BGE-reranker-v2</td><td>Best retrieval precision gain</td></tr>
+    <tr><td><strong>Orchestration</strong></td><td>LangGraph (stateful) / LangChain (chains)</td><td>Cycles + state = LangGraph; simple pipelines = LC</td></tr>
+    <tr><td><strong>Vector DB (managed)</strong></td><td>Pinecone / Weaviate</td><td>Zero ops, SOC2, good SLAs</td></tr>
+    <tr><td><strong>Vector DB (open source)</strong></td><td>pgvector (existing PG) / Qdrant</td><td>Collocate with app DB / rich filtering</td></tr>
+    <tr><td><strong>Fine-tuning (low resource)</strong></td><td>QLoRA with Unsloth</td><td>4-bit + LoRA = 70% VRAM reduction</td></tr>
+    <tr><td><strong>Graph RAG</strong></td><td>Microsoft GraphRAG / LightRAG</td><td>Multi-hop reasoning, thematic summaries</td></tr>
+  </table>
+</div>
+
+<!-- SEC 22: Hyperparameters + Pitfalls -->
+<div class="sec accent-pink col-span-3">
+  <div class="sec-num">22</div>
+  <div class="sec-title">Reference — Hyperparameters + Common Pitfalls <span class="highlight">Chunk Size · Top-K · Temperature · Mistakes</span></div>
+
+  <div class="g3">
+    <div class="sub-sec">
+      <div class="sub-sec-title"><span class="dot" style="background:#ec4899"></span><span style="color:#f472b6">Critical Hyperparameters</span></div>
+      <table class="mtable">
+        <tr><th>Parameter</th><th>Recommended</th><th>Impact</th></tr>
+        <tr><td><strong>chunk_size</strong></td><td>512–1024 tokens</td><td>Too small = loss of context; too large = noise + lost-in-middle</td></tr>
+        <tr><td><strong>chunk_overlap</strong></td><td>10–20% of chunk</td><td>Prevents answer split across boundaries</td></tr>
+        <tr><td><strong>top_k retrieval</strong></td><td>20–100 (rerank to 5)</td><td>High recall → rerank for precision. Too small = miss answers</td></tr>
+        <tr><td><strong>top_k final</strong></td><td>3–7 chunks</td><td>Context window budget; quality vs completeness tradeoff</td></tr>
+        <tr><td><strong>temperature</strong></td><td>0.0–0.2 (RAG) · 0.7–1.0 (creative)</td><td>Low T = deterministic, factual; High T = diverse, creative</td></tr>
+        <tr><td><strong>top_p (nucleus)</strong></td><td>0.9</td><td>Truncates low-prob tokens; avoid using with temperature simultaneously</td></tr>
+        <tr><td><strong>similarity threshold</strong></td><td>0.7–0.8</td><td>Filter irrelevant retrieved chunks before LLM</td></tr>
+        <tr><td><strong>embed batch_size</strong></td><td>64–256</td><td>Throughput vs memory; larger = faster embedding</td></tr>
+        <tr><td><strong>LoRA rank (r)</strong></td><td>16–64</td><td>Higher r = more capacity, more memory; r=16 usually sufficient</td></tr>
+        <tr><td><strong>LoRA alpha</strong></td><td>2× rank</td><td>Effective learning rate of adapter; alpha/r = scale factor</td></tr>
+      </table>
+    </div>
+
+    <div class="sub-sec">
+      <div class="sub-sec-title"><span class="dot" style="background:#ef4444"></span><span style="color:#f87171">⚠ Common Pitfalls</span></div>
+      <div class="items">
+        <div class="item"><span class="arrow">▸</span><span><strong>Hallucination:</strong> LLM answers without grounding → Fix: faithfulness guardrail, lower temp, explicit "only use context" prompt</span></div>
+        <div class="item"><span class="arrow">▸</span><span><strong>Chunk too large:</strong> Embedding averages out meaning → retrieval misses → Fix: smaller chunks + parent retrieval</span></div>
+        <div class="item"><span class="arrow">▸</span><span><strong>No reranking:</strong> ANN has recall errors → Fix: always add cross-encoder reranking stage</span></div>
+        <div class="item"><span class="arrow">▸</span><span><strong>Stale index:</strong> Docs updated but not re-indexed → Fix: delta indexing pipeline with doc hash change detection</span></div>
+        <div class="item"><span class="arrow">▸</span><span><strong>Query-doc mismatch:</strong> Query is short, doc is long → Fix: HyDE, multi-query, or doc summary embeddings</span></div>
+        <div class="item"><span class="arrow">▸</span><span><strong>Ignoring metadata:</strong> Not filtering by date/source → Fix: always add metadata filter layer to retrieval</span></div>
+        <div class="item"><span class="arrow">▸</span><span><strong>Lost-in-middle:</strong> Relevant chunk buried in context → Fix: reorder (best first/last), reduce K</span></div>
+        <div class="item"><span class="arrow">▸</span><span><strong>No deduplication:</strong> Repeated chunks inflate context, waste tokens → Fix: MD5/cosine dedup in preprocessing</span></div>
+        <div class="item"><span class="arrow">▸</span><span><strong>Embedding model mismatch:</strong> Different model for indexing vs query → Fix: Always use same model for both</span></div>
+        <div class="item"><span class="arrow">▸</span><span><strong>No eval loop:</strong> Shipping RAG without RAGAS baseline → Fix: run offline RAGAS eval before every deployment</span></div>
+      </div>
+    </div>
+
+    <div>
+      <div class="sub-sec">
+        <div class="sub-sec-title"><span class="dot" style="background:#8b5cf6"></span><span style="color:#a78bfa">RAG Quality Checklist</span></div>
+        <div class="items">
+          <div class="item"><span class="arrow">✓</span><span>Preprocessing removes noise before chunking</span></div>
+          <div class="item"><span class="arrow">✓</span><span>Chunk strategy matches doc structure (code → AST, prose → recursive)</span></div>
+          <div class="item"><span class="arrow">✓</span><span>Hybrid retrieval (dense + BM25) with RRF fusion</span></div>
+          <div class="item"><span class="arrow">✓</span><span>Cross-encoder reranking applied after ANN</span></div>
+          <div class="item"><span class="arrow">✓</span><span>Contextual compression to remove noise from chunks</span></div>
+          <div class="item"><span class="arrow">✓</span><span>Lost-in-middle mitigation (best chunks first/last)</span></div>
+          <div class="item"><span class="arrow">✓</span><span>Guardrails on input (injection) and output (faithfulness)</span></div>
+          <div class="item"><span class="arrow">✓</span><span>RAGAS metrics tracked per deployment (target: F&gt;0.8, AR&gt;0.8)</span></div>
+          <div class="item"><span class="arrow">✓</span><span>Semantic cache for repeated queries</span></div>
+          <div class="item"><span class="arrow">✓</span><span>Observability: traces, latency, cost per query in Grafana</span></div>
+          <div class="item"><span class="arrow">✓</span><span>Human-in-loop for high-stakes decisions (LoanIQ: approval gate)</span></div>
+          <div class="item"><span class="arrow">✓</span><span>Regular index refresh + deduplication pipeline</span></div>
+        </div>
+      </div>
+
+      <div class="sub-sec mt6">
+        <div class="sub-sec-title"><span class="dot" style="background:#06b6d4"></span><span style="color:#22d3ee">LoanIQ Tech Stack Summary</span></div>
+        <div class="chips">
+          <span class="tag tag-blue">FastAPI</span>
+          <span class="tag tag-blue">LangGraph</span>
+          <span class="tag tag-violet">pgvector</span>
+          <span class="tag tag-teal">text-embedding-3-small</span>
+          <span class="tag tag-orange">BM25+RRF</span>
+          <span class="tag tag-green">Cross-Encoder</span>
+          <span class="tag tag-pink">RAGAS</span>
+          <span class="tag tag-cyan">LangSmith</span>
+          <span class="tag tag-yellow">PostgresSaver</span>
+          <span class="tag tag-red">NeMo Guardrails</span>
+          <span class="tag tag-indigo">PolicyAgent · ComplianceAgent</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+<!-- end grid-master -->
+
+<div class="footer">
+  GenAI + RAG Complete Ecosystem Poster · Rahul © 2025 · LoanIQ Architecture Reference · 22 Sections · Built with precision
+</div>
+
+</div><!-- end poster -->
+
+<!-- Print button (hidden in print) -->
+<div style="position:fixed;bottom:20px;right:20px;z-index:100;display:flex;gap:8px;" class="no-print">
+  <button onclick="window.print()" style="background:#3b82f6;color:white;border:none;padding:10px 20px;border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:12px;cursor:pointer;font-weight:700;letter-spacing:1px;">⬇ PRINT / PDF</button>
+</div>
+
+<style>
+@media print {
+  .no-print { display: none !important; }
+  .poster { width: 100%; }
+  @page { margin: 0; size: landscape; }
+}
+</style>
+
+</body>
+</html>
