@@ -23,36 +23,6 @@
   position: relative; z-index: 5;
   padding-top: 60px;
 }
-  /* ── MOBILE NAV FIX ── */
-@media (max-width: 768px) {
-
-  .nav-links {
-    position: fixed;
-    top: 60px;
-    left: 0;
-    right: 0;
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-
-    gap: 1.2rem;
-    padding: 1.5rem 0;
-
-    background: var(--bg1);
-    border-top: 1px solid var(--border);
-
-    transform: translateY(-120%);
-    transition: transform 0.3s ease;
-
-    z-index: 999;
-  }
-
-  .nav-links.open {
-    transform: translateY(0);
-  }
-
-}
 
 /* ── HERO ── */
 .hero {
@@ -250,8 +220,8 @@
 
 .projects-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.25rem;
 }
 
 /* Featured project spans 2 cols */
@@ -261,6 +231,12 @@
 
 @media (max-width: 900px) {
   .project-card.featured { grid-column: span 1; }
+}
+
+@media (max-width: 600px) {
+  .projects-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* ── PROJECT CARD ── */
@@ -1022,7 +998,15 @@
 
 // ── HAMBURGER ──
 document.getElementById('hamburger').addEventListener('click', function() {
+  this.classList.toggle('open');
   document.getElementById('nav-links').classList.toggle('open');
+  // Close menu when a link is clicked
+  document.querySelectorAll('#nav-links a').forEach(function(link) {
+    link.addEventListener('click', function() {
+      document.getElementById('hamburger').classList.remove('open');
+      document.getElementById('nav-links').classList.remove('open');
+    });
+  });
 });
 
 // ── SMOOTH ANCHOR SCROLL ──

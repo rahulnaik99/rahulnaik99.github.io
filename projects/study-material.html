@@ -162,6 +162,16 @@
 }
 .wa-float:hover { transform: scale(1.1); }
 .wa-float svg { width: 26px; height: 26px; fill: #fff; }
+
+@media (max-width: 600px) {
+  .sm-hero { padding: 2.5rem 1.25rem 1.5rem; }
+  .sm-list { padding: 0 1.25rem 3rem; }
+  .sm-item { gap: 1rem; padding: 1.4rem 0; }
+  .sm-item-num { display: none; }
+  .sm-item::after { display: none; }
+  .sm-item h3 { font-size: 0.95rem; }
+  .sm-item p { font-size: 0.8rem; }
+}
 </style>
 </head>
 <body>
@@ -296,7 +306,15 @@
 <script src="../assets/js/main.js"></script>
 <script>
 document.getElementById('hamburger').addEventListener('click', function() {
+  this.classList.toggle('open');
   document.getElementById('nav-links').classList.toggle('open');
+  // Close menu when a link is clicked
+  document.querySelectorAll('#nav-links a').forEach(function(link) {
+    link.addEventListener('click', function() {
+      document.getElementById('hamburger').classList.remove('open');
+      document.getElementById('nav-links').classList.remove('open');
+    });
+  });
 });
 </script>
 </body>
