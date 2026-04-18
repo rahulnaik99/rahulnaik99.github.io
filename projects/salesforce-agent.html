@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <script id="rn-early-theme">
+    (function(){
+      var OVERRIDE="rn-theme-manual", OD=OVERRIDE+"-date";
+      function istHour(){var n=new Date(),u=n.getTime()+n.getTimezoneOffset()*60000,i=new Date(u+19800000);return i.getHours();}
+      function istDate(){var n=new Date(),u=n.getTime()+n.getTimezoneOffset()*60000,i=new Date(u+19800000);return i.getFullYear()+"-"+i.getMonth()+"-"+i.getDate();}
+      var manual=localStorage.getItem(OVERRIDE),day=localStorage.getItem(OD),today=istDate();
+      var theme=(manual&&day===today)?manual:((istHour()>=6&&istHour()<19)?"light":"dark");
+      document.documentElement.setAttribute("data-theme",theme);
+    })();
+  </script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Salesforce AI Agent — Rahul Naik</title>
+<link rel="stylesheet" href="../assets/css/theme.css">
+<style>
+.page-wrap { padding-top: 60px; position: relative; z-index: 5; }
+
+/* ── HERO ── */
+.proj-hero {
+  padding: 4rem 2rem 3rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+.back-crumb {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 1.8rem;
+  transition: color 0.2s;
+}
+.back-crumb:hover { color: var(--accent); }
+
+.proj-badge {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.52rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: 0.25rem 0.7rem;
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+  color: var(--accent);
+  background: rgba(0,212,255,0.05);
+  margin-bottom: 1.2rem;
+}
+.proj-title {
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 5vw, 3.8rem);
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.05;
+  margin-bottom: 0.5rem;
+}
+.proj-subtitle {
+  font-size: 1rem;
+  color: var(--accent);
+  font-weight: 600;
+  margin-bottom: 1.2rem;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+}
+.proj-desc {
+  font-size: 0.95rem;
+  color: var(--text2);
+  line-height: 1.8;
+  max-width: 680px;
+}
+
+/* ── METRICS ── */
+.metrics-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin: 2.5rem auto;
+  max-width: 900px;
+  padding: 0 2rem;
+}
+.metric-card {
+  flex: 1;
+  min-width: 140px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-top: 3px solid var(--accent);
+  border-radius: 10px;
+  padding: 1.1rem 1rem;
+  text-align: center;
+}
+.metric-card .val {
+  font-family: var(--font-display);
+  font-size: 1.7rem;
+  font-weight: 800;
+  color: var(--accent);
+  line-height: 1;
+  margin-bottom: 0.3rem;
+}
+.metric-card .lbl {
+  font-family: var(--font-mono);
+  font-size: 0.5rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* ── SECTIONS ── */
+.proj-body {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 2rem 4rem;
+}
+.proj-section {
+  margin-bottom: 3.5rem;
+}
+.proj-section-title {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.proj-section-title .icon { font-size: 1rem; }
+.proj-p {
+  font-size: 0.88rem;
+  color: var(--text2);
+  line-height: 1.85;
+  margin-bottom: 0.9rem;
+}
+
+/* ── ARCHITECTURE DIAGRAM ── */
+.arch-diagram {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 2rem 1.5rem;
+  margin: 1.5rem 0;
+  overflow-x: auto;
+}
+.arch-diagram svg { min-width: 640px; width: 100%; height: auto; }
+
+/* ── AGENT CARDS ── */
+.agents-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+  margin-top: 1.2rem;
+}
+.agent-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.2rem;
+  border-left: 3px solid var(--agent-color, var(--cyan));
+  transition: box-shadow 0.2s;
+}
+.agent-card:hover { box-shadow: 0 4px 24px rgba(0,0,0,0.12); }
+.agent-num {
+  font-family: var(--font-mono);
+  font-size: 0.5rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--agent-color, var(--cyan));
+  margin-bottom: 0.4rem;
+}
+.agent-name {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+}
+.agent-desc {
+  font-size: 0.78rem;
+  color: var(--text2);
+  line-height: 1.65;
+}
+
+/* ── FLOW STEPS ── */
+.flow-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-top: 1.2rem;
+  position: relative;
+}
+.flow-step {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  position: relative;
+}
+.flow-step:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: 17px; top: 36px;
+  width: 2px; bottom: 0;
+  background: var(--border);
+}
+.step-num {
+  width: 36px; height: 36px; flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 2px solid var(--accent);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--accent);
+  position: relative;
+  z-index: 1;
+}
+.step-body {
+  padding-bottom: 1.8rem;
+  flex: 1;
+}
+.step-title {
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 0.3rem;
+}
+.step-desc {
+  font-size: 0.8rem;
+  color: var(--text2);
+  line-height: 1.65;
+}
+
+/* ── TECH PILLS ── */
+.tech-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+.tech-pill {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.3rem 0.7rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text2);
+  background: var(--surface);
+}
+
+/* ── CODE BLOCK ── */
+.code-block {
+  background: #020510;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.4rem 1.5rem;
+  overflow-x: auto;
+  margin: 1.2rem 0;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  line-height: 1.7;
+  color: #c9d1d9;
+}
+[data-theme="light"] .code-block { background: #1a1e2e; }
+.code-block .kw { color: #ff79c6; }
+.code-block .fn { color: #50fa7b; }
+.code-block .st { color: #f1fa8c; }
+.code-block .cm { color: #6272a4; }
+.code-block .cn { color: #bd93f9; }
+
+/* ── HIGHLIGHT BOX ── */
+.highlight-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: 10px;
+  padding: 1.2rem 1.4rem;
+  margin: 1rem 0;
+}
+.highlight-box p {
+  font-size: 0.82rem;
+  color: var(--text2);
+  line-height: 1.7;
+  margin: 0;
+}
+.highlight-box strong { color: var(--accent); font-weight: 600; }
+
+/* ── CONTACT ── */
+.contact-section { text-align:center; padding:4rem 2rem; border-top:1px solid var(--border); }
+.contact-section h2 { font-family:var(--font-display); font-size:1.8rem; font-weight:800; color:var(--text); margin-bottom:0.8rem; }
+.contact-section p { color:var(--text2); font-size:0.9rem; margin-bottom:1.8rem; }
+.contact-links { display:flex; gap:0.8rem; flex-wrap:wrap; justify-content:center; }
+
+/* ── WhatsApp Float ── */
+.wa-float {
+  position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 999;
+  width: 52px; height: 52px;
+  background: #25d366; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 20px rgba(37,211,102,0.4);
+  transition: transform 0.2s, box-shadow 0.2s; text-decoration: none;
+}
+.wa-float:hover { transform: scale(1.12); box-shadow: 0 6px 28px rgba(37,211,102,0.55); }
+.wa-float svg { width: 26px; height: 26px; fill: #fff; }
+
+/* accent var */
+:root { --accent: #00d4ff; }
+</style>
+</head>
+<body>
+<div class="hexgrid"></div>
+
+<nav class="site-nav">
+  <a class="nav-logo" href="../index.html"><span class="dot"></span>RN</a>
+  <div class="hamburger" id="hamburger"><span></span><span></span><span></span></div>
+  <div class="nav-links" id="nav-links">
+    <a href="../index.html">Home</a>
+    <a href="../index.html#projects">Projects</a>
+    <a href="study-material.html">Study Material</a>
+    <a href="../index.html#contact">Contact</a>
+  </div>
+  <div class="nav-right">
+    <div class="theme-toggle" id="themeToggle" role="button" aria-label="Toggle theme">
+      <div class="toggle-track"><div class="toggle-thumb"></div></div>
+      <span class="theme-label">LIGHT</span>
+    </div>
+  </div>
+</nav>
+
+<div class="page-wrap">
+  <div class="proj-hero">
+    <a class="back-crumb" href="../index.html">← Home</a>
+    <div class="proj-badge">Multi-Agent · AWS · Salesforce</div>
+    <h1 class="proj-title">Salesforce<br>AI Agent</h1>
+    <div class="proj-subtitle">// Intelligent Vehicle Case Management System</div>
+    <p class="proj-desc">
+      A production-grade multi-agent pipeline that automates vehicle service case triage, 
+      RAG-powered technical summarisation, and Salesforce writeback — orchestrated via LangGraph 
+      with AWS-native resilience (SQS, ElastiCache, Cognito, Bedrock) and real-time Slack alerting 
+      for critical incidents.
+    </p>
+  </div>
+
+  <!-- METRICS -->
+  <div class="metrics-row">
+    <div class="metric-card">
+      <div class="val">3</div>
+      <div class="lbl">AI Agents</div>
+    </div>
+    <div class="metric-card">
+      <div class="val" style="color:var(--green)">SQS</div>
+      <div class="lbl">Async Queues</div>
+    </div>
+    <div class="metric-card">
+      <div class="val" style="color:var(--purple)">RAG</div>
+      <div class="lbl">Vector Retrieval</div>
+    </div>
+    <div class="metric-card">
+      <div class="val" style="color:var(--yellow)">RAGAS</div>
+      <div class="lbl">Quality Gate</div>
+    </div>
+    <div class="metric-card">
+      <div class="val" style="color:var(--pink)">Zero</div>
+      <div class="lbl">Manual Triage</div>
+    </div>
+  </div>
+
+  <div class="proj-body">
+
+    <!-- PROBLEM -->
+    <div class="proj-section">
+      <h2 class="proj-section-title"> Problem Statement</h2>
+      <p class="proj-p">
+        Vehicle service centres generate hundreds of Salesforce cases daily. Technicians manually 
+        triaged each case, searched historical repair documentation, and wrote technical summaries — 
+        a slow, inconsistent, and expensive process. Critical cases often went undetected for hours.
+      </p>
+      <p class="proj-p">
+        The goal: an autonomous pipeline that receives a Salesforce case, classifies priority, 
+        retrieves relevant vehicle history and repair documentation via RAG, generates a verified 
+        technical summary, writes it back to Salesforce, and triggers real-time Slack alerts for 
+        critical incidents — all without human intervention.
+      </p>
+    </div>
+
+    <!-- ARCHITECTURE FLOW -->
+    <div class="proj-section">
+      <h2 class="proj-section-title"> System Architecture</h2>
+      <p class="proj-p">
+        The system follows an event-driven, queue-decoupled architecture. An authenticated API Gateway 
+        receives the case trigger, invokes a Lambda which enqueues to SQS, and a Fargate-hosted 
+        FastAPI container picks up the job and runs the LangGraph agent pipeline.
+      </p>
+
+      <!-- SVG Architecture Diagram -->
+      <div class="arch-diagram">
+        <svg viewBox="0 0 800 520" xmlns="http://www.w3.org/2000/svg" font-family="'JetBrains Mono', monospace">
+          <defs>
+            <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L8,3 z" fill="#4a6080"/>
+            </marker>
+            <marker id="arr-cyan" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L8,3 z" fill="#00d4ff"/>
+            </marker>
+            <marker id="arr-green" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L8,3 z" fill="#00ff88"/>
+            </marker>
+            <marker id="arr-purple" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L8,3 z" fill="#bf5af2"/>
+            </marker>
+          </defs>
+
+          <!-- BG Layers -->
+          <!-- Row 1: Entry -->
+          <rect x="20" y="20" width="760" height="90" rx="8" fill="rgba(0,212,255,0.04)" stroke="#162035" stroke-width="1"/>
+          <text x="30" y="38" fill="#4a6080" font-size="8" letter-spacing="2">ENTRY LAYER</text>
+
+          <!-- Salesforce -->
+          <rect x="40" y="48" width="110" height="48" rx="6" fill="#0e1526" stroke="#00d4ff" stroke-width="1.5"/>
+          <text x="95" y="68" text-anchor="middle" fill="#00d4ff" font-size="9" font-weight="600">Salesforce</text>
+          <text x="95" y="82" text-anchor="middle" fill="#4a6080" font-size="7">Case Trigger</text>
+
+          <!-- API Gateway -->
+          <rect x="210" y="48" width="110" height="48" rx="6" fill="#0e1526" stroke="#00d4ff" stroke-width="1.5"/>
+          <text x="265" y="68" text-anchor="middle" fill="#00d4ff" font-size="9" font-weight="600">API Gateway</text>
+          <text x="265" y="82" text-anchor="middle" fill="#4a6080" font-size="7">Cognito 2.0 Auth</text>
+
+          <!-- Lambda -->
+          <rect x="380" y="48" width="100" height="48" rx="6" fill="#0e1526" stroke="#ffb700" stroke-width="1.5"/>
+          <text x="430" y="68" text-anchor="middle" fill="#ffb700" font-size="9" font-weight="600">Lambda</text>
+          <text x="430" y="82" text-anchor="middle" fill="#4a6080" font-size="7">Trigger + Enqueue</text>
+
+          <!-- SQS -->
+          <rect x="540" y="48" width="100" height="48" rx="6" fill="#0e1526" stroke="#ffb700" stroke-width="1.5"/>
+          <text x="590" y="68" text-anchor="middle" fill="#ffb700" font-size="9" font-weight="600">AWS SQS</text>
+          <text x="590" y="82" text-anchor="middle" fill="#4a6080" font-size="7">Main Queue</text>
+
+          <!-- Fargate -->
+          <rect x="690" y="48" width="86" height="48" rx="6" fill="#0e1526" stroke="#bf5af2" stroke-width="1.5"/>
+          <text x="733" y="68" text-anchor="middle" fill="#bf5af2" font-size="9" font-weight="600">Fargate</text>
+          <text x="733" y="82" text-anchor="middle" fill="#4a6080" font-size="7">FastAPI Worker</text>
+
+          <!-- Arrows row 1 -->
+          <line x1="150" y1="72" x2="205" y2="72" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#arr-cyan)"/>
+          <line x1="320" y1="72" x2="375" y2="72" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#arr-cyan)"/>
+          <line x1="480" y1="72" x2="535" y2="72" stroke="#ffb700" stroke-width="1.5" marker-end="url(#arr)"/>
+          <line x1="640" y1="72" x2="685" y2="72" stroke="#ffb700" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <!-- Row 2: LangGraph Agents -->
+          <rect x="20" y="130" width="760" height="180" rx="8" fill="rgba(191,90,242,0.04)" stroke="#162035" stroke-width="1"/>
+          <text x="30" y="148" fill="#4a6080" font-size="8" letter-spacing="2">LANGGRAPH AGENT PIPELINE</text>
+
+          <!-- Agent 01 -->
+          <rect x="40" y="158" width="155" height="130" rx="8" fill="#0e1526" stroke="#00d4ff" stroke-width="1.5"/>
+          <text x="117" y="178" text-anchor="middle" fill="#00d4ff" font-size="8" letter-spacing="1">AGENT 01</text>
+          <text x="117" y="194" text-anchor="middle" fill="#e8edf5" font-size="9" font-weight="600">Case Classifier</text>
+          <line x1="55" y1="202" x2="180" y2="202" stroke="#162035" stroke-width="1"/>
+          <text x="117" y="218" text-anchor="middle" fill="#4a6080" font-size="7">Fetch case details</text>
+          <text x="117" y="232" text-anchor="middle" fill="#4a6080" font-size="7">Classify: HIGH / LOW</text>
+          <text x="117" y="246" text-anchor="middle" fill="#4a6080" font-size="7">Check vehicle history</text>
+          <text x="117" y="262" text-anchor="middle" fill="#00d4ff" font-size="7">→ Route to Agent 02/03</text>
+
+          <!-- Agent 02 -->
+          <rect x="322" y="158" width="155" height="130" rx="8" fill="#0e1526" stroke="#bf5af2" stroke-width="1.5"/>
+          <text x="399" y="178" text-anchor="middle" fill="#bf5af2" font-size="8" letter-spacing="1">AGENT 02</text>
+          <text x="399" y="194" text-anchor="middle" fill="#e8edf5" font-size="9" font-weight="600">RAG Summariser</text>
+          <line x1="337" y1="202" x2="462" y2="202" stroke="#162035" stroke-width="1"/>
+          <text x="399" y="218" text-anchor="middle" fill="#4a6080" font-size="7">Build search query</text>
+          <text x="399" y="232" text-anchor="middle" fill="#4a6080" font-size="7">Weaviate retrieval</text>
+          <text x="399" y="246" text-anchor="middle" fill="#4a6080" font-size="7">LLM: Tech summary</text>
+          <text x="399" y="262" text-anchor="middle" fill="#bf5af2" font-size="7">+ Sentiment analysis</text>
+
+          <!-- Agent 03 -->
+          <rect x="605" y="158" width="155" height="130" rx="8" fill="#0e1526" stroke="#00ff88" stroke-width="1.5"/>
+          <text x="682" y="178" text-anchor="middle" fill="#00ff88" font-size="8" letter-spacing="1">AGENT 03</text>
+          <text x="682" y="194" text-anchor="middle" fill="#e8edf5" font-size="9" font-weight="600">Writeback Agent</text>
+          <line x1="620" y1="202" x2="745" y2="202" stroke="#162035" stroke-width="1"/>
+          <text x="682" y="218" text-anchor="middle" fill="#4a6080" font-size="7">RAGAS eval (dev)</text>
+          <text x="682" y="232" text-anchor="middle" fill="#4a6080" font-size="7">SQS → patch case</text>
+          <text x="682" y="246" text-anchor="middle" fill="#4a6080" font-size="7">SQS → create task</text>
+          <text x="682" y="262" text-anchor="middle" fill="#00ff88" font-size="7">SQS → Slack (critical)</text>
+
+          <!-- Arrows between agents -->
+          <line x1="195" y1="223" x2="317" y2="223" stroke="#4a6080" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#arr)"/>
+          <text x="256" y="217" text-anchor="middle" fill="#4a6080" font-size="7">HIGH priority</text>
+          <line x1="477" y1="223" x2="600" y2="223" stroke="#4a6080" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#arr)"/>
+          <text x="538" y="217" text-anchor="middle" fill="#4a6080" font-size="7">summary + sentiment</text>
+
+          <!-- Fargate to Agent 01 -->
+          <line x1="733" y1="96" x2="733" y2="148" stroke="#bf5af2" stroke-width="1" stroke-dasharray="3 3"/>
+          <line x1="733" y1="148" x2="117" y2="158" stroke="#bf5af2" stroke-width="1" stroke-dasharray="3 3" marker-end="url(#arr-purple)"/>
+
+          <!-- Row 3: Support Services -->
+          <rect x="20" y="330" width="760" height="100" rx="8" fill="rgba(0,255,136,0.03)" stroke="#162035" stroke-width="1"/>
+          <text x="30" y="348" fill="#4a6080" font-size="8" letter-spacing="2">SUPPORT SERVICES</text>
+
+          <!-- ElastiCache -->
+          <rect x="40" y="356" width="130" height="54" rx="6" fill="#0e1526" stroke="#00ff88" stroke-width="1.5"/>
+          <text x="105" y="376" text-anchor="middle" fill="#00ff88" font-size="9" font-weight="600">ElastiCache</text>
+          <text x="105" y="391" text-anchor="middle" fill="#4a6080" font-size="7">State persistence</text>
+
+          <!-- Weaviate -->
+          <rect x="220" y="356" width="130" height="54" rx="6" fill="#0e1526" stroke="#bf5af2" stroke-width="1.5"/>
+          <text x="285" y="376" text-anchor="middle" fill="#bf5af2" font-size="9" font-weight="600">Weaviate</text>
+          <text x="285" y="391" text-anchor="middle" fill="#4a6080" font-size="7">Vector DB · RAG</text>
+
+          <!-- S3 -->
+          <rect x="400" y="356" width="130" height="54" rx="6" fill="#0e1526" stroke="#ffb700" stroke-width="1.5"/>
+          <text x="465" y="376" text-anchor="middle" fill="#ffb700" font-size="9" font-weight="600">AWS S3</text>
+          <text x="465" y="391" text-anchor="middle" fill="#4a6080" font-size="7">Doc storage</text>
+
+          <!-- SQS Worker -->
+          <rect x="580" y="356" width="130" height="54" rx="6" fill="#0e1526" stroke="#ff6b9d" stroke-width="1.5"/>
+          <text x="645" y="376" text-anchor="middle" fill="#ff6b9d" font-size="9" font-weight="600">SQS Worker</text>
+          <text x="645" y="391" text-anchor="middle" fill="#4a6080" font-size="7">SF health check · retry</text>
+
+          <!-- Connection lines from agents to services -->
+          <line x1="117" y1="288" x2="105" y2="356" stroke="#00ff88" stroke-width="1" stroke-dasharray="3 2" marker-end="url(#arr-green)"/>
+          <line x1="399" y1="288" x2="285" y2="356" stroke="#bf5af2" stroke-width="1" stroke-dasharray="3 2" marker-end="url(#arr-purple)"/>
+          <line x1="682" y1="288" x2="645" y2="356" stroke="#ff6b9d" stroke-width="1" stroke-dasharray="3 2" marker-end="url(#arr)"/>
+
+          <!-- Row 4: Outputs -->
+          <rect x="20" y="450" width="760" height="56" rx="8" fill="rgba(0,212,255,0.03)" stroke="#162035" stroke-width="1"/>
+          <text x="30" y="468" fill="#4a6080" font-size="8" letter-spacing="2">OUTPUTS</text>
+
+          <rect x="50" y="476" width="100" height="22" rx="4" fill="rgba(0,212,255,0.08)" stroke="#00d4ff" stroke-width="1"/>
+          <text x="100" y="491" text-anchor="middle" fill="#00d4ff" font-size="8">SF Case Updated</text>
+
+          <rect x="200" y="476" width="100" height="22" rx="4" fill="rgba(0,255,136,0.08)" stroke="#00ff88" stroke-width="1"/>
+          <text x="250" y="491" text-anchor="middle" fill="#00ff88" font-size="8">Task Created</text>
+
+          <rect x="350" y="476" width="100" height="22" rx="4" fill="rgba(255,107,157,0.08)" stroke="#ff6b9d" stroke-width="1"/>
+          <text x="400" y="491" text-anchor="middle" fill="#ff6b9d" font-size="8">Slack Alert (critical)</text>
+
+          <rect x="500" y="476" width="100" height="22" rx="4" fill="rgba(191,90,242,0.08)" stroke="#bf5af2" stroke-width="1"/>
+          <text x="550" y="491" text-anchor="middle" fill="#bf5af2" font-size="8">DLQ → Retry</text>
+
+          <rect x="650" y="476" width="110" height="22" rx="4" fill="rgba(255,183,0,0.08)" stroke="#ffb700" stroke-width="1"/>
+          <text x="705" y="491" text-anchor="middle" fill="#ffb700" font-size="8">RAGAS QA Gate</text>
+        </svg>
+      </div>
+
+      <div class="highlight-box">
+        <p><strong>Key design principle:</strong> All Salesforce writes happen asynchronously via dedicated SQS queues (patch queue, task queue, Slack queue). If Salesforce is unavailable, the SQS Worker performs health checks and exponential-backoff retries, with a Dead Letter Queue capturing failures for manual review.</p>
+      </div>
+    </div>
+
+    <!-- AGENT BREAKDOWN -->
+    <div class="proj-section">
+      <h2 class="proj-section-title"> Agent Breakdown</h2>
+      <p class="proj-p">Three specialised agents operate as a LangGraph state machine, passing a shared <code style="font-family:var(--font-mono);font-size:0.8em;color:var(--cyan);background:var(--surface);padding:0.1em 0.4em;border-radius:3px">StateObject</code> through each node.</p>
+      <div class="agents-grid">
+        <div class="agent-card" style="--agent-color:#00d4ff">
+          <div class="agent-num">Agent 01 · Classifier</div>
+          <div class="agent-name">Case Triage Agent</div>
+          <div class="agent-desc">Authenticates via Cognito token, fetches full case details from Salesforce, retrieves vehicle history from the database, and classifies priority as HIGH or LOW. High-priority cases route to Agent 02 for RAG; low-priority cases go directly to Agent 03 for patch.</div>
+        </div>
+        <div class="agent-card" style="--agent-color:#bf5af2">
+          <div class="agent-num">Agent 02 · RAG Summariser</div>
+          <div class="agent-name">Technical Analysis Agent</div>
+          <div class="agent-desc">Builds a semantic search query from vehicle model + case description + history. Retrieves relevant service documents from Weaviate (filtered by vehicle model metadata). Calls LLM to produce a structured Technical Summary and Sentiment classification (Normal / Warning / Critical).</div>
+        </div>
+        <div class="agent-card" style="--agent-color:#00ff88">
+          <div class="agent-num">Agent 03 · Writeback</div>
+          <div class="agent-name">Salesforce Update Agent</div>
+          <div class="agent-desc">In dev mode, runs RAGAS evaluation before writeback to gate quality. In production, uses Agent 02 output directly. Sends three parallel SQS messages: patch the SF case, create a technician follow-up task, and — if sentiment is Critical — fire a Slack alert via a dedicated notification queue.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- END-TO-END FLOW -->
+    <div class="proj-section">
+      <h2 class="proj-section-title"> End-to-End Request Flow</h2>
+      <div class="flow-steps">
+        <div class="flow-step">
+          <div class="step-num">01</div>
+          <div class="step-body">
+            <div class="step-title">Salesforce Case Trigger</div>
+            <div class="step-desc">A new or updated case fires a POST request to API Gateway with Case ID, Priority, and Type. AWS Cognito 2.0 Auth validates the bearer token before the request proceeds.</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">02</div>
+          <div class="step-body">
+            <div class="step-title">Lambda → SQS Enqueue</div>
+            <div class="step-desc">API Gateway invokes a Lambda that uploads the payload with action metadata to the main SQS queue. The Fargate FastAPI worker polls this queue and pulls the job.</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">03</div>
+          <div class="step-body">
+            <div class="step-title">Agent 01 — Classify &amp; Route</div>
+            <div class="step-desc">Fetches full case details, pulls vehicle repair history from the database, saves state to AWS ElastiCache, and classifies the case. HIGH priority routes to Agent 02; LOW priority skips to Agent 03 for a direct writeback.</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">04</div>
+          <div class="step-body">
+            <div class="step-title">Agent 02 — RAG Retrieval &amp; Summary</div>
+            <div class="step-desc">Builds a contextual search query (model + description + history). Weaviate returns ranked document chunks filtered by vehicle model metadata. An LLM call generates the Technical Summary and Sentiment score.</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">05</div>
+          <div class="step-body">
+            <div class="step-title">Agent 03 — Async Writeback</div>
+            <div class="step-desc">Dispatches three SQS messages in parallel: case patch, technician task creation, and (if Critical) a Slack notification. A dedicated SQS Worker continuously checks Salesforce endpoint health and retries failed messages with exponential backoff. A DLQ catches persistent failures.</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">06</div>
+          <div class="step-body">
+            <div class="step-title">SQS Worker — SF Health &amp; Retry</div>
+            <div class="step-desc">Continuously polls Salesforce endpoint health. If Salesforce is unavailable, messages are held in queue and retried. If Salesforce is healthy, the worker processes patch/task/slack actions and confirms completion.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CODE SNIPPET -->
+    <div class="proj-section">
+      <h2 class="proj-section-title"> Agent 03 — Core Writeback Logic</h2>
+      <p class="proj-p">The writeback agent dispatches asynchronous SQS messages for each action, keeping Salesforce integration fully decoupled from the agent pipeline.</p>
+      <div class="code-block"><span class="kw">async def</span> <span class="fn">agent_03_writeback</span>(state: dict) -> dict:
+    case_id  = state[<span class="st">"case_id"</span>]
+    summary  = state.get(<span class="st">"summary"</span>)
+    sentiment = state.get(<span class="st">"sentiment"</span>) <span class="kw">or</span> <span class="st">""</span>
+    
+    full_payload = {<span class="st">"case_id"</span>: case_id, <span class="st">"summary"</span>: summary, <span class="st">"sentiment"</span>: sentiment}
+
+    <span class="cm"># Patch the Salesforce case with technical summary</span>
+    sqs.<span class="fn">send_message</span>(QueueUrl=SQS_QUEUE_PATCH,
+        MessageBody=json.<span class="fn">dumps</span>({**full_payload, <span class="st">"action"</span>: <span class="st">"writeback_case"</span>}))
+
+    <span class="cm"># Always create follow-up task for human technician</span>
+    sqs.<span class="fn">send_message</span>(QueueUrl=SQS_QUEUE_TASK,
+        MessageBody=json.<span class="fn">dumps</span>({**full_payload, <span class="st">"action"</span>: <span class="st">"create_task"</span>}))
+
+    <span class="cm"># Fire Slack alert only for critical sentiment</span>
+    <span class="kw">if</span> sentiment.<span class="fn">lower</span>() == <span class="st">"critical"</span>:
+        sqs.<span class="fn">send_message</span>(QueueUrl=SQS_QUEUE_SLACK,
+            MessageBody=json.<span class="fn">dumps</span>({**full_payload, <span class="st">"action"</span>: <span class="st">"slack_alert"</span>}))
+
+    <span class="kw">return</span> {**state, <span class="st">"error"</span>: <span class="cn">None</span>}</div>
+    </div>
+
+    <!-- TECH STACK -->
+    <div class="proj-section">
+      <h2 class="proj-section-title"> Technology Stack</h2>
+      <p class="proj-p">Built entirely on AWS-native services with a Python-first agentic layer.</p>
+      <div class="tech-pills">
+        <span class="tech-pill">LangGraph</span>
+        <span class="tech-pill">FastAPI</span>
+        <span class="tech-pill">AWS Fargate</span>
+        <span class="tech-pill">AWS SQS</span>
+        <span class="tech-pill">AWS Lambda</span>
+        <span class="tech-pill">API Gateway</span>
+        <span class="tech-pill">AWS Cognito</span>
+        <span class="tech-pill">AWS ElastiCache</span>
+        <span class="tech-pill">AWS S3</span>
+        <span class="tech-pill">Weaviate</span>
+        <span class="tech-pill">AWS Bedrock</span>
+        <span class="tech-pill">Salesforce API v59</span>
+        <span class="tech-pill">RAGAS Evaluation</span>
+        <span class="tech-pill">Slack Webhooks</span>
+        <span class="tech-pill">Python 3.11</span>
+        <span class="tech-pill">boto3</span>
+        <span class="tech-pill">httpx</span>
+      </div>
+    </div>
+
+    <!-- KEY DECISIONS -->
+    <div class="proj-section">
+      <h2 class="proj-section-title"> Key Engineering Decisions</h2>
+      <div class="highlight-box" style="margin-bottom:0.8rem">
+        <p><strong>Why SQS over direct API calls?</strong> Salesforce API rate limits and transient outages make synchronous calls fragile in high-volume scenarios. SQS decouples the agent pipeline from Salesforce availability, enabling at-least-once delivery with dead-letter queuing for zero data loss.</p>
+      </div>
+      <div class="highlight-box" style="margin-bottom:0.8rem">
+        <p><strong>Why ElastiCache for state?</strong> LangGraph agent state must survive Fargate task restarts and be readable across parallel workers. ElastiCache provides sub-millisecond shared state with TTL-based cleanup, avoiding duplicate processing.</p>
+      </div>
+      <div class="highlight-box" style="margin-bottom:0.8rem">
+        <p><strong>Why RAGAS only in dev?</strong> RAGAS evaluation adds latency (~500ms–2s). In production, the cost of delay on critical cases outweighs the benefit of per-request evaluation. Instead, RAGAS runs in CI/CD as a regression gate on retrieval quality across the test suite.</p>
+      </div>
+      <div class="highlight-box">
+        <p><strong>Weaviate metadata filtering:</strong> Each document chunk stores <code style="font-family:var(--font-mono);font-size:0.8em;color:var(--cyan)">vehicle_model</code> as metadata. Agent 02 applies a metadata pre-filter before semantic search, dramatically reducing irrelevant retrieval and improving faithfulness scores.</p>
+      </div>
+    </div>
+
+  </div><!-- end proj-body -->
+
+  <section class="contact-section" id="contact">
+    <h2>Interested in this project?</h2>
+    <p>Let's discuss the architecture or explore collaboration opportunities.</p>
+    <div class="contact-links">
+      <a href="mailto:rahulnaik99@outlook.com" class="btn btn-primary">Get in Touch</a>
+      <a href="https://www.linkedin.com/in/rahul-naik-ai/" target="_blank" rel="noopener" class="btn btn-ghost">LinkedIn</a>
+      <a href="https://api.whatsapp.com/send/?phone=919591522079" target="_blank" rel="noopener" class="btn btn-ghost" style="border-color:#25d366;color:#25d366">WhatsApp</a>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <p>© 2025 Rahul Naik · Senior GenAI Engineer</p>
+    <p style="margin-top:0.4rem">
+      <a href="../index.html">Home</a> ·
+      <a href="../index.html#projects">Projects</a> ·
+      <a href="study-material.html">Study Material</a>
+    </p>
+  </footer>
+</div>
+
+<!-- WhatsApp Float -->
+<a href="https://api.whatsapp.com/send/?phone=919591522079" target="_blank" rel="noopener" class="wa-float" aria-label="Chat on WhatsApp">
+  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+</a>
+
+<script src="../assets/js/main.js"></script>
+<script>
+document.getElementById('hamburger').addEventListener('click', function() {
+  document.getElementById('nav-links').classList.toggle('open');
+});
+</script>
+</body>
+</html>

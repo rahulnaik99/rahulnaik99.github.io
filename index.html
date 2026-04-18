@@ -162,7 +162,17 @@
   color: var(--cyan);
 }
 
-/* ── STATS BAR ── */
+/* ── WHATSAPP FLOAT ── */
+.wa-float {
+  position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 999;
+  width: 52px; height: 52px;
+  background: #25d366; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 20px rgba(37,211,102,0.4);
+  transition: transform 0.2s, box-shadow 0.2s; text-decoration: none;
+}
+.wa-float:hover { transform: scale(1.12); box-shadow: 0 6px 28px rgba(37,211,102,0.55); }
+.wa-float svg { width: 26px; height: 26px; fill: #fff; }
 .stats-bar {
   position: relative; z-index: 5;
   display: flex; justify-content: center; flex-wrap: wrap;
@@ -256,31 +266,31 @@
 /* ── PROJECT CARD ── */
 .project-card {
   background: var(--card-bg);
-  border: 1px solid var(--b2);
-  border-radius: 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
   padding: 0;
   overflow: hidden;
   text-decoration: none;
   display: flex; flex-direction: column;
-  transition: transform 0.3s ease, border-color 0.3s, box-shadow 0.3s;
+  transition: transform 0.25s ease, border-color 0.25s, box-shadow 0.25s;
   position: relative;
   opacity: 0;
   animation: fadeUp 0.7s forwards;
 }
 
 .project-card:hover {
-  transform: translateY(-6px);
-  border-color: var(--accent, var(--cyan));
-  box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 0 1px var(--accent, var(--cyan));
+  transform: translateY(-4px);
+  border-color: var(--b2);
+  box-shadow: 0 16px 48px rgba(0,0,0,0.28);
 }
 
 [data-theme="light"] .project-card:hover {
-  box-shadow: 0 12px 40px rgba(0,0,0,0.12), 0 0 0 1px var(--accent, var(--cyan));
+  box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+  border-color: var(--b2);
 }
 
 .card-banner {
-  height: 6px;
-  background: linear-gradient(90deg, var(--accent, var(--cyan)), var(--accent2, var(--purple)));
+  display: none;
 }
 
 .card-body {
@@ -294,9 +304,9 @@
   font-size: 0.5rem;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--accent, var(--cyan));
-  background: rgba(0,212,255,0.07);
-  border: 1px solid var(--accent, var(--cyan));
+  color: var(--muted);
+  background: transparent;
+  border: 1px solid var(--border);
   border-radius: 3px;
   padding: 0.15rem 0.5rem;
   display: inline-block;
@@ -343,7 +353,7 @@
   font-family: var(--font-display);
   font-size: 1.1rem;
   font-weight: 700;
-  color: var(--accent, var(--cyan));
+  color: var(--text);
 }
 
 .metric-label {
@@ -370,19 +380,23 @@
   font-size: 0.58rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--accent, var(--cyan));
+  color: var(--text2);
 }
 
 .card-arrow {
   width: 28px; height: 28px;
   border-radius: 50%;
-  border: 1px solid var(--accent, var(--cyan));
+  border: 1px solid var(--border);
   display: flex; align-items: center; justify-content: center;
-  color: var(--accent, var(--cyan));
+  color: var(--text2);
   font-size: 0.8rem;
-  transition: background 0.2s, transform 0.2s;
+  transition: background 0.2s, border-color 0.2s, transform 0.2s;
 }
 
+.project-card:hover .card-arrow {
+  border-color: var(--b2);
+  transform: translateX(2px);
+}
 .project-card:hover .card-arrow {
   background: var(--accent, var(--cyan));
   color: #04060c;
@@ -605,13 +619,7 @@
   <div class="nav-links" id="nav-links">
     <a href="index.html" class="active">Home</a>
     <a href="#projects">Projects</a>
-    <a href="#about">About</a>
-    <a href="projects/project-evolution.html">Journey</a>
-    <a href="projects/genai_interview_checklist.html">Checklist</a>
-    <a href="projects/GenAI_Engineer_Study_Guide.html">Study Guide</a>
-    <a href="projects/architecture.html">Architecture</a>
-    <a href="projects/python_topics_genai.html">Python</a>
-    <a href="projects/cicd.html">Cloud</a>
+    <a href="projects/study-material.html">Study Material</a>
     <a href="#contact">Contact</a>
   </div>
 
@@ -644,7 +652,6 @@
 
     <div class="hero-cta">
       <a href="#projects" class="btn btn-primary">View Projects</a>
-      <a href="projects/project-evolution.html" class="btn btn-ghost">Technical Journey</a>
     </div>
   </section>
 
@@ -678,70 +685,106 @@
     <div class="projects-section">
       <div class="projects-grid">
 
-        <!-- LoanIQ — FEATURED -->
-        <a href="projects/loaniq.html" class="project-card featured" style="--accent:#00d4ff;--accent2:#bf5af2;animation-delay:0.1s">
-          <div class="card-banner"></div>
+        <!-- Underwriter Multi-Agent — FEATURED -->
+        <a href="projects/loaniq.html" class="project-card featured" style="animation-delay:0.1s">
+          <div class="card-banner" style="background:var(--text);opacity:0.06;height:1px"></div>
           <div class="card-body">
-            <span class="card-badge" style="--accent:#00d4ff;background:rgba(0,212,255,0.07);border-color:#00d4ff;color:#00d4ff">FEATURED · GEN AI</span>
-            <div class="card-title">LoanIQ</div>
-            <div class="card-subtitle" style="color:#00d4ff">Intelligent Loan Processing System</div>
+            <span class="card-badge" style="background:transparent;border-color:var(--border);color:var(--muted)">Featured &middot; Multi-Agent</span>
+            <div class="card-title">Underwriter Multi-Agent Orchestration</div>
+            <div class="card-subtitle" style="color:var(--muted)">// Autonomous Mortgage Underwriting Pipeline</div>
             <p class="card-desc">
-              Production-grade multi-agent AI system that automates end-to-end loan origination — 
-              from document intake and ratio analysis to policy compliance, underwriting, and final 
-              decisioning. Built with parallel agent execution, RAG pipelines, and a full audit trail.
+              Production-grade 7-agent LangGraph system automating end-to-end mortgage underwriting — 
+              document intake, ratio analysis, policy compliance, risk scoring, and decisioning. 
+              Hybrid RAG retrieval with BM25, pgvector, RRF fusion, and cross-encoder reranking. 
+              AWS Bedrock, LangSmith observability, full audit trail.
             </p>
             <div class="card-metrics">
               <div class="metric">
-                <span class="metric-val" style="color:#00d4ff">95%</span>
+                <span class="metric-val">95%</span>
                 <span class="metric-label">Decision accuracy</span>
               </div>
               <div class="metric">
-                <span class="metric-val" style="color:#00ff88">7</span>
-                <span class="metric-label">Specialized agents</span>
+                <span class="metric-val">7</span>
+                <span class="metric-label">Specialised agents</span>
               </div>
               <div class="metric">
-                <span class="metric-val" style="color:#bf5af2">RAG</span>
-                <span class="metric-label">Policy lookup</span>
+                <span class="metric-val">Hybrid</span>
+                <span class="metric-label">RAG retrieval</span>
               </div>
               <div class="metric">
-                <span class="metric-val" style="color:#ffb700">Real-time</span>
+                <span class="metric-val">Real-time</span>
                 <span class="metric-label">Processing</span>
               </div>
             </div>
             <div class="card-tags">
-              <span class="tag">LangChain</span>
-              <span class="tag">Claude API</span>
+              <span class="tag">LangGraph</span>
+              <span class="tag">AWS Bedrock</span>
               <span class="tag">FastAPI</span>
-              <span class="tag">RAG</span>
-              <span class="tag">Vector DB</span>
-              <span class="tag">Multi-Agent</span>
+              <span class="tag">pgvector</span>
+              <span class="tag">BM25</span>
+              <span class="tag">LangSmith</span>
             </div>
             <div class="card-footer">
-              <span class="card-link-label" style="color:#00d4ff">View Architecture →</span>
-              <div class="card-arrow" style="border-color:#00d4ff;color:#00d4ff">→</div>
+              <span class="card-link-label">View Architecture &rarr;</span>
+              <div class="card-arrow">→</div>
+            </div>
+          </div>
+        </a>
+
+        <!-- Salesforce AI Agent -->
+        <a href="projects/salesforce-agent.html" class="project-card" style="animation-delay:0.2s">
+          <div class="card-banner" style="background:var(--text);opacity:0.06;height:1px"></div>
+          <div class="card-body">
+            <span class="card-badge" style="background:transparent;border-color:var(--border);color:var(--muted)">Multi-Agent &middot; AWS</span>
+            <div class="card-title">Salesforce AI Agent</div>
+            <div class="card-subtitle" style="color:var(--muted)">// Vehicle Case Management Pipeline</div>
+            <p class="card-desc">
+              Three-agent LangGraph pipeline automating vehicle service case triage, RAG-powered 
+              technical summarisation, and async Salesforce writeback via SQS — with real-time 
+              Slack alerting for critical incidents and zero manual intervention.
+            </p>
+            <div class="card-metrics">
+              <div class="metric">
+                <span class="metric-val">3</span>
+                <span class="metric-label">AI agents</span>
+              </div>
+              <div class="metric">
+                <span class="metric-val">Zero</span>
+                <span class="metric-label">Manual triage</span>
+              </div>
+            </div>
+            <div class="card-tags">
+              <span class="tag">LangGraph</span>
+              <span class="tag">AWS SQS</span>
+              <span class="tag">Weaviate</span>
+              <span class="tag">Salesforce API</span>
+            </div>
+            <div class="card-footer">
+              <span class="card-link-label">Explore Project &rarr;</span>
+              <div class="card-arrow">→</div>
             </div>
           </div>
         </a>
 
         <!-- FinDoc QA -->
-        <a href="projects/findocqa.html" class="project-card" style="--accent:#bf5af2;--accent2:#00d4ff;animation-delay:0.2s">
-          <div class="card-banner" style="background:linear-gradient(90deg,#bf5af2,#00d4ff)"></div>
+        <a href="projects/findocqa.html" class="project-card" style="animation-delay:0.3s">
+          <div class="card-banner" style="background:var(--text);opacity:0.06;height:1px"></div>
           <div class="card-body">
-            <span class="card-badge" style="background:rgba(191,90,242,0.07);border-color:#bf5af2;color:#bf5af2">NLP · DOCUMENT AI</span>
+            <span class="card-badge" style="background:transparent;border-color:var(--border);color:var(--muted)">NLP &middot; Document AI</span>
             <div class="card-title">FinDoc QA</div>
-            <div class="card-subtitle" style="color:#bf5af2">Financial Document Intelligence</div>
+            <div class="card-subtitle" style="color:var(--muted)">// Financial Document Intelligence</div>
             <p class="card-desc">
               RAG-powered system for extracting and answering questions from complex financial 
-              documents — annual reports, contracts, regulatory filings — with citation-level accuracy 
-              and hybrid semantic + keyword retrieval.
+              documents — annual reports, contracts, regulatory filings — with citation-level 
+              accuracy and hybrid semantic plus keyword retrieval.
             </p>
             <div class="card-metrics">
               <div class="metric">
-                <span class="metric-val" style="color:#bf5af2">40%</span>
+                <span class="metric-val">40%</span>
                 <span class="metric-label">Time saved</span>
               </div>
               <div class="metric">
-                <span class="metric-val" style="color:#00d4ff">Hybrid</span>
+                <span class="metric-val">Hybrid</span>
                 <span class="metric-label">Retrieval</span>
               </div>
             </div>
@@ -752,31 +795,31 @@
               <span class="tag">Pinecone</span>
             </div>
             <div class="card-footer">
-              <span class="card-link-label" style="color:#bf5af2">Explore Project</span>
-              <div class="card-arrow" style="border-color:#bf5af2;color:#bf5af2">→</div>
+              <span class="card-link-label">Explore Project &rarr;</span>
+              <div class="card-arrow">→</div>
             </div>
           </div>
         </a>
 
         <!-- FinBot -->
-        <a href="projects/finbot.html" class="project-card" style="--accent:#00ff88;--accent2:#4da6ff;animation-delay:0.3s">
-          <div class="card-banner" style="background:linear-gradient(90deg,#00ff88,#4da6ff)"></div>
+        <a href="projects/finbot.html" class="project-card" style="animation-delay:0.35s">
+          <div class="card-banner" style="background:var(--text);opacity:0.06;height:1px"></div>
           <div class="card-body">
-            <span class="card-badge" style="background:rgba(0,255,136,0.07);border-color:#00ff88;color:#00ff88">CONVERSATIONAL AI</span>
+            <span class="card-badge" style="background:transparent;border-color:var(--border);color:var(--muted)">Conversational AI</span>
             <div class="card-title">FinBot</div>
-            <div class="card-subtitle" style="color:#00ff88">AI Financial Advisor Chatbot</div>
+            <div class="card-subtitle" style="color:var(--muted)">// AI Financial Advisor</div>
             <p class="card-desc">
-              Conversational financial assistant that leverages LLMs with tool-use for real-time 
-              market data, portfolio analysis, and personalised financial guidance — all with 
-              explainable reasoning and compliance guardrails.
+              Conversational financial assistant leveraging LLMs with tool-use for real-time 
+              market data, portfolio analysis, and personalised guidance — with explainable 
+              reasoning and compliance guardrails.
             </p>
             <div class="card-metrics">
               <div class="metric">
-                <span class="metric-val" style="color:#00ff88">Live</span>
+                <span class="metric-val">Live</span>
                 <span class="metric-label">Market data</span>
               </div>
               <div class="metric">
-                <span class="metric-val" style="color:#4da6ff">Safe</span>
+                <span class="metric-val">Safe</span>
                 <span class="metric-label">Guardrails</span>
               </div>
             </div>
@@ -787,31 +830,31 @@
               <span class="tag">APIs</span>
             </div>
             <div class="card-footer">
-              <span class="card-link-label" style="color:#00ff88">Explore Project</span>
-              <div class="card-arrow" style="border-color:#00ff88;color:#00ff88">→</div>
+              <span class="card-link-label">Explore Project &rarr;</span>
+              <div class="card-arrow">→</div>
             </div>
           </div>
         </a>
 
         <!-- WFO Risk -->
-        <a href="projects/wfo-risk.html" class="project-card" style="--accent:#ffb700;--accent2:#ff6b9d;animation-delay:0.4s">
-          <div class="card-banner" style="background:linear-gradient(90deg,#ffb700,#ff6b9d)"></div>
+        <a href="projects/wfo-risk-original.html" class="project-card" style="animation-delay:0.4s">
+          <div class="card-banner" style="background:var(--text);opacity:0.06;height:1px"></div>
           <div class="card-body">
-            <span class="card-badge" style="background:rgba(255,183,0,0.07);border-color:#ffb700;color:#ffb700">RISK ANALYTICS</span>
-            <div class="card-title">WFO Risk</div>
-            <div class="card-subtitle" style="color:#ffb700">Workforce Obligation Risk Engine</div>
+            <span class="card-badge" style="background:transparent;border-color:var(--border);color:var(--muted)">Risk Analytics</span>
+            <div class="card-title">WFO Risk Engine</div>
+            <div class="card-subtitle" style="color:var(--muted)">// Workforce Obligation Risk</div>
             <p class="card-desc">
-              AI-driven workforce and financial obligation risk assessment system combining 
-              predictive modelling, anomaly detection, and automated reporting for enterprise 
-              risk management teams.
+              AI-driven risk assessment system combining predictive modelling, anomaly detection, 
+              and automated reporting for enterprise workforce and financial obligation risk 
+              management.
             </p>
             <div class="card-metrics">
               <div class="metric">
-                <span class="metric-val" style="color:#ffb700">Predictive</span>
+                <span class="metric-val">Predictive</span>
                 <span class="metric-label">Risk scoring</span>
               </div>
               <div class="metric">
-                <span class="metric-val" style="color:#ff6b9d">Auto</span>
+                <span class="metric-val">Auto</span>
                 <span class="metric-label">Reporting</span>
               </div>
             </div>
@@ -822,8 +865,8 @@
               <span class="tag">Tableau</span>
             </div>
             <div class="card-footer">
-              <span class="card-link-label" style="color:#ffb700">Explore Project</span>
-              <div class="card-arrow" style="border-color:#ffb700;color:#ffb700">→</div>
+              <span class="card-link-label">Explore Project &rarr;</span>
+              <div class="card-arrow">→</div>
             </div>
           </div>
         </a>
@@ -924,10 +967,11 @@
   <!-- ── CONTACT ── -->
   <section class="contact-section" id="contact">
     <h2>Let's build something <span class="gradient-text">intelligent</span></h2>
-    <p>Open to AI/ML engineering roles, collaborations, and interesting problems in financial technology.</p>
+    <p>Open to Senior GenAI/RAG Engineer roles in India. Reach out via email, LinkedIn or WhatsApp.</p>
     <div class="contact-links">
       <a href="mailto:rahulnaik99@outlook.com" class="btn btn-primary">Get in Touch</a>
       <a href="https://www.linkedin.com/in/rahul-naik-ai/" target="_blank" rel="noopener" class="btn btn-ghost">LinkedIn</a>
+      <a href="https://api.whatsapp.com/send/?phone=919591522079" target="_blank" rel="noopener" class="btn btn-ghost" style="border-color:#25d366;color:#25d366">WhatsApp</a>
     </div>
   </section>
 
@@ -944,6 +988,12 @@
 </div><!-- end page-wrap -->
 
 <script src="assets/js/main.js"></script>
+
+<!-- WhatsApp Float -->
+<a href="https://api.whatsapp.com/send/?phone=919591522079" target="_blank" rel="noopener" class="wa-float" aria-label="Chat on WhatsApp">
+  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+</a>
+
 <script>
 // ── PARTICLES ──
 (function() {
