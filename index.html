@@ -1,539 +1,423 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
-  <script>
-    (function(){
-      var K="rn-theme-manual",D=K+"-date";
-      function h(){var n=new Date(),u=n.getTime()+n.getTimezoneOffset()*60000,i=new Date(u+19800000);return i.getHours();}
-      function d(){var n=new Date(),u=n.getTime()+n.getTimezoneOffset()*60000,i=new Date(u+19800000);return i.getFullYear()+"-"+i.getMonth()+"-"+i.getDate();}
-      var m=localStorage.getItem(K),day=localStorage.getItem(D),today=d();
-      document.documentElement.setAttribute("data-theme",(m&&day===today)?m:((h()>=6&&h()<19)?"light":"dark"));
-    })();
-  </script>
+  <script>(function(){var K="rn-theme-manual",D=K+"-date";function h(){var n=new Date(),u=n.getTime()+n.getTimezoneOffset()*60000,i=new Date(u+19800000);return i.getHours();}function d(){var n=new Date(),u=n.getTime()+n.getTimezoneOffset()*60000,i=new Date(u+19800000);return i.getFullYear()+"-"+i.getMonth()+"-"+i.getDate();}var m=localStorage.getItem(K),day=localStorage.getItem(D),today=d();document.documentElement.setAttribute("data-theme",(m&&day===today)?m:((h()>=6&&h()<19)?"light":"dark"));})();</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Rahul Naik · Gen AI Engineer</title>
-  <meta name="description" content="Gen AI Engineer building production-grade agentic systems, RAG pipelines, and MCP-based AI services.">
+  <meta name="description" content="Gen AI Engineer — agentic systems, RAG pipelines, MCP. Currently at NDBS–SAP building AI skills on SAP Cloud ALM.">
   <link rel="stylesheet" href="assets/css/theme.css">
   <style>
 
-/* ─── BASE ─────────────────────────────────────────── */
-.page-wrap { padding-top: 60px; }
+/* ── RESET / BASE ─────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
 
-section, .section-wrap {
-  max-width: 1080px;
-  margin: 0 auto;
-  padding-left: 2rem;
-  padding-right: 2rem;
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.6;
 }
 
-.divider {
+a { color: inherit; text-decoration: none; }
+
+.pw { padding-top: 60px; }
+
+/* ── SHARED ───────────────────────────────────── */
+.row {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.rule {
   border: none;
   border-top: 1px solid var(--border);
   margin: 0;
 }
 
-/* ─── HERO ─────────────────────────────────────────── */
-.hero {
-  padding: 8rem 2rem 6rem;
-  max-width: 1080px;
-  margin: 0 auto;
-}
-
-.hero-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-family: var(--font-mono);
-  font-size: 0.65rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--cyan);
-  margin-bottom: 2rem;
-  opacity: 0;
-  animation: fadeUp 0.5s 0.1s forwards;
-}
-.hero-tag::before {
-  content: '';
-  display: inline-block;
-  width: 20px; height: 1px;
-  background: var(--cyan);
-}
-
-.hero-headline {
-  font-family: var(--font-display);
-  font-size: clamp(2.4rem, 5.5vw, 4.5rem);
-  font-weight: 800;
-  line-height: 1.08;
-  letter-spacing: -0.025em;
-  color: var(--text);
-  margin-bottom: 2rem;
-  max-width: 820px;
-  opacity: 0;
-  animation: fadeUp 0.6s 0.2s forwards;
-}
-
-.hero-headline em {
-  font-style: normal;
-  color: var(--cyan);
-}
-
-.hero-body {
-  display: grid;
-  grid-template-columns: 1.1fr 1fr;
-  gap: 4rem;
-  align-items: start;
-}
-
-.hero-desc {
-  font-size: 1.05rem;
-  line-height: 1.8;
-  color: var(--text2);
-  margin-bottom: 2.5rem;
-  opacity: 0;
-  animation: fadeUp 0.6s 0.35s forwards;
-}
-
-.hero-cta {
-  display: flex;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-  opacity: 0;
-  animation: fadeUp 0.6s 0.5s forwards;
-}
-
-/* Terminal */
-.hero-terminal {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  overflow: hidden;
-  font-family: var(--font-mono);
-  opacity: 0;
-  animation: fadeUp 0.6s 0.35s forwards;
-}
-.t-bar {
-  display: flex; align-items: center; gap: 0.45rem;
-  padding: 0.65rem 1rem;
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
-}
-.t-dot { width: 9px; height: 9px; border-radius: 50%; }
-.t-dot:nth-child(1) { background: #ff5f57; }
-.t-dot:nth-child(2) { background: #febc2e; }
-.t-dot:nth-child(3) { background: #28c840; }
-.t-file { font-size: 0.6rem; color: var(--muted); margin-left: 0.3rem; letter-spacing: 0.04em; }
-.t-body { padding: 1.2rem 1.4rem; display: flex; flex-direction: column; gap: 0.5rem; }
-.t-line { font-size: 0.75rem; line-height: 1.6; }
-.t-line .p  { color: var(--muted); user-select: none; }
-.t-line .c  { color: var(--cyan); }
-.t-line .o  { color: var(--text2); }
-.t-line .ok { color: var(--green); }
-.t-line .d  { color: var(--muted); }
-.t-line.sp  { margin-top: 0.3rem; }
-
-/* ─── CAREER ────────────────────────────────────────── */
-.career-section {
-  padding: 5rem 2rem;
-  max-width: 1080px;
-  margin: 0 auto;
-}
-
-.section-label {
+.sec-lbl {
   font-family: var(--font-mono);
   font-size: 0.6rem;
-  letter-spacing: 0.25em;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--muted);
   margin-bottom: 2.5rem;
+}
+
+/* ── NAV ──────────────────────────────────────── */
+/* uses theme.css .site-nav — no changes needed */
+
+/* ── MASTHEAD ─────────────────────────────────── */
+.masthead {
+  padding: 7rem 2rem 4rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.mast-name {
+  font-family: var(--font-display);
+  font-size: clamp(4.5rem, 13vw, 10rem);
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  line-height: 0.9;
+  color: var(--text);
+  margin: 0 0 1.5rem;
+}
+
+.mast-rule {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
-}
-.section-label::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: var(--border);
+  gap: 1.5rem;
+  border-top: 2px solid var(--border);
+  padding-top: 1.25rem;
+  margin-bottom: 2.5rem;
+  flex-wrap: wrap;
 }
 
-.career-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 0;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-.career-card {
-  padding: 1.75rem;
-  border-right: 1px solid var(--border);
-  position: relative;
-  transition: background 0.2s;
-}
-.career-card:last-child { border-right: none; }
-.career-card:hover { background: var(--surface); }
-
-.career-version {
+.mast-meta {
   font-family: var(--font-mono);
   font-size: 0.65rem;
   letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.mast-meta .dot { color: var(--cyan); margin: 0 0.4rem; }
+
+.mast-status {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--green);
+}
+
+.mast-status::before {
+  content: '';
+  display: inline-block;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--green);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.mast-statement {
+  font-size: clamp(1.1rem, 2.2vw, 1.4rem);
+  line-height: 1.65;
+  color: var(--text2);
+  max-width: 640px;
+}
+
+.mast-statement strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.mast-cta {
+  margin-top: 2.5rem;
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+/* ── NOW ──────────────────────────────────────── */
+.now-section {
+  padding: 4rem 2rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.now-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.now-cell {
+  background: var(--bg);
+  padding: 1.75rem 2rem;
+  transition: background 0.2s;
+}
+
+.now-cell:hover { background: var(--surface); }
+
+.now-status {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
   color: var(--cyan);
-  margin-bottom: 1rem;
+  margin-bottom: 0.6rem;
   display: flex;
   align-items: center;
   gap: 0.4rem;
 }
-.career-version::before {
+
+.now-status.green { color: var(--green); }
+.now-status.green::before { background: var(--green); }
+
+.now-status::before {
   content: '';
-  display: block;
-  width: 6px; height: 6px;
+  display: inline-block;
+  width: 5px; height: 5px;
   border-radius: 50%;
   background: var(--cyan);
-  opacity: 0.6;
 }
 
-.career-role {
-  font-family: var(--font-display);
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: var(--text);
-  margin-bottom: 0.25rem;
-  line-height: 1.3;
-}
-
-.career-company {
-  font-size: 0.8rem;
+.now-text {
+  font-size: 0.9rem;
+  line-height: 1.65;
   color: var(--text2);
-  margin-bottom: 0.2rem;
 }
 
-.career-period {
-  font-family: var(--font-mono);
-  font-size: 0.6rem;
-  color: var(--muted);
-  letter-spacing: 0.06em;
-  margin-bottom: 1rem;
-}
+.now-text strong { color: var(--text); font-weight: 600; }
 
-.career-skills {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.3rem;
-}
-
-.career-skill {
-  font-family: var(--font-mono);
-  font-size: 0.58rem;
-  letter-spacing: 0.05em;
-  color: var(--muted);
-  border: 1px solid var(--border);
-  border-radius: 3px;
-  padding: 0.15rem 0.4rem;
-}
-
-/* ─── CAPABILITIES ──────────────────────────────────── */
-.caps-section {
-  padding: 5rem 2rem;
-  max-width: 1080px;
+/* ── TIMELINE ─────────────────────────────────── */
+.timeline-section {
+  padding: 4rem 2rem;
+  max-width: 1000px;
   margin: 0 auto;
 }
 
-.caps-grid {
+.tl-entries {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.tl-entry {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1.5rem;
+  grid-template-columns: 160px 1fr;
+  gap: 2rem;
+  padding: 1.5rem 0;
+  border-bottom: 1px solid var(--border);
+  align-items: start;
 }
 
-.cap-card {
-  padding: 1.75rem 1.5rem;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  transition: border-color 0.2s, background 0.2s;
-}
-.cap-card:hover {
-  border-color: var(--b2);
-  background: var(--surface);
-}
+.tl-entry:first-child { border-top: 1px solid var(--border); }
 
-.cap-icon {
-  font-family: var(--font-mono);
-  font-size: 0.65rem;
-  color: var(--cyan);
-  letter-spacing: 0.1em;
-  margin-bottom: 1rem;
-}
-
-.cap-title {
-  font-family: var(--font-display);
-  font-size: 1rem;
-  font-weight: 700;
-  color: var(--text);
-  margin-bottom: 0.6rem;
-}
-
-.cap-desc {
-  font-size: 0.84rem;
-  line-height: 1.65;
-  color: var(--text2);
-  margin-bottom: 1rem;
-}
-
-.cap-tags {
+.tl-left {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
 }
 
-.cap-tag {
+.tl-period {
   font-family: var(--font-mono);
-  font-size: 0.6rem;
+  font-size: 0.65rem;
+  color: var(--muted);
+  letter-spacing: 0.06em;
+}
+
+.tl-co {
+  font-size: 0.8rem;
+  color: var(--text2);
+  font-weight: 500;
+}
+
+.tl-right {}
+
+.tl-role {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+}
+
+.tl-entry.current .tl-role { color: var(--cyan); }
+
+.tl-skills {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
   color: var(--muted);
   letter-spacing: 0.04em;
+  line-height: 1.6;
 }
-.cap-tag::before { content: '— '; }
 
-/* ─── RESULTS ───────────────────────────────────────── */
-.results-section {
+/* ── WORK ─────────────────────────────────────── */
+.work-section {
   padding: 4rem 2rem;
-  max-width: 1080px;
+  max-width: 1000px;
   margin: 0 auto;
 }
 
-.results-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 0;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-.result-item {
-  padding: 2.5rem 2rem;
-  border-right: 1px solid var(--border);
-  text-align: left;
-}
-.result-item:last-child { border-right: none; }
-
-.result-num {
-  font-family: var(--font-display);
-  font-size: 2.75rem;
-  font-weight: 800;
-  color: var(--text);
-  line-height: 1;
-  margin-bottom: 0.5rem;
-  letter-spacing: -0.03em;
-}
-
-.result-label {
-  font-size: 0.85rem;
-  color: var(--text2);
-  line-height: 1.4;
-  margin-bottom: 0.4rem;
-}
-
-.result-context {
-  font-family: var(--font-mono);
-  font-size: 0.58rem;
-  color: var(--muted);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-/* ─── PROJECTS ──────────────────────────────────────── */
-.projects-section {
-  padding: 5rem 2rem 2rem;
-  max-width: 1080px;
-  margin: 0 auto;
-}
-
-.project-list {
+.work-list {
   display: flex;
   flex-direction: column;
-  border-top: 1px solid var(--border);
 }
 
-.project-row {
-  display: grid;
-  grid-template-columns: 44px 1fr auto;
-  align-items: start;
-  gap: 2rem;
-  padding: 2.5rem 0;
+.work-item {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  padding: 1.2rem 0;
   border-bottom: 1px solid var(--border);
   text-decoration: none;
   color: inherit;
   position: relative;
+  transition: padding-left 0.18s;
 }
-.project-row::before {
-  content: '';
-  position: absolute;
-  left: -2rem; right: -2rem; top: 0; bottom: 0;
-  background: var(--surface);
-  opacity: 0; transition: opacity 0.18s;
-  z-index: 0;
-}
-.project-row:hover::before { opacity: 1; }
-.project-row > * { position: relative; z-index: 1; }
+.work-item:first-child { border-top: 1px solid var(--border); }
+.work-item:hover { padding-left: 0.5rem; }
 
-.row-num {
+.work-num {
   font-family: var(--font-mono);
-  font-size: 0.62rem;
+  font-size: 0.6rem;
   color: var(--muted);
   letter-spacing: 0.08em;
-  padding-top: 0.4rem;
-  text-align: right;
+  min-width: 20px;
+  flex-shrink: 0;
 }
 
-.row-title {
+.work-title {
   font-family: var(--font-display);
-  font-size: 1.25rem;
+  font-size: 1.05rem;
   font-weight: 700;
   color: var(--text);
-  margin-bottom: 0.3rem;
+  flex: 1;
   transition: color 0.15s;
 }
 
-.row-sub {
+.work-item:hover .work-title { color: var(--cyan); }
+
+.work-dots {
+  flex: 1;
+  border-bottom: 1px dotted var(--border);
+  margin-bottom: 4px;
+  min-width: 20px;
+}
+
+.work-meta {
   font-family: var(--font-mono);
-  font-size: 0.62rem;
+  font-size: 0.6rem;
   color: var(--muted);
-  letter-spacing: 0.05em;
-  margin-bottom: 0.9rem;
+  letter-spacing: 0.06em;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
-.row-desc {
-  font-size: 0.88rem;
-  line-height: 1.75;
-  color: var(--text2);
-  max-width: 580px;
-  margin-bottom: 1rem;
-}
-
-.row-tags { display: flex; flex-wrap: wrap; gap: 0.3rem; }
-
-.row-right {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 1.1rem;
-  min-width: 90px;
-  padding-top: 0.4rem;
-}
-
-.row-metric { text-align: right; }
-.row-metric-val {
-  font-family: var(--font-display);
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: var(--text);
-  line-height: 1;
-  display: block;
-}
-.row-metric-lbl {
-  font-family: var(--font-mono);
-  font-size: 0.55rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+.work-arr {
+  font-size: 0.85rem;
   color: var(--muted);
-  margin-top: 0.15rem;
-  display: block;
+  flex-shrink: 0;
+  transition: transform 0.18s, color 0.15s;
 }
 
-.row-arrow {
-  width: 30px; height: 30px;
-  border-radius: 50%;
-  border: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: center;
-  color: var(--muted); font-size: 0.85rem;
-  transition: all 0.18s;
-  margin-top: auto;
+.work-item:hover .work-arr {
+  transform: translateX(4px);
+  color: var(--cyan);
 }
 
-/* row accent colours on hover */
-.project-row:nth-child(1):hover .row-title { color: var(--cyan); }
-.project-row:nth-child(1):hover .row-arrow { background: var(--cyan); border-color: var(--cyan); color: #04060c; }
-.project-row:nth-child(2):hover .row-title { color: var(--green); }
-.project-row:nth-child(2):hover .row-arrow { background: var(--green); border-color: var(--green); color: #04060c; }
-.project-row:nth-child(3):hover .row-title { color: #a78bfa; }
-.project-row:nth-child(3):hover .row-arrow { background: #a78bfa; border-color: #a78bfa; color: #04060c; }
-.project-row:nth-child(4):hover .row-title { color: #f472b6; }
-.project-row:nth-child(4):hover .row-arrow { background: #f472b6; border-color: #f472b6; color: #04060c; }
-.project-row:nth-child(5):hover .row-title { color: #fb923c; }
-.project-row:nth-child(5):hover .row-arrow { background: #fb923c; border-color: #fb923c; color: #04060c; }
-
-/* ─── CONTACT ───────────────────────────────────────── */
-.contact-section {
-  padding: 6rem 2rem 7rem;
-  max-width: 1080px;
+/* ── STACK ────────────────────────────────────── */
+.stack-section {
+  padding: 4rem 2rem;
+  max-width: 1000px;
   margin: 0 auto;
 }
 
-.contact-headline {
-  font-family: var(--font-display);
-  font-size: clamp(2rem, 4vw, 3.2rem);
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  color: var(--text);
-  margin-bottom: 1rem;
-  line-height: 1.1;
+.stack-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
 }
 
-.contact-desc {
-  font-size: 1rem;
-  line-height: 1.75;
+.stack-line {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  gap: 1.5rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--border);
+  align-items: baseline;
+}
+.stack-line:first-child { border-top: 1px solid var(--border); }
+
+.sl-cat {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--cyan);
+  flex-shrink: 0;
+}
+
+.sl-items {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
   color: var(--text2);
-  max-width: 520px;
+  letter-spacing: 0.03em;
+  line-height: 1.6;
+}
+
+/* ── CONTACT ──────────────────────────────────── */
+.contact-section {
+  padding: 5rem 2rem 7rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.ct-headline {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 900;
+  letter-spacing: -0.025em;
+  line-height: 1.05;
+  color: var(--text);
+  margin-bottom: 1.5rem;
+}
+
+.ct-desc {
+  font-size: 0.95rem;
+  color: var(--text2);
+  line-height: 1.75;
+  max-width: 480px;
   margin-bottom: 2.5rem;
 }
 
-.contact-links {
+.ct-links {
   display: flex;
   gap: 0.75rem;
   flex-wrap: wrap;
 }
 
-/* ─── ANIMATIONS ────────────────────────────────────── */
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(14px); }
-  to   { opacity: 1; transform: translateY(0); }
+/* ── LIGHT THEME OVERRIDES ────────────────────── */
+[data-theme="light"] .now-cell { background: var(--bg); }
+[data-theme="light"] .now-cell:hover { background: var(--surface); }
+
+/* ── RESPONSIVE ───────────────────────────────── */
+@media (max-width: 700px) {
+  .masthead { padding: 5rem 1.25rem 3rem; }
+  .now-grid { grid-template-columns: 1fr; }
+  .tl-entry { grid-template-columns: 1fr; gap: 0.4rem; }
+  .work-dots { display: none; }
+  .work-meta { display: none; }
+  .stack-line { grid-template-columns: 80px 1fr; gap: 1rem; }
 }
 
-/* ─── RESPONSIVE ────────────────────────────────────── */
-@media (max-width: 1000px) {
-  .hero-body { grid-template-columns: 1fr; gap: 2.5rem; }
-  .hero-terminal { max-width: 480px; }
-  .career-grid { grid-template-columns: repeat(2, 1fr); }
-  .career-card:nth-child(2) { border-right: none; }
-  .career-card:nth-child(1),
-  .career-card:nth-child(2) { border-bottom: 1px solid var(--border); }
-  .caps-grid { grid-template-columns: repeat(2, 1fr); }
-  .results-grid { grid-template-columns: repeat(2, 1fr); }
-  .result-item:nth-child(2) { border-right: none; }
-  .result-item:nth-child(1),
-  .result-item:nth-child(2) { border-bottom: 1px solid var(--border); }
-}
-
-@media (max-width: 680px) {
-  .hero { padding: 5rem 1.25rem 4rem; }
-  .hero-headline { font-size: 2.2rem; }
-  .career-grid { grid-template-columns: 1fr; }
-  .career-card { border-right: none; border-bottom: 1px solid var(--border); }
-  .career-card:last-child { border-bottom: none; }
-  .caps-grid { grid-template-columns: 1fr; }
-  .results-grid { grid-template-columns: 1fr 1fr; }
-  .project-row { grid-template-columns: 1fr; gap: 0.75rem; }
-  .row-num { display: none; }
-  .row-right { display: none; }
+@media (max-width: 480px) {
+  .mast-name { font-size: clamp(3.2rem, 15vw, 5rem); }
+  .mast-status { margin-left: 0; }
 }
 
   </style>
 </head>
 <body>
-
-<div class="hexgrid"></div>
-<div class="glow-overlay" style="background:radial-gradient(ellipse 55% 35% at 10% 15%,rgba(0,212,255,0.04),transparent)"></div>
 
 <nav class="site-nav">
   <a class="nav-logo" href="/index.html">RN <span class="dot"></span></a>
@@ -575,331 +459,213 @@ section, .section-wrap {
   </div>
 </nav>
 
-<div class="page-wrap">
+<div class="pw">
 
-  <!-- ── HERO ── -->
-  <div class="hero">
-    <div class="hero-tag">Gen AI Engineer · Bangalore</div>
-    <h1 class="hero-headline">
-      I build <em>agentic systems</em><br>
-      that make AI reliable<br>
-      in production.
-    </h1>
-    <div class="hero-body">
-      <div>
-        <p class="hero-desc">
-          4+ years building production-grade AI — from multi-agent LangGraph pipelines
-          and hybrid RAG systems to MCP-based AI skills on SAP Cloud ALM.
-          Currently deploying A2A agent communication and LLM-as-a-Judge evaluation
-          frameworks at NDBS–SAP.
-        </p>
-        <div class="hero-cta">
-          <a href="#projects" class="btn btn-primary">View Projects</a>
-          <a href="#contact" class="btn btn-ghost">Get in Touch</a>
-          <a href="/study/index.html" class="btn btn-ghost">Study Material</a>
-        </div>
-      </div>
-      <div class="hero-terminal">
-        <div class="t-bar">
-          <div class="t-dot"></div><div class="t-dot"></div><div class="t-dot"></div>
-          <span class="t-file">agent_orchestrator.py</span>
-        </div>
-        <div class="t-body">
-          <div class="t-line"><span class="p">$ </span><span class="c">python agent_orchestrator.py</span></div>
-          <div class="t-line sp"><span class="o">&gt; Initialising LangGraph workflow...</span></div>
-          <div class="t-line"><span class="ok">&gt; 7 specialised agents loaded</span></div>
-          <div class="t-line"><span class="o">&gt; MCP tool registry connected</span></div>
-          <div class="t-line"><span class="o">&gt; A2A communication layer ready</span></div>
-          <div class="t-line"><span class="o">&gt; LLM-as-Judge evaluation active</span></div>
-          <div class="t-line sp"><span class="ok">&gt; RAGAS pipeline decoupled — no latency impact</span></div>
-          <div class="t-line"><span class="d">&gt; Awaiting task orchestration...</span></div>
-        </div>
-      </div>
+  <!-- MASTHEAD -->
+  <div class="masthead">
+    <h1 class="mast-name">Rahul<br>Naik</h1>
+    <div class="mast-rule">
+      <span class="mast-meta">Gen AI Engineer<span class="dot">·</span>Bangalore<span class="dot">·</span>India</span>
+      <span class="mast-meta">rahulnaik.online</span>
+      <span class="mast-status">Available</span>
     </div>
-  </div>
-
-  <hr class="divider">
-
-  <!-- ── CAREER VERSIONS ── -->
-  <div class="career-section" data-reveal>
-    <div class="section-label">Career · Evolution</div>
-    <div class="career-grid">
-
-      <div class="career-card">
-        <div class="career-version">v1.0</div>
-        <div class="career-role">Backend Developer</div>
-        <div class="career-company">Tata Consultancy Services</div>
-        <div class="career-period">2021 — 2022</div>
-        <div class="career-skills">
-          <span class="career-skill">Python</span>
-          <span class="career-skill">FastAPI</span>
-          <span class="career-skill">PostgreSQL</span>
-          <span class="career-skill">REST APIs</span>
-          <span class="career-skill">Docker</span>
-        </div>
-      </div>
-
-      <div class="career-card">
-        <div class="career-version">v2.0</div>
-        <div class="career-role">AI Integration Engineer</div>
-        <div class="career-company">Tata Consultancy Services</div>
-        <div class="career-period">2023 — 2025</div>
-        <div class="career-skills">
-          <span class="career-skill">LangGraph</span>
-          <span class="career-skill">RAG</span>
-          <span class="career-skill">pgvector</span>
-          <span class="career-skill">AWS SQS</span>
-          <span class="career-skill">ECS Fargate</span>
-        </div>
-      </div>
-
-      <div class="career-card">
-        <div class="career-version">v3.0</div>
-        <div class="career-role">Gen AI Engineer</div>
-        <div class="career-company">Publicis Sapient</div>
-        <div class="career-period">2025 — 2026</div>
-        <div class="career-skills">
-          <span class="career-skill">Multi-Agent</span>
-          <span class="career-skill">Guardrails</span>
-          <span class="career-skill">RAGAS</span>
-          <span class="career-skill">LangSmith</span>
-          <span class="career-skill">Redis</span>
-        </div>
-      </div>
-
-      <div class="career-card" style="background:var(--surface)">
-        <div class="career-version" style="color:var(--green)">v4.0 · Now</div>
-        <div class="career-role">AI Developer</div>
-        <div class="career-company">NDBS – SAP</div>
-        <div class="career-period">Apr 2026 — Present</div>
-        <div class="career-skills">
-          <span class="career-skill" style="border-color:var(--b2);color:var(--text2)">MCP</span>
-          <span class="career-skill" style="border-color:var(--b2);color:var(--text2)">A2A</span>
-          <span class="career-skill" style="border-color:var(--b2);color:var(--text2)">SAP Joule</span>
-          <span class="career-skill" style="border-color:var(--b2);color:var(--text2)">LLM-as-Judge</span>
-          <span class="career-skill" style="border-color:var(--b2);color:var(--text2)">OData V4</span>
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-  <hr class="divider">
-
-  <!-- ── CAPABILITIES ── -->
-  <div class="caps-section" data-reveal>
-    <div class="section-label">Capabilities</div>
-    <div class="caps-grid">
-
-      <div class="cap-card">
-        <div class="cap-icon">// 01 · Agentic</div>
-        <div class="cap-title">Agentic Systems</div>
-        <p class="cap-desc">Stateful multi-agent pipelines with shared state, hard-fail detection, and graceful decline routing. MCP tool integration and A2A communication.</p>
-        <div class="cap-tags">
-          <span class="cap-tag">LangGraph · LangChain</span>
-          <span class="cap-tag">MCP · A2A Protocol</span>
-          <span class="cap-tag">Skill Orchestration</span>
-          <span class="cap-tag">SAP Joule / Cloud ALM</span>
-        </div>
-      </div>
-
-      <div class="cap-card">
-        <div class="cap-icon">// 02 · Retrieval</div>
-        <div class="cap-title">RAG Pipelines</div>
-        <p class="cap-desc">End-to-end retrieval systems with hybrid BM25 + vector search, RRF fusion, cross-encoder reranking, and semantic caching layers.</p>
-        <div class="cap-tags">
-          <span class="cap-tag">Hybrid Search · BM25 · RRF</span>
-          <span class="cap-tag">Cross-Encoders · MMR</span>
-          <span class="cap-tag">pgvector · Weaviate · Pinecone</span>
-          <span class="cap-tag">PyMuPDF · Unstructured</span>
-        </div>
-      </div>
-
-      <div class="cap-card">
-        <div class="cap-icon">// 03 · Eval</div>
-        <div class="cap-title">Evaluation &amp; Observability</div>
-        <p class="cap-desc">LLM-as-a-Judge benchmark frameworks with category-weighted scoring, RAGAS evaluation pipelines decoupled from inference, and quality gate enforcement.</p>
-        <div class="cap-tags">
-          <span class="cap-tag">RAGAS · LangSmith</span>
-          <span class="cap-tag">LLM-as-Judge</span>
-          <span class="cap-tag">REST Assured · JUnit 5</span>
-          <span class="cap-tag">API Contract Testing</span>
-        </div>
-      </div>
-
-      <div class="cap-card">
-        <div class="cap-icon">// 04 · Deploy</div>
-        <div class="cap-title">Backend &amp; Cloud</div>
-        <p class="cap-desc">Production deployment on AWS and SAP BTP with CI/CD pipelines, containerised services, blue-green releases, and structured API design.</p>
-        <div class="cap-tags">
-          <span class="cap-tag">FastAPI · Pydantic · Redis</span>
-          <span class="cap-tag">AWS ECS · Lambda · S3</span>
-          <span class="cap-tag">SAP BTP Cloud Foundry</span>
-          <span class="cap-tag">Docker · GitHub Actions</span>
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-  <hr class="divider">
-
-  <!-- ── RESULTS ── -->
-  <div class="results-section" data-reveal>
-    <div class="section-label">Results</div>
-    <div class="results-grid">
-
-      <div class="result-item">
-        <div class="result-num" style="color:var(--cyan)">40–60%</div>
-        <div class="result-label">Reduction in redundant LLM calls via Redis semantic caching</div>
-        <div class="result-context">Multi-Agent Pipeline · Publicis Sapient</div>
-      </div>
-
-      <div class="result-item">
-        <div class="result-num" style="color:var(--green)">95%</div>
-        <div class="result-label">Decision accuracy on 7-agent stateful orchestration system</div>
-        <div class="result-context">Agentic Orchestration</div>
-      </div>
-
-      <div class="result-item">
-        <div class="result-num">Zero</div>
-        <div class="result-label">Data loss via self-healing SQS retry with DLQ and Event Bridge reprocess</div>
-        <div class="result-context">Case Management Pipeline · TCS</div>
-      </div>
-
-      <div class="result-item">
-        <div class="result-num">4+</div>
-        <div class="result-label">Years building production AI across 3 companies and 5 shipped systems</div>
-        <div class="result-context">TCS → Publicis Sapient → NDBS-SAP</div>
-      </div>
-
-    </div>
-  </div>
-
-  <hr class="divider">
-
-  <!-- ── PROJECTS ── -->
-  <div class="projects-section" id="projects" data-reveal>
-    <div class="section-label">Work</div>
-
-    <div class="project-list">
-
-      <a href="/projects/loaniq.html" class="project-row">
-        <div class="row-num">01</div>
-        <div>
-          <div class="row-title">Multi-Agent Orchestration System</div>
-          <div class="row-sub">// 7-Agent Stateful Pipeline · Publicis Sapient · 2025–26</div>
-          <p class="row-desc">Production LangGraph system with shared state persistence across all agent hops. Hybrid RAG with BM25, pgvector, RRF fusion, and cross-encoder reranking. Redis semantic caching cut redundant LLM calls by 40–60%. Multi-layer guardrails for input validation, hallucination detection, and output sanitisation.</p>
-          <div class="row-tags">
-            <span class="tag">LangGraph</span><span class="tag">AWS Bedrock</span><span class="tag">FastAPI</span><span class="tag">pgvector</span><span class="tag">BM25</span><span class="tag">Redis</span><span class="tag">LangSmith</span><span class="tag">ECS Fargate</span>
-          </div>
-        </div>
-        <div class="row-right">
-          <div class="row-metric">
-            <span class="row-metric-val" style="color:var(--green)">95%</span>
-            <span class="row-metric-lbl">Accuracy</span>
-          </div>
-          <div class="row-metric">
-            <span class="row-metric-val">7</span>
-            <span class="row-metric-lbl">Agents</span>
-          </div>
-          <div class="row-arrow">→</div>
-        </div>
-      </a>
-
-      <a href="/projects/salesforce-agent.html" class="project-row">
-        <div class="row-num">02</div>
-        <div>
-          <div class="row-title">Automated Case Management Pipeline</div>
-          <div class="row-sub">// Closed-Loop Service Agent · TCS · 2023–25</div>
-          <p class="row-desc">Multi-agent LangGraph pipeline replacing manual Tier-1 review with a closed-loop AI agent. Four-stage RAG pipeline with pgvector and LLM-generated summaries. Self-healing SQS retry with DLQ and Event Bridge reprocess for zero data loss. ElastiCache checkpointing for state persistence.</p>
-          <div class="row-tags">
-            <span class="tag">LangGraph</span><span class="tag">pgvector</span><span class="tag">AWS SQS</span><span class="tag">ElastiCache</span><span class="tag">OAuth2</span><span class="tag">ECS Fargate</span>
-          </div>
-        </div>
-        <div class="row-right">
-          <div class="row-metric">
-            <span class="row-metric-val">Zero</span>
-            <span class="row-metric-lbl">Data loss</span>
-          </div>
-          <div class="row-arrow">→</div>
-        </div>
-      </a>
-
-      <a href="/projects/findocqa.html" class="project-row">
-        <div class="row-num">03</div>
-        <div>
-          <div class="row-title">Document Intelligence &amp; QA</div>
-          <div class="row-sub">// RAG-Powered Q&amp;A with Citation Accuracy</div>
-          <p class="row-desc">Hybrid semantic + keyword retrieval over complex document corpora. Citation-level accuracy with a verifiable reasoning chain, cross-encoder reranking, and structured output validation via Pydantic.</p>
-          <div class="row-tags">
-            <span class="tag">LlamaIndex</span><span class="tag">OpenAI</span><span class="tag">Pinecone</span><span class="tag">BM25</span><span class="tag">FastAPI</span>
-          </div>
-        </div>
-        <div class="row-right">
-          <div class="row-metric">
-            <span class="row-metric-val">40%</span>
-            <span class="row-metric-lbl">Time saved</span>
-          </div>
-          <div class="row-arrow">→</div>
-        </div>
-      </a>
-
-      <a href="/projects/finbot.html" class="project-row">
-        <div class="row-num">04</div>
-        <div>
-          <div class="row-title">Conversational AI Assistant</div>
-          <div class="row-sub">// LLM Tool-Use with Guardrails &amp; Explainable Reasoning</div>
-          <p class="row-desc">Conversational assistant with LLM tool-use for real-time data retrieval, structured analysis, and personalised guidance. Compliance guardrails with step-by-step explainable reasoning and structured output validation.</p>
-          <div class="row-tags">
-            <span class="tag">GPT-4</span><span class="tag">Streamlit</span><span class="tag">LLM Tools</span><span class="tag">Guardrails</span><span class="tag">Pydantic</span>
-          </div>
-        </div>
-        <div class="row-right">
-          <div class="row-metric">
-            <span class="row-metric-val">Safe</span>
-            <span class="row-metric-lbl">Guardrails</span>
-          </div>
-          <div class="row-arrow">→</div>
-        </div>
-      </a>
-
-      <a href="/projects/wfo-risk.html" class="project-row">
-        <div class="row-num">05</div>
-        <div>
-          <div class="row-title">Predictive Risk Analytics Engine</div>
-          <div class="row-sub">// ML-Driven Assessment &amp; Automated Reporting</div>
-          <p class="row-desc">AI-driven risk assessment combining predictive modelling, anomaly detection, and automated reporting for enterprise-scale obligation risk management.</p>
-          <div class="row-tags">
-            <span class="tag">scikit-learn</span><span class="tag">Anomaly Detection</span><span class="tag">Python</span><span class="tag">Tableau</span>
-          </div>
-        </div>
-        <div class="row-right">
-          <div class="row-metric">
-            <span class="row-metric-val">Auto</span>
-            <span class="row-metric-lbl">Reporting</span>
-          </div>
-          <div class="row-arrow">→</div>
-        </div>
-      </a>
-
-    </div>
-  </div>
-
-  <hr class="divider" style="margin-top:3rem">
-
-  <!-- ── CONTACT ── -->
-  <div class="contact-section" id="contact" data-reveal>
-    <div class="section-label">Contact</div>
-    <h2 class="contact-headline">
-      Open to Senior<br>
-      <span class="gradient-text">Gen AI roles.</span>
-    </h2>
-    <p class="contact-desc">
-      Available for Senior Gen AI / Agentic Systems positions in Bangalore.
-      Reach out via email, LinkedIn, or WhatsApp.
+    <p class="mast-statement">
+      I build <strong>agentic systems, RAG pipelines, and MCP-based AI services</strong>
+      that work reliably in production — from multi-agent LangGraph orchestration
+      to AI skills deployed on SAP Cloud ALM.
     </p>
-    <div class="contact-links">
+    <div class="mast-cta">
+      <a href="#work" class="btn btn-primary">Projects</a>
+      <a href="/study/index.html" class="btn btn-ghost">Study Material</a>
+      <a href="#contact" class="btn btn-ghost">Contact</a>
+    </div>
+  </div>
+
+  <hr class="rule">
+
+  <!-- NOW -->
+  <div class="now-section">
+    <div class="sec-lbl">// now</div>
+    <div class="now-grid">
+      <div class="now-cell">
+        <div class="now-status">● Active</div>
+        <p class="now-text">
+          Building the <strong>TDM Knowledge Skill</strong> for SAP Joule on Cloud ALM at NDBS–SAP.
+          MCP tool integration, A2A agent communication, LLM-as-a-Judge benchmark
+          evaluation with category-weighted scoring and quality gate enforcement.
+        </p>
+      </div>
+      <div class="now-cell">
+        <div class="now-status green">↑ Learning</div>
+        <p class="now-text">
+          vLLM inference and open-weight model deployment — prefill vs decode,
+          KV cache, continuous batching. Building an eval-first approach to
+          open-model selection for agentic pipelines.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <hr class="rule">
+
+  <!-- EXPERIENCE -->
+  <div class="timeline-section">
+    <div class="sec-lbl">// experience</div>
+    <div class="tl-entries">
+
+      <div class="tl-entry current">
+        <div class="tl-left">
+          <span class="tl-period">Apr 2026 — present</span>
+          <span class="tl-co">NDBS – SAP</span>
+        </div>
+        <div class="tl-right">
+          <div class="tl-role">AI Developer</div>
+          <div class="tl-skills">MCP · A2A · SAP Joule · SAP Cloud ALM · LLM-as-Judge · OData V4 · XSUAA · REST Assured / JUnit 5</div>
+        </div>
+      </div>
+
+      <div class="tl-entry">
+        <div class="tl-left">
+          <span class="tl-period">2025 — 2026</span>
+          <span class="tl-co">Publicis Sapient</span>
+        </div>
+        <div class="tl-right">
+          <div class="tl-role">Gen AI Engineer</div>
+          <div class="tl-skills">LangGraph · LangSmith · RAGAS · Guardrails · Redis semantic cache · AWS Bedrock · ECS Fargate · pgvector · BM25 · RRF</div>
+        </div>
+      </div>
+
+      <div class="tl-entry">
+        <div class="tl-left">
+          <span class="tl-period">2023 — 2025</span>
+          <span class="tl-co">Tata Consultancy Services</span>
+        </div>
+        <div class="tl-right">
+          <div class="tl-role">AI Integration Engineer</div>
+          <div class="tl-skills">LangGraph · pgvector · AWS SQS · DLQ · ElastiCache · OAuth2 · ECS Fargate · Docker</div>
+        </div>
+      </div>
+
+      <div class="tl-entry">
+        <div class="tl-left">
+          <span class="tl-period">2021 — 2022</span>
+          <span class="tl-co">Tata Consultancy Services</span>
+        </div>
+        <div class="tl-right">
+          <div class="tl-role">Backend Developer</div>
+          <div class="tl-skills">Python · FastAPI · PostgreSQL · REST APIs · Docker · Role-based access · Audit logging</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <hr class="rule">
+
+  <!-- WORK -->
+  <div class="work-section" id="work">
+    <div class="sec-lbl">// work</div>
+    <div class="work-list">
+
+      <a href="/projects/loaniq.html" class="work-item">
+        <span class="work-num">01</span>
+        <span class="work-title">Multi-Agent Orchestration System</span>
+        <span class="work-dots"></span>
+        <span class="work-meta">LangGraph · AWS · 7 agents</span>
+        <span class="work-arr">→</span>
+      </a>
+
+      <a href="/projects/salesforce-agent.html" class="work-item">
+        <span class="work-num">02</span>
+        <span class="work-title">Automated Case Management Pipeline</span>
+        <span class="work-dots"></span>
+        <span class="work-meta">LangGraph · SQS · DLQ</span>
+        <span class="work-arr">→</span>
+      </a>
+
+      <a href="/projects/findocqa.html" class="work-item">
+        <span class="work-num">03</span>
+        <span class="work-title">Document Intelligence &amp; QA</span>
+        <span class="work-dots"></span>
+        <span class="work-meta">RAG · Hybrid search</span>
+        <span class="work-arr">→</span>
+      </a>
+
+      <a href="/projects/finbot.html" class="work-item">
+        <span class="work-num">04</span>
+        <span class="work-title">Conversational AI with Tool Use</span>
+        <span class="work-dots"></span>
+        <span class="work-meta">GPT-4 · Guardrails</span>
+        <span class="work-arr">→</span>
+      </a>
+
+      <a href="/projects/wfo-risk.html" class="work-item">
+        <span class="work-num">05</span>
+        <span class="work-title">Predictive Risk Analytics Engine</span>
+        <span class="work-dots"></span>
+        <span class="work-meta">scikit-learn · Anomaly detection</span>
+        <span class="work-arr">→</span>
+      </a>
+
+    </div>
+  </div>
+
+  <hr class="rule">
+
+  <!-- STACK -->
+  <div class="stack-section">
+    <div class="sec-lbl">// stack</div>
+    <div class="stack-lines">
+
+      <div class="stack-line">
+        <span class="sl-cat">Agentic</span>
+        <span class="sl-items">LangGraph, LangChain, MCP, A2A, Skill Orchestration, Guardrails, Hard-fail Detection, Graceful Decline Routing</span>
+      </div>
+
+      <div class="stack-line">
+        <span class="sl-cat">Retrieval</span>
+        <span class="sl-items">Hybrid Search, BM25, RRF, MMR, Bi-Encoder, Cross-Encoders, pgvector, Weaviate, ChromaDB, Pinecone, FAISS</span>
+      </div>
+
+      <div class="stack-line">
+        <span class="sl-cat">LLM</span>
+        <span class="sl-items">OpenAI, Claude, Gemini, Ollama, AWS Bedrock, BGE Models, Sentence Transformers, Cross-Encoders</span>
+      </div>
+
+      <div class="stack-line">
+        <span class="sl-cat">Eval</span>
+        <span class="sl-items">RAGAS, LangSmith, LLM-as-Judge, Benchmark Evaluation, REST Assured, JUnit 5, API Contract Testing</span>
+      </div>
+
+      <div class="stack-line">
+        <span class="sl-cat">Backend</span>
+        <span class="sl-items">Python, FastAPI, Pydantic, Redis, Streamlit, Java, Spring Boot, PostgreSQL, MySQL</span>
+      </div>
+
+      <div class="stack-line">
+        <span class="sl-cat">Cloud</span>
+        <span class="sl-items">AWS ECS Fargate, Lambda, S3, CloudWatch · Azure Container Apps, AI Foundry · SAP BTP Cloud Foundry, MTA Build</span>
+      </div>
+
+      <div class="stack-line">
+        <span class="sl-cat">SAP</span>
+        <span class="sl-items">SAP Cloud ALM, SAP BTP, SAP S/4 HANA, DWC, CAP, OData V4, XSUAA, SAP Joule / CXS</span>
+      </div>
+
+    </div>
+  </div>
+
+  <hr class="rule">
+
+  <!-- CONTACT -->
+  <div class="contact-section" id="contact">
+    <div class="sec-lbl">// contact</div>
+    <h2 class="ct-headline">Open to<br><span class="gradient-text">Senior Gen AI</span><br>roles.</h2>
+    <p class="ct-desc">
+      Based in Bangalore. Available for Senior Gen AI, Agentic Systems,
+      or AI Platform Engineer positions. Reach out via any channel below.
+    </p>
+    <div class="ct-links">
       <a href="mailto:rahulnaik.aiengineer@gmail.com" class="btn btn-primary">rahulnaik.aiengineer@gmail.com</a>
       <a href="https://www.linkedin.com/in/rahul-naik-ps/" target="_blank" rel="noopener" class="btn btn-ghost">LinkedIn</a>
       <a href="https://api.whatsapp.com/send/?phone=919591522079" target="_blank" rel="noopener" class="btn btn-ghost" style="border-color:#25d366;color:#25d366">WhatsApp</a>
@@ -910,7 +676,7 @@ section, .section-wrap {
     <p>&copy; 2025 Rahul Naik &middot; Gen AI Engineer &middot; Bangalore</p>
     <p style="margin-top:0.4rem">
       <a href="/index.html">Home</a> &middot;
-      <a href="#projects">Projects</a> &middot;
+      <a href="#work">Projects</a> &middot;
       <a href="/study/index.html">Study</a> &middot;
       <a href="/documents.html">Documents</a>
     </p>
@@ -923,10 +689,10 @@ section, .section-wrap {
 </a>
 
 <script>
-document.querySelectorAll('a[href^="#"]').forEach(function(a) {
-  a.addEventListener('click', function(e) {
-    var t = document.querySelector(this.getAttribute('href'));
-    if (t) { e.preventDefault(); t.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+document.querySelectorAll('a[href^="#"]').forEach(function(a){
+  a.addEventListener('click',function(e){
+    var t=document.querySelector(this.getAttribute('href'));
+    if(t){e.preventDefault();t.scrollIntoView({behavior:'smooth',block:'start'});}
   });
 });
 </script>
