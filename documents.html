@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <script id="rn-early-theme">
+    (function(){
+      var OVERRIDE="rn-theme-manual", OD=OVERRIDE+"-date";
+      function istHour(){var n=new Date(),u=n.getTime()+n.getTimezoneOffset()*60000,i=new Date(u+19800000);return i.getHours();}
+      function istDate(){var n=new Date(),u=n.getTime()+n.getTimezoneOffset()*60000,i=new Date(u+19800000);return i.getFullYear()+"-"+i.getMonth()+"-"+i.getDate();}
+      var manual=localStorage.getItem(OVERRIDE),day=localStorage.getItem(OD),today=istDate();
+      var theme=(manual&&day===today)?manual:((istHour()>=6&&istHour()<19)?"light":"dark");
+      document.documentElement.setAttribute("data-theme",theme);
+    })();
+  </script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Documents · Rahul Naik</title>
+<meta name="description" content="All project documents in one place — markdown files rendered for easy reading.">
+<link rel="stylesheet" href="assets/css/theme.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+<style>
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  margin: 0;
+}
+
+.page-wrap { padding-top: 60px; }
+
+.page-head {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 3.5rem 2rem 1.5rem;
+}
+
+.page-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--cyan);
+  margin-bottom: 0.8rem;
+}
+
+.page-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  margin: 0 0 0.5rem;
+}
+
+.page-sub {
+  color: var(--text2);
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+.layout {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1rem 2rem 5rem;
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 2.5rem;
+  align-items: start;
+}
+
+/* ── TOC ── */
+.toc {
+  position: sticky;
+  top: 84px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.2rem;
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+}
+
+.toc-label {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 0.8rem;
+}
+
+.toc-link {
+  display: block;
+  padding: 0.45rem 0.6rem;
+  border-radius: 6px;
+  color: var(--text2);
+  text-decoration: none;
+  font-size: 0.82rem;
+  font-family: var(--font-mono);
+  border-left: 2px solid transparent;
+  transition: all 0.2s;
+  overflow-wrap: anywhere;
+}
+
+.toc-link:hover {
+  color: var(--cyan);
+  background: var(--s2);
+  border-left-color: var(--cyan);
+}
+
+.toc-link.active {
+  color: var(--cyan);
+  background: var(--s2);
+  border-left-color: var(--cyan);
+}
+
+/* ── Sections ── */
+.docs {
+  min-width: 0;
+}
+
+.doc-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 2rem;
+  margin-bottom: 2.5rem;
+  scroll-margin-top: 90px;
+}
+
+.doc-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.6rem 1rem;
+  padding-bottom: 1.2rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.doc-file {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--cyan);
+  background: var(--s2);
+  border: 1px solid var(--border);
+  padding: 0.25rem 0.7rem;
+  border-radius: 6px;
+}
+
+.doc-title {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.doc-meta {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--muted);
+  letter-spacing: 0.08em;
+}
+
+/* ── Markdown body ── */
+.doc-body { line-height: 1.7; font-size: 0.95rem; color: var(--text); }
+.doc-body h1, .doc-body h2, .doc-body h3 {
+  font-family: var(--font-display);
+  color: var(--text);
+  scroll-margin-top: 90px;
+}
+.doc-body h1 { font-size: 1.6rem; margin: 2rem 0 1rem; }
+.doc-body h2 { font-size: 1.25rem; margin: 1.8rem 0 0.8rem; padding-bottom: 0.4rem; border-bottom: 1px solid var(--border); }
+.doc-body h3 { font-size: 1.05rem; margin: 1.5rem 0 0.6rem; }
+.doc-body p { margin: 0.8rem 0; color: var(--text2); }
+.doc-body a { color: var(--cyan); text-decoration: none; }
+.doc-body a:hover { text-decoration: underline; }
+.doc-body ul, .doc-body ol { color: var(--text2); padding-left: 1.4rem; }
+.doc-body li { margin: 0.35rem 0; }
+.doc-body code {
+  font-family: var(--font-mono);
+  font-size: 0.82em;
+  background: var(--s2);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 0.1rem 0.4rem;
+  color: var(--green);
+}
+.doc-body pre {
+  background: var(--bg1);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.1rem;
+  overflow-x: auto;
+}
+.doc-body pre code { background: none; border: none; padding: 0; color: var(--text); }
+.doc-body blockquote {
+  margin: 1rem 0;
+  padding: 0.5rem 1.2rem;
+  border-left: 3px solid var(--cyan);
+  background: var(--s2);
+  border-radius: 0 8px 8px 0;
+  color: var(--text2);
+}
+.doc-body table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.2rem 0;
+  font-size: 0.85rem;
+  display: block;
+  overflow-x: auto;
+}
+.doc-body th {
+  background: var(--s2);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--cyan);
+  text-align: left;
+}
+.doc-body th, .doc-body td {
+  border: 1px solid var(--border);
+  padding: 0.55rem 0.8rem;
+  vertical-align: top;
+}
+.doc-body tr:nth-child(even) td { background: var(--s2); }
+.doc-body hr { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
+.doc-body img { max-width: 100%; border-radius: 8px; }
+
+.footer-note {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 2rem 3rem;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+}
+
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; }
+  .toc { position: static; max-height: none; }
+  .doc-section { padding: 1.4rem; }
+  .doc-meta { margin-left: 0; }
+}
+</style>
+</head>
+<body>
+<div class="page-wrap">
+
+  <div class="page-head">
+    <div class="page-eyebrow">// documentation</div>
+    <h1 class="page-title">Documents</h1>
+    <p class="page-sub">1 markdown documents, rendered for easy reading — newest stacked below with their file names.</p>
+  </div>
+
+  <div class="layout">
+    <nav class="toc" aria-label="Document list">
+      <div class="toc-label">Files (1)</div>
+      <a class="toc-link" href="#doc-open-model-learning-plan"><span class="toc-name">open-model-learning-plan.md</span></a>
+    </nav>
+
+    <main class="docs">
+      <section class="doc-section" id="doc-open-model-learning-plan"><header class="doc-header"><span class="doc-file">open-model-learning-plan.md</span><span class="doc-title">Open-Model Inference, Evaluation &amp; Deployment: Learning Steps</span><span class="doc-meta">updated 23 Nov 2026</span></header><div class="doc-body"><h1 id="open-model-inference-evaluation-deployment-learning-steps">Open-Model Inference, Evaluation &amp; Deployment: Learning Steps</h1>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Title</th>
+<th>Description</th>
+<th>Skills I learn</th>
+<th>Difficulty</th>
+<th>Importance</th>
+<th>Link</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>LLM inference basics with vLLM</td>
+<td>Take the DeepLearning.AI course, then rebuild its lab: compress a Qwen model, serve it with vLLM, benchmark it.</td>
+<td>Prefill vs decode, KV cache, continuous batching, PagedAttention, prefix caching</td>
+<td>Medium</td>
+<td>High</td>
+<td><a href="https://www.deeplearning.ai/short-courses/fast-and-efficient-llm-inference-with-vllm/">Course</a></td>
+</tr>
+<tr>
+<td>2</td>
+<td>Run vLLM yourself</td>
+<td>Serve one open model on a rented GPU (or a small model locally) and call it through the OpenAI-compatible API from Python.</td>
+<td>vLLM setup, OpenAI-compatible API, GPU memory sizing</td>
+<td>Medium</td>
+<td>High</td>
+<td><a href="https://docs.vllm.ai">vLLM docs</a></td>
+</tr>
+<tr>
+<td>3</td>
+<td>Quantization trade-offs</td>
+<td>Serve the same model at FP16, FP8 and AWQ 4-bit. Compare memory, tokens/sec and accuracy on your own prompts.</td>
+<td>Quantization, LLM Compressor, accuracy vs speed trade-offs</td>
+<td>Medium</td>
+<td>High</td>
+<td><a href="https://github.com/vllm-project/llm-compressor">LLM Compressor</a></td>
+</tr>
+<tr>
+<td>4</td>
+<td>Load benchmarking</td>
+<td>Test at 1, 8 and 32 concurrent users. Record TTFT, p95 latency and throughput in a results table and chart.</td>
+<td>Benchmarking, TTFT, p95 latency, throughput under load</td>
+<td>Medium</td>
+<td>High</td>
+<td><a href="https://github.com/vllm-project/guidellm">GuideLLM</a></td>
+</tr>
+<tr>
+<td>5</td>
+<td>Managed open-model APIs</td>
+<td>Try Together, Fireworks or DeepInfra for the same model. Compare price, latency and reliability against your own server.</td>
+<td>Provider comparison, per-token pricing, BYO weights</td>
+<td>Easy</td>
+<td>High</td>
+<td><a href="https://www.together.ai">Together AI</a></td>
+</tr>
+<tr>
+<td>6</td>
+<td>Gateway and routing</td>
+<td>Put one endpoint in front of your vLLM, a hosted open model and a closed model, with fallback rules.</td>
+<td>LiteLLM, routing, retries, fallbacks, provider abstraction</td>
+<td>Medium</td>
+<td>High</td>
+<td><a href="https://docs.litellm.ai">LiteLLM docs</a></td>
+</tr>
+<tr>
+<td>7</td>
+<td>Tracing and cost tracking</td>
+<td>Trace every request with latency, tokens, cost and model used. Build a cost and p95 dashboard per model.</td>
+<td>Observability, Langfuse or Phoenix, cost tracking</td>
+<td>Medium</td>
+<td>High</td>
+<td><a href="https://langfuse.com">Langfuse</a></td>
+</tr>
+<tr>
+<td>8</td>
+<td>Eval fundamentals for agents</td>
+<td>Take the Arize course. Add tracing to an agent and choose code, LLM-judge or human evaluators per component.</td>
+<td>Eval design, code evaluators, LLM-as-judge, trajectory evals</td>
+<td>Easy</td>
+<td>High</td>
+<td><a href="https://www.deeplearning.ai/alpha/short-courses/evaluating-ai-agents">Course</a></td>
+</tr>
+<tr>
+<td>9</td>
+<td>Build a golden eval set</td>
+<td>Write 100 to 150 labelled cases from your own domain (RAG questions, tool-call tasks) with a documented rubric.</td>
+<td>Dataset design, labelling, rubric writing</td>
+<td>Medium</td>
+<td>High</td>
+<td><a href="https://www.promptfoo.dev">Promptfoo</a></td>
+</tr>
+<tr>
+<td>10</td>
+<td>RAG evaluation</td>
+<td>Score your RAG pipeline on retrieval recall and precision, faithfulness and answer relevance. Record a baseline.</td>
+<td>RAG metrics, Ragas or DeepEval, baselines</td>
+<td>Medium</td>
+<td>High</td>
+<td><a href="https://docs.ragas.io">Ragas</a></td>
+</tr>
+<tr>
+<td>11</td>
+<td>Trustworthy LLM judges</td>
+<td>Label 50 cases yourself, compare to the judge, report agreement (Cohen's kappa), and refine the rubric.</td>
+<td>Judge calibration, precision, recall, Cohen's kappa</td>
+<td>Hard</td>
+<td>High</td>
+<td><a href="https://www.deeplearning.ai/short-courses/evaluating-and-improving-agentic-applications/">Course</a></td>
+</tr>
+<tr>
+<td>12</td>
+<td>Regression testing in CI</td>
+<td>Run all candidate models through one command and fail the build when the score drops below baseline.</td>
+<td>Regression tests, CI for evals, model comparison tables</td>
+<td>Medium</td>
+<td>High</td>
+<td><a href="https://github.com/EleutherAI/lm-evaluation-harness">lm-evaluation-harness</a></td>
+</tr>
+<tr>
+<td>13</td>
+<td>Containers and Kubernetes basics</td>
+<td>Containerize the vLLM server and deploy it to a local cluster with Helm.</td>
+<td>Docker with GPUs, Kubernetes, Helm, vLLM Production Stack</td>
+<td>Hard</td>
+<td>Medium</td>
+<td><a href="https://github.com/vllm-project/production-stack">vLLM Production Stack</a></td>
+</tr>
+<tr>
+<td>14</td>
+<td>Autoscaling and distributed serving</td>
+<td>Add autoscaling on request rate or queue depth, test a zero-downtime model swap, and read about llm-d.</td>
+<td>KEDA, autoscaling, rolling updates, llm-d, disaggregated serving</td>
+<td>Hard</td>
+<td>Medium</td>
+<td><a href="https://llm-d.ai">llm-d</a></td>
+</tr>
+<tr>
+<td>15</td>
+<td>Self-host vs managed cost model</td>
+<td>Build a calculator showing the monthly token volume where self-hosting beats the managed API, using your measured throughput.</td>
+<td>Cost modelling, GPU utilisation, break-even analysis</td>
+<td>Medium</td>
+<td>High</td>
+<td><a href="https://deepinfra.com/blog/best-open-source-llm-api-providers">DeepInfra provider comparison</a></td>
+</tr>
+<tr>
+<td>16</td>
+<td>Optional: fine-tuning and LLMOps</td>
+<td>Learn supervised fine-tuning pipelines and LoRA adapters; link to your existing finetune project.</td>
+<td>SFT, LoRA/QLoRA, versioning data and models</td>
+<td>Medium</td>
+<td>Medium</td>
+<td><a href="https://deeplearning.ai/short-courses/llmops">LLMOps course</a></td>
+</tr>
+<tr>
+<td>17</td>
+<td>Portfolio write-up</td>
+<td>Publish the repo, README, architecture diagram and a blog post comparing open and closed models on cost, latency and quality.</td>
+<td>Technical writing, reproducibility, honest trade-off analysis</td>
+<td>Medium</td>
+<td>High</td>
+<td><a href="https://www.udemy.com/course/ultimate-llmops-bootcamp/">Udemy LLMOps Bootcamp (optional extra)</a></td>
+</tr>
+</tbody>
+</table></div></section>
+    </main>
+  </div>
+
+  <div class="footer-note">generated 23 Nov 2026, 08:51 UTC · rahulnaik99.github.io/documents.html</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>
+  document.querySelectorAll('pre code').forEach(function(el) { try { hljs.highlightElement(el); } catch(e) {} });
+  // Highlight active TOC entry while scrolling
+  var links = Array.prototype.slice.call(document.querySelectorAll('.toc-link'));
+  var sections = links.map(function(l) { return document.querySelector(l.getAttribute('href')); });
+  function onScroll() {
+    var y = window.scrollY + 120, idx = 0;
+    sections.forEach(function(s, i) { if (s && s.offsetTop <= y) idx = i; });
+    links.forEach(function(l, i) { l.classList.toggle('active', i === idx); });
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+</script>
+</body>
+</html>
