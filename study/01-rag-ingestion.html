@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RAG Ingestion Pipeline — Gen AI Study Guide</title>
+<script>(function(){var K="rn-theme-manual",D=K+"-date";function h(){var n=new Date(),u=n.getTime()+n.getTimezoneOffset()*60000,i=new Date(u+19800000);return i.getHours();}function d(){var n=new Date(),u=n.getTime()+n.getTimezoneOffset()*60000,i=new Date(u+19800000);return i.getFullYear()+"-"+i.getMonth()+"-"+i.getDate();}var m=localStorage.getItem(K),day=localStorage.getItem(D),today=d();document.documentElement.setAttribute("data-theme",(m&&day===today)?m:((h()>=6&&h()<19)?"light":"dark"));})();</script>
+<link rel="stylesheet" href="../assets/css/theme.css">
+<style>
+/* Page-specific layout */
+.module-wrap {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 2.5rem 2rem 5rem;
+}
+
+.module-header {
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.module-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--purple);
+  margin-bottom: 0.6rem;
+}
+
+.module-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 4vw, 2.2rem);
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.02em;
+  margin-bottom: 0.4rem;
+}
+
+.module-sub {
+  font-size: 0.9rem;
+  color: var(--muted);
+  font-family: var(--font-mono);
+}
+
+/* Content typography */
+.content h2 {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--purple);
+  margin: 2.5rem 0 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.content h2::before {
+  content: '';
+  display: inline-block;
+  width: 4px;
+  height: 16px;
+  background: var(--purple);
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.content h3 {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 1.75rem 0 0.5rem;
+}
+
+.content h3::before {
+  content: '// ';
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  font-weight: 400;
+}
+
+.content p { margin: 0.65rem 0; color: var(--text2); font-size: 0.95rem; line-height: 1.8; }
+
+.content pre {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--purple);
+  padding: 1.1rem 1.4rem;
+  border-radius: 0 8px 8px 0;
+  overflow-x: auto;
+  margin: 1.1rem 0;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--text2);
+  line-height: 1.6;
+}
+
+.content code:not(pre code) {
+  background: rgba(191,90,242,0.08);
+  color: var(--purple);
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid rgba(191,90,242,0.18);
+  font-family: var(--font-mono);
+  font-size: 0.82em;
+}
+
+.content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.1rem 0;
+  font-size: 0.875rem;
+}
+
+.content th {
+  background: var(--s2);
+  color: var(--purple);
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  text-align: left;
+}
+
+.content td {
+  padding: 9px 14px;
+  border: 1px solid var(--border);
+  color: var(--text2);
+  vertical-align: top;
+  font-size: 0.875rem;
+}
+
+.content tr:hover td { background: rgba(255,255,255,0.01); }
+
+.content blockquote {
+  border-left: 3px solid var(--yellow);
+  background: rgba(255,183,0,0.05);
+  padding: 0.9rem 1.2rem;
+  border-radius: 0 8px 8px 0;
+  margin: 1.1rem 0;
+  color: var(--text2);
+  font-style: italic;
+  font-size: 0.95rem;
+}
+
+.content hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 2rem 0;
+}
+
+.content ul, .content ol { padding-left: 1.5rem; margin: 0.5rem 0; color: var(--text2); font-size: 0.95rem; }
+.content li { margin: 0.3rem 0; }
+.content li > strong { color: var(--cyan); }
+.content a { color: var(--cyan); text-decoration: none; }
+.content a:hover { text-decoration: underline; }
+.content strong { color: var(--text); font-weight: 600; }
+
+/* Interview section highlight */
+.content h2.interview-heading {
+  color: var(--yellow);
+  background: rgba(255,183,0,0.05);
+  padding: 0.65rem 1rem;
+  border-radius: 0 8px 8px 0;
+  border-left: 3px solid var(--yellow);
+  margin-top: 3rem;
+}
+.content h2.interview-heading::before { background: var(--yellow); }
+
+/* Module nav footer */
+.module-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 2rem;
+  margin-top: 3rem;
+  border-top: 1px solid var(--border);
+}
+
+.footer-nav-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0.6rem 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  text-decoration: none;
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  transition: all 0.15s;
+}
+
+.footer-nav-btn:hover {
+  border-color: var(--purple);
+  color: var(--purple);
+  text-decoration: none;
+}
+
+@media (max-width: 600px) {
+  .module-wrap { padding: 1.5rem 1rem 4rem; }
+  .content pre { padding: 0.9rem 1rem; font-size: 0.75rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="hexgrid"></div>
+<div class="glow-overlay" style="background:radial-gradient(ellipse 50% 40% at 80% 20%,rgba(124,58,237,0.04),transparent)"></div>
+
+<nav class="site-nav">
+  <a class="nav-logo" href="/index.html">RN <span class="dot"></span></a>
+  <div class="nav-links" id="nav-links">
+    <a href="/index.html">Home</a>
+    <div class="nav-item">
+      <button class="nav-btn" aria-haspopup="true">Projects <span class="nav-arrow">▾</span></button>
+      <div class="nav-dropdown">
+        <a href="/projects/loaniq.html">LoanIQ — Underwriter Agent</a>
+        <a href="/projects/salesforce-agent.html">Salesforce AI Agent</a>
+        <a href="/projects/findocqa.html">FinDoc QA</a>
+        <a href="/projects/finbot.html">FinBot</a>
+        <a href="/projects/wfo-risk.html">WFO Risk Engine</a>
+        <hr><a href="/projects/evolution.html">Technical Journey</a>
+      </div>
+    </div>
+    <div class="nav-item">
+      <button class="nav-btn" aria-haspopup="true">Study <span class="nav-arrow">▾</span></button>
+      <div class="nav-dropdown">
+        <a href="/study/index.html">Study Hub</a>
+        <a href="/study/guide.html">Complete Guide</a>
+        <a href="/study/checklist.html">Interview Checklist</a>
+        <a href="/study/scenarios.html">100 Scenarios</a>
+        <a href="/study/architecture.html">Architecture Map</a>
+      </div>
+    </div>
+    <a href="/documents.html">Documents</a>
+    <a href="/index.html#contact">Contact</a>
+  </div>
+  <div class="nav-right">
+    <div class="theme-toggle" role="button" aria-label="Toggle theme">
+      <div class="toggle-track"><div class="toggle-thumb"></div></div>
+      <span class="theme-label">LIGHT</span>
+    </div>
+    <button class="hamburger" id="hamburger" aria-label="Open menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<main data-section="Study" data-section-url="/study/index.html" data-title="RAG Ingestion Pipeline" data-back-url="/study/index.html" data-back-label="Study Hub" style="padding-top:60px">
+  <div class="module-wrap">
+    <div class="module-header">
+      <div class="module-eyebrow">Module 01 · RAG</div>
+      <h1 class="module-title">RAG Ingestion Pipeline</h1>
+      <p class="module-sub">Document loading · Chunking strategies · Embeddings · Vector store indexing</p>
+    </div>
+
+    <div class="content">
+
+<h2>What is the Ingestion Pipeline?</h2>
+<p>The ingestion pipeline converts raw source documents (PDFs, DOCX, HTML, plain text) into searchable vector chunks stored in a vector database. It runs offline — either once or incrementally — and is the foundation of any RAG system. Poor ingestion causes poor retrieval regardless of how good the LLM is.</p>
+
+<blockquote>The quality of your RAG system is bounded by the quality of your ingestion pipeline. Garbage in, garbage out.</blockquote>
+
+<h2>Pipeline Stages</h2>
+<table>
+  <tr><th>Stage</th><th>What happens</th><th>Key decisions</th></tr>
+  <tr><td>1. Loading</td><td>Read raw files from disk, S3, URLs</td><td>File format handling, encoding, error quarantine</td></tr>
+  <tr><td>2. Parsing</td><td>Extract clean text, preserve structure</td><td>PDF parser choice, table extraction, OCR fallback</td></tr>
+  <tr><td>3. Chunking</td><td>Split into indexed units</td><td>Strategy, size, overlap</td></tr>
+  <tr><td>4. Metadata</td><td>Attach source info to each chunk</td><td>What to store, how to filter later</td></tr>
+  <tr><td>5. Embedding</td><td>Convert text to dense vectors</td><td>Model choice, dimensionality, normalisation</td></tr>
+  <tr><td>6. Indexing</td><td>Store vectors + metadata in DB</td><td>Batch size, upsert strategy, deduplication</td></tr>
+</table>
+
+<h2>Document Loading by Format</h2>
+<h3>PDF</h3>
+<p><strong>PyMuPDF (fitz)</strong> — best for text-heavy PDFs, preserves layout. Fallback to <strong>AWS Textract</strong> for scanned/image-only PDFs. Detect scanned pages by checking if extracted text is under 100 chars per page.</p>
+<pre>
+import fitz  # PyMuPDF
+
+def load_pdf(path: str) -> list[str]:
+    doc = fitz.open(path)
+    pages = []
+    for page in doc:
+        text = page.get_text()
+        if len(text.strip()) &lt; 100:
+            text = ocr_fallback(page)  # AWS Textract
+        pages.append(text)
+    return pages
+</pre>
+
+<h3>DOCX / HTML / plain text</h3>
+<p>Use <code>python-docx</code> for DOCX (preserves heading hierarchy), <code>BeautifulSoup</code> for HTML (strip nav/footer boilerplate), <code>unstructured.io</code> as a catch-all for 20+ formats.</p>
+
+<h2>Chunking Strategies</h2>
+<table>
+  <tr><th>Strategy</th><th>How it works</th><th>Best for</th><th>Risk</th></tr>
+  <tr><td>Fixed-size</td><td>Split every N characters</td><td>Uniform docs</td><td>Breaks mid-sentence</td></tr>
+  <tr><td>Recursive character</td><td>Split on \n\n → \n → space, prefer paragraph breaks</td><td>General prose</td><td>Inconsistent chunk sizes</td></tr>
+  <tr><td>Token-based</td><td>Split on token count (tiktoken)</td><td>LLM context window control</td><td>Semantic breaks ignored</td></tr>
+  <tr><td>Semantic</td><td>Embed sentences, split where similarity drops below threshold</td><td>Complex documents</td><td>Slow, expensive</td></tr>
+  <tr><td>Markdown/header</td><td>Split at H1/H2/H3 boundaries</td><td>Structured docs, policies</td><td>Requires clean markdown</td></tr>
+</table>
+
+<pre>
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+
+splitter = RecursiveCharacterTextSplitter(
+    chunk_size=512,
+    chunk_overlap=64,
+    separators=["\n\n", "\n", ". ", " ", ""],
+)
+chunks = splitter.split_text(raw_text)
+</pre>
+
+<h3>LoanIQ: Semantic Chunking for Policy Documents</h3>
+<p>Policy documents have dense, clause-based structure. Splitting mid-clause loses the rule. LoanIQ uses semantic chunking with a similarity threshold of 0.85 — adjacent sentences are grouped until semantic similarity to the next sentence drops, signalling a topic boundary.</p>
+
+<h2>Metadata Design</h2>
+<p>Metadata is stored alongside each chunk and used for <strong>pre-filtering</strong> before vector search — much cheaper than searching all vectors.</p>
+<pre>
+chunk = {
+    "page_content": "DTI ratio must not exceed 43% for conventional loans...",
+    "metadata": {
+        "source": "underwriting_guidelines_v3.pdf",
+        "section": "Debt-to-Income",
+        "product_type": "conventional",
+        "effective_date": "2024-01-01",
+        "page": 14,
+        "chunk_id": "ug-v3-p14-c2"
+    }
+}
+</pre>
+
+<h2>Embedding Models</h2>
+<table>
+  <tr><th>Model</th><th>Dims</th><th>Best for</th></tr>
+  <tr><td>text-embedding-3-small</td><td>1536</td><td>General RAG, low cost</td></tr>
+  <tr><td>text-embedding-3-large</td><td>3072</td><td>High-accuracy retrieval</td></tr>
+  <tr><td>BGE-large-en</td><td>1024</td><td>Open-source, strong on technical docs</td></tr>
+  <tr><td>Amazon Titan Embeddings</td><td>1536</td><td>AWS Bedrock stack</td></tr>
+</table>
+<p>Always <strong>normalise embeddings</strong> (L2 norm) before storing. Use the same model for ingestion and query — a mismatch produces garbage retrieval.</p>
+
+<h2>Indexing Strategy</h2>
+<pre>
+# Batch upsert with deduplication by chunk_id
+def index_chunks(chunks: list[dict], vector_store):
+    existing_ids = vector_store.get_existing_ids()
+    new_chunks = [c for c in chunks if c["metadata"]["chunk_id"] not in existing_ids]
+    if new_chunks:
+        vector_store.add_documents(new_chunks, batch_size=100)
+    return len(new_chunks)
+</pre>
+
+<h2 class="interview-heading">Common Interview Questions</h2>
+<h3>Q: How do you handle duplicate documents?</h3>
+<p>Hash the document content (SHA-256) and store in a seen-hashes set before ingestion. If hash exists, skip. For near-duplicates (updated versions), use a <code>version</code> metadata field and upsert by <code>source + version</code>.</p>
+
+<h3>Q: How do you decide chunk size?</h3>
+<p>Rule of thumb: chunk size should match the retrieval granularity you need. For Q&amp;A over dense policy text, 256–512 tokens with 64 overlap. For long-form document summarisation, 1024 tokens. Always test retrieval quality with RAGAS context recall at different sizes.</p>
+
+<h3>Q: What if a table is split across chunks?</h3>
+<p>Extract tables separately as markdown strings, keeping the entire table as one chunk regardless of size. Tag with <code>content_type: table</code> metadata. This prevents a cell from landing in one chunk with no column header context.</p>
+
+    </div><!-- .content -->
+
+    <div class="module-footer">
+      <a href="/study/02-rag-retrieval.html" class="footer-nav-btn">Retrieval Pipeline →</a>
+    </div>
+  </div><!-- .module-wrap -->
+</main>
+
+<a href="https://api.whatsapp.com/send/?phone=919591522079" target="_blank" rel="noopener" class="wa-float" aria-label="Chat on WhatsApp"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></a>
+<script src="../assets/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<script>(function(){var K="rn-theme-manual",D=K+"-date";function h(){var n=new Date(),u=n.getTime()+n.getTimezoneOffset()*60000,i=new Date(u+19800000);return i.getHours();}function d(){var n=new Date(),u=n.getTime()+n.getTimezoneOffset()*60000,i=new Date(u+19800000);return i.getFullYear()+"-"+i.getMonth()+"-"+i.getDate();}var m=localStorage.getItem(K),day=localStorage.getItem(D),today=d();document.documentElement.setAttribute("data-theme",(m&&day===today)?m:((h()>=6&&h()<19)?"light":"dark"));})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Docker &amp; AWS Bedrock — Gen AI Study Guide</title>
+<link rel="stylesheet" href="../assets/css/theme.css">
+<style>
+html { scroll-behavior: smooth; }
+
+.page-wrap { padding-top: 60px; }
+
+.content {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 3rem 2rem 5rem;
+}
+
+.page-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 4vw, 2.4rem);
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.02em;
+  margin-bottom: 0.4rem;
+}
+
+.page-sub {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--muted);
+  letter-spacing: 0.06em;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.content h2 {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--purple);
+  margin: 2.5rem 0 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.content h2::before {
+  content: '';
+  display: inline-block;
+  width: 4px; height: 18px;
+  background: var(--purple);
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.content h3 {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 1.75rem 0 0.5rem;
+}
+.content h3::before {
+  content: '// ';
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  font-weight: 400;
+}
+
+.content h2.interview-heading {
+  color: var(--yellow);
+  background: rgba(255,183,0,0.06);
+  padding: 0.75rem 1rem;
+  border-radius: 0 8px 8px 0;
+  border-left: 3px solid var(--yellow);
+  margin-top: 3rem;
+}
+.content h2.interview-heading::before { background: var(--yellow); }
+
+.content p { margin: 0.65rem 0; color: var(--text2); font-size: 0.95rem; line-height: 1.8; }
+
+.content pre, .content code { font-family: var(--font-mono); }
+.content code:not(pre code) {
+  background: rgba(0,212,255,0.08);
+  color: var(--cyan);
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid rgba(0,212,255,0.15);
+  font-size: 0.82em;
+}
+.content pre {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--purple);
+  padding: 1.25rem 1.5rem;
+  border-radius: 0 8px 8px 0;
+  overflow-x: auto;
+  margin: 1.25rem 0;
+  font-size: 0.8rem;
+  line-height: 1.65;
+}
+.content pre code { color: var(--text2); background: none; border: none; padding: 0; font-size: inherit; }
+
+.content table {
+  width: 100%; border-collapse: collapse;
+  margin: 1.25rem 0; font-size: 0.88rem;
+  display: block; overflow-x: auto;
+}
+.content th {
+  background: var(--s2);
+  color: var(--cyan);
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  text-align: left;
+}
+.content td {
+  padding: 9px 14px;
+  border: 1px solid var(--border);
+  color: var(--text2);
+  vertical-align: top;
+  font-size: 0.88rem;
+}
+.content tr:nth-child(even) td { background: var(--s2); }
+
+.content blockquote {
+  border-left: 3px solid var(--yellow);
+  background: rgba(255,183,0,0.05);
+  padding: 1rem 1.25rem;
+  border-radius: 0 8px 8px 0;
+  margin: 1.25rem 0;
+  color: var(--text2);
+  font-style: italic;
+}
+
+.content hr { border: none; border-top: 1px solid var(--border); margin: 2.5rem 0; }
+.content ul, .content ol { padding-left: 1.5rem; margin: 0.5rem 0; color: var(--text2); font-size: 0.95rem; }
+.content li { margin: 0.3rem 0; line-height: 1.7; }
+.content strong { color: var(--text); font-weight: 600; }
+.content a { color: var(--cyan); text-decoration: none; }
+.content a:hover { text-decoration: underline; }
+
+.module-nav {
+  display: flex; gap: 0.5rem; flex-wrap: wrap;
+  margin-bottom: 2rem;
+}
+.module-nav a {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.06em;
+  padding: 0.3rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  color: var(--muted);
+  text-decoration: none;
+  transition: all 0.15s;
+}
+.module-nav a:hover, .module-nav a.current {
+  border-color: var(--purple);
+  color: var(--purple);
+}
+
+@media (max-width: 600px) {
+  .content { padding: 2rem 1rem 4rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="hexgrid"></div>
+<div class="glow-overlay" style="background:radial-gradient(ellipse 50% 40% at 80% 10%,rgba(191,90,242,0.05),transparent)"></div>
+
+<nav class="site-nav">
+  <a class="nav-logo" href="/index.html">RN <span class="dot"></span></a>
+  <div class="nav-links" id="nav-links">
+    <a href="/index.html">Home</a>
+    <div class="nav-item">
+      <button class="nav-btn" aria-haspopup="true">Projects <span class="nav-arrow">▾</span></button>
+      <div class="nav-dropdown">
+        <a href="/projects/loaniq.html">LoanIQ — Underwriter Agent</a>
+        <a href="/projects/salesforce-agent.html">Salesforce AI Agent</a>
+        <a href="/projects/findocqa.html">FinDoc QA</a>
+        <a href="/projects/finbot.html">FinBot</a>
+        <a href="/projects/wfo-risk.html">WFO Risk Engine</a>
+        <hr>
+        <a href="/projects/evolution.html">Technical Journey</a>
+      </div>
+    </div>
+    <div class="nav-item">
+      <button class="nav-btn" aria-haspopup="true">Study <span class="nav-arrow">▾</span></button>
+      <div class="nav-dropdown">
+        <a href="/study/index.html">Study Hub</a>
+        <a href="/study/guide.html">Complete Guide</a>
+        <a href="/study/checklist.html">Interview Checklist</a>
+        <a href="/study/scenarios.html">100 Scenarios</a>
+        <a href="/study/architecture.html">Architecture Map</a>
+      </div>
+    </div>
+    <a href="/documents.html">Documents</a>
+    <a href="/index.html#contact">Contact</a>
+  </div>
+  <div class="nav-right">
+    <div class="theme-toggle" role="button" aria-label="Toggle theme">
+      <div class="toggle-track"><div class="toggle-thumb"></div></div>
+      <span class="theme-label">LIGHT</span>
+    </div>
+    <button class="hamburger" id="hamburger" aria-label="Open menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<div class="page-wrap">
+<main data-section="Study" data-section-url="/study/index.html" data-title="Docker &amp; AWS Bedrock" data-back-url="/study/index.html" data-back-label="Study Hub">
+<div class="content">
+
+<div class="module-nav">
+  <a href="/study/01-rag-ingestion.html">01 Ingestion</a>
+  <a href="/study/02-rag-retrieval.html">02 Retrieval</a>
+  <a href="/study/03-rag-generation.html">03 Generation</a>
+  <a href="/study/04-langchain-langgraph.html">04 LangChain</a>
+  <a href="/study/05-fine-tuning.html">05 Fine-Tuning</a>
+  <a href="/study/06-ml-transformers.html">06 ML &amp; Transformers</a>
+  <a href="/study/07-docker-aws.html" class="current">07 Docker &amp; Bedrock</a>
+  <a href="/study/08-python-system-design.html">08 Python &amp; System Design</a>
+</div>
+
+<h1 class="page-title">Docker &amp; AWS Bedrock</h1>
+<p class="page-sub">Containerisation · ECS Fargate · AWS Bedrock LLMs · CI/CD pipeline · Production deployment</p>
+
+<h2>Docker Fundamentals</h2>
+<table>
+  <tr><th>Concept</th><th>What it is</th></tr>
+  <tr><td>Image</td><td>Immutable blueprint — layers of filesystem changes, built from Dockerfile</td></tr>
+  <tr><td>Container</td><td>Running instance of an image — isolated process with its own filesystem, network, PID space</td></tr>
+  <tr><td>Registry</td><td>Store for images — Docker Hub, AWS ECR, GitHub Container Registry</td></tr>
+  <tr><td>Layer cache</td><td>Each Dockerfile instruction = one layer. Unchanged layers are cached — build only what changed</td></tr>
+  <tr><td>Multi-stage build</td><td>Use a build image for compilation, copy only artifacts to lean runtime image</td></tr>
+</table>
+
+<h2>Production Dockerfile for FastAPI + LangGraph</h2>
+<pre>
+# Stage 1: build dependencies
+FROM python:3.11-slim AS builder
+WORKDIR /build
+COPY requirements.txt .
+RUN pip install --user --no-cache-dir -r requirements.txt
+
+# Stage 2: lean runtime image
+FROM python:3.11-slim
+WORKDIR /app
+
+# Non-root user for security
+RUN groupadd -r appuser && useradd -r -g appuser appuser
+
+# Copy installed packages from builder
+COPY --from=builder /root/.local /home/appuser/.local
+COPY --chown=appuser:appuser . .
+
+USER appuser
+ENV PATH=/home/appuser/.local/bin:$PATH
+ENV PYTHONUNBUFFERED=1
+
+EXPOSE 8000
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "2"]
+</pre>
+
+<h3>Order Dockerfile layers correctly</h3>
+<p>Put <code>COPY requirements.txt</code> and <code>pip install</code> BEFORE copying source code. Dependencies change rarely — source code changes on every commit. This maximises layer cache hits and keeps CI builds fast.</p>
+
+<h2>Docker Compose for Local Dev</h2>
+<pre>
+version: "3.9"
+services:
+  api:
+    build: .
+    ports: ["8000:8000"]
+    environment:
+      - DATABASE_URL=postgresql://user:pass@db:5432/loaniq
+      - REDIS_URL=redis://redis:6379
+      - AWS_REGION=ap-south-1
+    depends_on:
+      db: { condition: service_healthy }
+      redis: { condition: service_started }
+    volumes:
+      - ./:/app  # hot-reload in dev
+
+  db:
+    image: pgvector/pgvector:pg16
+    environment: { POSTGRES_DB: loaniq, POSTGRES_USER: user, POSTGRES_PASSWORD: pass }
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d loaniq"]
+      interval: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+</pre>
+
+<h2>AWS ECS Fargate Deployment</h2>
+<p>Fargate runs containers without managing EC2 instances. Key concepts:</p>
+<table>
+  <tr><th>Component</th><th>Purpose</th></tr>
+  <tr><td>ECS Cluster</td><td>Logical grouping of services</td></tr>
+  <tr><td>Task Definition</td><td>Blueprint: image URI, CPU/memory, env vars, IAM role</td></tr>
+  <tr><td>Service</td><td>Keeps N tasks running, handles rolling deploys</td></tr>
+  <tr><td>ECR</td><td>Private Docker registry — stores your images in AWS</td></tr>
+  <tr><td>Task IAM Role</td><td>Grants the running container permissions (S3, Bedrock, SQS...)</td></tr>
+</table>
+
+<h2>CI/CD Pipeline — GitHub Actions → ECR → ECS</h2>
+<pre>
+# .github/workflows/deploy.yml
+name: Deploy to ECS
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-south-1
+
+      - name: Login to ECR
+        run: aws ecr get-login-password | docker login --username AWS \
+             --password-stdin ${{ secrets.ECR_REGISTRY }}
+
+      - name: Build and push image
+        run: |
+          docker build -t ${{ secrets.ECR_REGISTRY }}/loaniq:$GITHUB_SHA .
+          docker push ${{ secrets.ECR_REGISTRY }}/loaniq:$GITHUB_SHA
+
+      - name: Update ECS service
+        run: |
+          aws ecs update-service \
+            --cluster loaniq-cluster \
+            --service loaniq-service \
+            --force-new-deployment
+</pre>
+
+<h2>AWS Bedrock</h2>
+<p>Bedrock is a managed API for foundation models — Claude (Anthropic), Titan (Amazon), Llama (Meta), Mistral — without running any model infrastructure. All within the AWS VPC boundary, so data never leaves your AWS account.</p>
+
+<h3>Invoking Claude via Bedrock</h3>
+<pre>
+import boto3, json
+
+bedrock = boto3.client("bedrock-runtime", region_name="ap-south-1")
+
+response = bedrock.invoke_model(
+    modelId="anthropic.claude-3-sonnet-20240229-v1:0",
+    body=json.dumps({
+        "anthropic_version": "bedrock-2023-05-31",
+        "max_tokens": 1024,
+        "messages": [
+            {"role": "user", "content": "Summarise this loan application: ..."}
+        ]
+    }),
+    contentType="application/json",
+    accept="application/json"
+)
+
+result = json.loads(response["body"].read())
+text = result["content"][0]["text"]
+</pre>
+
+<h3>Streaming response from Bedrock</h3>
+<pre>
+response = bedrock.invoke_model_with_response_stream(
+    modelId="anthropic.claude-3-sonnet-20240229-v1:0",
+    body=json.dumps({...})
+)
+stream = response["body"]
+for event in stream:
+    chunk = json.loads(event["chunk"]["bytes"])
+    if chunk["type"] == "content_block_delta":
+        print(chunk["delta"]["text"], end="", flush=True)
+</pre>
+
+<h2>LangChain + Bedrock Integration</h2>
+<pre>
+from langchain_aws import ChatBedrock
+
+llm = ChatBedrock(
+    model_id="anthropic.claude-3-sonnet-20240229-v1:0",
+    region_name="ap-south-1",
+    model_kwargs={"max_tokens": 2048, "temperature": 0},
+)
+
+# Drop-in replacement for ChatOpenAI
+chain = prompt | llm | parser
+</pre>
+
+<h2>IAM Permissions for Bedrock</h2>
+<pre>
+{
+  "Effect": "Allow",
+  "Action": [
+    "bedrock:InvokeModel",
+    "bedrock:InvokeModelWithResponseStream"
+  ],
+  "Resource": [
+    "arn:aws:bedrock:ap-south-1::foundation-model/anthropic.claude-3-sonnet*"
+  ]
+}
+</pre>
+
+<h2 class="interview-heading">Common Interview Questions</h2>
+<h3>Q: Why Fargate over EC2 for LLM workloads?</h3>
+<p>Fargate has no instance management overhead — no patching, no capacity reservations. For API services that scale in and out, Fargate is simpler. The trade-off: can't run GPU workloads on Fargate (use EC2 with GPU instances for self-hosted models). Since LoanIQ uses Bedrock for inference, Fargate is the right choice.</p>
+
+<h3>Q: How do you manage secrets in containers?</h3>
+<p>Never hardcode secrets in images. Use <strong>AWS Secrets Manager</strong> — inject secret ARNs as environment variables in the ECS task definition. ECS fetches the secret at startup. For local dev, use a <code>.env</code> file (gitignored) with <code>docker-compose env_file</code>.</p>
+
+<h3>Q: How do you size Fargate tasks for a RAG service?</h3>
+<p>Profile CPU and memory under load. RAG services are mostly I/O-bound (Bedrock API calls, DB queries) — 1 vCPU and 2GB RAM handles moderate traffic. Add CPU/RAM if you run local reranking models (cross-encoder) in the container. Set ECS auto-scaling on CPU utilisation at 70%.</p>
+
+<div style="display:flex;justify-content:space-between;margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--border);">
+  <a href="/study/06-ml-transformers.html" class="btn btn-ghost">← ML &amp; Transformers</a>
+  <a href="/study/08-python-system-design.html" class="btn btn-ghost">Python &amp; System Design →</a>
+</div>
+
+</div>
+</main>
+</div>
+
+<a href="https://api.whatsapp.com/send/?phone=919591522079" target="_blank" rel="noopener" class="wa-float" aria-label="Chat on WhatsApp"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></a>
+
+<script src="../assets/js/main.js"></script>
+</body>
+</html>

@@ -319,27 +319,51 @@
 </head>
 <body>
 <div class="hexgrid"></div>
+<div class="glow-overlay" style="background:radial-gradient(ellipse 60% 40% at 20% 20%,rgba(0,212,255,0.03),transparent)"></div>
 
 <nav class="site-nav">
-  <a class="nav-logo" href="../index.html"><span class="dot"></span>RN</a>
-  <div class="hamburger" id="hamburger"><span></span><span></span><span></span></div>
+  <a class="nav-logo" href="/index.html">RN <span class="dot"></span></a>
   <div class="nav-links" id="nav-links">
-    <a href="../index.html">Home</a>
-    <a href="../index.html#projects">Projects</a>
-    <a href="study-material.html">Study Material</a>
-    <a href="../index.html#contact">Contact</a>
+    <a href="/index.html">Home</a>
+    <div class="nav-item">
+      <button class="nav-btn" aria-haspopup="true">Projects <span class="nav-arrow">▾</span></button>
+      <div class="nav-dropdown">
+        <a href="/projects/loaniq.html">LoanIQ — Underwriter Agent</a>
+        <a href="/projects/salesforce-agent.html">Salesforce AI Agent</a>
+        <a href="/projects/findocqa.html">FinDoc QA</a>
+        <a href="/projects/finbot.html">FinBot</a>
+        <a href="/projects/wfo-risk.html">WFO Risk Engine</a>
+        <hr>
+        <a href="/projects/evolution.html">Technical Journey</a>
+      </div>
+    </div>
+    <div class="nav-item">
+      <button class="nav-btn" aria-haspopup="true">Study <span class="nav-arrow">▾</span></button>
+      <div class="nav-dropdown">
+        <a href="/study/index.html">Study Hub</a>
+        <a href="/study/guide.html">Complete Guide</a>
+        <a href="/study/checklist.html">Interview Checklist</a>
+        <a href="/study/scenarios.html">100 Scenarios</a>
+        <a href="/study/architecture.html">Architecture Map</a>
+      </div>
+    </div>
+    <a href="/documents.html">Documents</a>
+    <a href="/index.html#contact">Contact</a>
   </div>
   <div class="nav-right">
-    <div class="theme-toggle" id="themeToggle" role="button" aria-label="Toggle theme">
+    <div class="theme-toggle" role="button" aria-label="Toggle theme">
       <div class="toggle-track"><div class="toggle-thumb"></div></div>
       <span class="theme-label">LIGHT</span>
     </div>
+    <button class="hamburger" id="hamburger" aria-label="Open menu">
+      <span></span><span></span><span></span>
+    </button>
   </div>
 </nav>
 
 <div class="page-wrap">
+<main data-section="Projects" data-section-url="/index.html#projects" data-title="Salesforce AI Agent" data-back-url="/index.html#projects" data-back-label="Projects">
   <div class="proj-hero">
-    <a class="back-crumb" href="../index.html">← Home</a>
     <div class="proj-badge">Multi-Agent · AWS · Salesforce</div>
     <h1 class="proj-title">Salesforce<br>AI Agent</h1>
     <div class="proj-subtitle">// Intelligent Vehicle Case Management System</div>
@@ -697,6 +721,7 @@
     </div>
 
   </div><!-- end proj-body -->
+</main>
 
   <section class="contact-section" id="contact">
     <h2>Interested in this project?</h2>
@@ -711,9 +736,9 @@
   <footer class="site-footer">
     <p>© 2025 Rahul Naik · Senior GenAI Engineer</p>
     <p style="margin-top:0.4rem">
-      <a href="../index.html">Home</a> ·
-      <a href="../index.html#projects">Projects</a> ·
-      <a href="study-material.html">Study Material</a>
+      <a href="/index.html">Home</a> ·
+      <a href="/index.html#projects">Projects</a> ·
+      <a href="/study/index.html">Study Hub</a>
     </p>
   </footer>
 </div>
@@ -724,18 +749,5 @@
 </a>
 
 <script src="../assets/js/main.js"></script>
-<script>
-document.getElementById('hamburger').addEventListener('click', function() {
-  this.classList.toggle('open');
-  document.getElementById('nav-links').classList.toggle('open');
-  // Close menu when a link is clicked
-  document.querySelectorAll('#nav-links a').forEach(function(link) {
-    link.addEventListener('click', function() {
-      document.getElementById('hamburger').classList.remove('open');
-      document.getElementById('nav-links').classList.remove('open');
-    });
-  });
-});
-</script>
 </body>
 </html>

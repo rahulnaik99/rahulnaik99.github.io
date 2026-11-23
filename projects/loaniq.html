@@ -1,157 +1,390 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
 <head>
-  <script id="rn-early-theme">
-    (function(){
-      var OVERRIDE="rn-theme-manual", OD=OVERRIDE+"-date";
-      function istHour(){var n=new Date(),u=n.getTime()+n.getTimezoneOffset()*60000,i=new Date(u+19800000);return i.getHours();}
-      function istDate(){var n=new Date(),u=n.getTime()+n.getTimezoneOffset()*60000,i=new Date(u+19800000);return i.getFullYear()+"-"+i.getMonth()+"-"+i.getDate();}
-      var manual=localStorage.getItem(OVERRIDE),day=localStorage.getItem(OD),today=istDate();
-      var theme=(manual&&day===today)?manual:((istHour()>=6&&istHour()<19)?"light":"dark");
-      document.documentElement.setAttribute("data-theme",theme);
-    })();
-  </script>
+<script>(function(){var K="rn-theme-manual",D=K+"-date";function h(){var n=new Date(),u=n.getTime()+n.getTimezoneOffset()*60000,i=new Date(u+19800000);return i.getHours();}function d(){var n=new Date(),u=n.getTime()+n.getTimezoneOffset()*60000,i=new Date(u+19800000);return i.getFullYear()+"-"+i.getMonth()+"-"+i.getDate();}var m=localStorage.getItem(K),day=localStorage.getItem(D),today=d();document.documentElement.setAttribute("data-theme",(m&&day===today)?m:((h()>=6&&h()<19)?"light":"dark"));})();</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LoanIQ · Architecture — Rahul Naik</title>
-<meta name="description" content="LoanIQ: Production-grade multi-agent AI loan processing system by Rahul Naik.">
+<title>LoanIQ — Underwriter Multi-Agent Orchestration</title>
 <link rel="stylesheet" href="../assets/css/theme.css">
 <style>
-.page-frame {
-  padding-top: 60px;
+.page-wrap { position: relative; z-index: 5; padding-top: 60px; }
+
+/* ── PROJECT HERO ── */
+.proj-hero {
   position: relative; z-index: 5;
-}
-.project-iframe {
-  width: 100%;
-  min-height: calc(100vh - 60px);
-  border: none;
-  display: block;
-}
-.back-bar {
-  position: sticky;
-  top: 60px;
-  z-index: 90;
-  background: rgba(4,6,12,0.88);
-  backdrop-filter: blur(12px);
+  max-width: 900px; margin: 0 auto;
+  padding: 3.5rem 2rem 2rem;
   border-bottom: 1px solid var(--border);
-  padding: 0.6rem 1.5rem;
-  display: flex; align-items: center; gap: 1rem;
 }
-[data-theme="light"] .back-bar {
-  background: rgba(240,244,248,0.92);
+.proj-eyebrow {
+  font-family: var(--font-mono); font-size: 0.65rem;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 0.6rem;
 }
-.back-link {
-  font-family: var(--font-mono);
-  font-size: 0.58rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--muted);
-  text-decoration: none;
-  display: flex; align-items: center; gap: 0.4rem;
-  transition: color 0.2s;
+.proj-badge {
+  display: inline-block; font-family: var(--font-mono); font-size: 0.62rem;
+  letter-spacing: 0.15em; text-transform: uppercase;
+  color: var(--cyan); border: 1px solid rgba(0,212,255,0.4);
+  border-radius: 4px; padding: 0.2rem 0.6rem; margin-bottom: 1rem;
 }
-.back-link:hover { color: var(--cyan); }
-.back-sep { color: var(--dim); font-size: 0.7rem; }
-.back-crumb {
-  font-family: var(--font-mono);
-  font-size: 0.58rem;
-  letter-spacing: 0.1em;
-  color: var(--cyan);
+.proj-title {
+  font-family: var(--font-display); font-size: clamp(1.6rem, 4vw, 2.4rem);
+  font-weight: 800; color: var(--text); margin-bottom: 0.5rem;
+  letter-spacing: -0.02em; line-height: 1.1;
 }
-.project-nav-pills {
-  margin-left: auto;
-  display: flex; gap: 0.4rem;
+.proj-subtitle {
+  font-family: var(--font-mono); font-size: 0.72rem;
+  color: var(--muted); letter-spacing: 0.06em; margin-bottom: 2rem;
 }
-.project-nav-pills a {
-  font-family: var(--font-mono);
-  font-size: 0.52rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--muted);
-  text-decoration: none;
-  padding: 0.25rem 0.6rem;
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  transition: all 0.2s;
+
+/* ── METRICS ── */
+.metrics {
+  display: flex; flex-wrap: wrap; gap: 0.9rem; margin-bottom: 1rem;
 }
-.project-nav-pills a:hover {
-  color: var(--cyan); border-color: var(--cyan);
+.metric {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 8px; padding: 0.9rem 1.1rem; min-width: 120px;
+}
+.metric-val {
+  font-family: var(--font-display); font-size: 1.5rem;
+  font-weight: 800; color: var(--cyan); line-height: 1;
+}
+.metric-lbl {
+  font-family: var(--font-mono); font-size: 0.58rem;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--muted); margin-top: 0.3rem;
+}
+
+/* ── CONTENT BODY ── */
+.proj-body {
+  position: relative; z-index: 5;
+  max-width: 900px; margin: 0 auto;
+  padding: 2.5rem 2rem 6rem;
+}
+
+h2 {
+  font-family: var(--font-display); font-size: 1.1rem; font-weight: 700;
+  color: var(--cyan); margin: 2.5rem 0 0.8rem;
+  padding-bottom: 0.4rem; border-bottom: 1px solid var(--border);
+}
+
+h3 {
+  font-family: var(--font-display); font-size: 0.95rem; font-weight: 700;
+  color: var(--text); margin: 1.5rem 0 0.5rem;
+}
+
+p { font-size: 0.93rem; line-height: 1.8; color: var(--text2); margin: 0.6rem 0; }
+
+strong { color: var(--text); font-weight: 600; }
+
+code:not(pre code) {
+  background: rgba(0,212,255,0.08); color: var(--cyan);
+  padding: 2px 6px; border-radius: 4px;
+  border: 1px solid rgba(0,212,255,0.15);
+  font-family: var(--font-mono); font-size: 0.8rem;
+}
+
+pre {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-left: 3px solid var(--purple);
+  padding: 1.2rem 1.4rem; border-radius: 0 8px 8px 0;
+  overflow-x: auto; margin: 1.25rem 0;
+  font-family: var(--font-mono); font-size: 0.8rem;
+  line-height: 1.65; color: var(--text2);
+}
+
+table { width: 100%; border-collapse: collapse; margin: 1.25rem 0; font-size: 0.85rem; }
+th {
+  background: var(--surface); color: var(--cyan);
+  font-family: var(--font-display); font-weight: 700; font-size: 0.72rem;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 10px 14px; border: 1px solid var(--border); text-align: left;
+}
+td { padding: 9px 14px; border: 1px solid var(--border); color: var(--text2); vertical-align: top; }
+tr:hover td { background: rgba(255,255,255,0.02); }
+[data-theme="light"] tr:hover td { background: rgba(0,0,0,0.02); }
+
+ul, ol { padding-left: 1.5rem; margin: 0.5rem 0; }
+li { margin: 0.3rem 0; font-size: 0.93rem; line-height: 1.75; color: var(--text2); }
+li > strong { color: var(--cyan); }
+
+/* ── AGENT GRID ── */
+.agent-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem; margin: 1.2rem 0;
+}
+.agent-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-left: 3px solid var(--cyan); border-radius: 8px; padding: 1.1rem;
+}
+.agent-num {
+  font-family: var(--font-mono); font-size: 0.58rem;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--cyan); margin-bottom: 0.3rem;
+}
+.agent-name {
+  font-family: var(--font-display); font-size: 0.9rem;
+  font-weight: 700; color: var(--text); margin-bottom: 0.5rem;
+}
+.agent-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.65; }
+
+/* ── HIGHLIGHT BOX ── */
+.hl {
+  background: var(--surface); border: 1px solid var(--border);
+  border-left: 3px solid var(--yellow);
+  border-radius: 0 8px 8px 0; padding: 1rem 1.2rem;
+  margin: 1rem 0; font-size: 0.88rem; color: var(--text2);
+}
+
+/* ── FLOW ── */
+.flow { display: flex; flex-direction: column; gap: 0; }
+.flow-step {
+  display: flex; gap: 1rem; align-items: flex-start;
+  position: relative; padding-bottom: 1.8rem;
+}
+.flow-step:not(:last-child)::after {
+  content: ''; position: absolute; left: 16px; top: 34px;
+  width: 2px; bottom: 0; background: var(--border);
+}
+.step-num {
+  width: 34px; height: 34px; flex-shrink: 0; border-radius: 50%;
+  background: var(--surface); border: 2px solid var(--cyan);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono); font-size: 0.6rem; font-weight: 600;
+  color: var(--cyan); position: relative; z-index: 1;
+}
+.step-body { flex: 1; }
+.step-title {
+  font-family: var(--font-display); font-size: 0.9rem;
+  font-weight: 700; color: var(--text); margin-bottom: 0.3rem;
+}
+.step-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.65; }
+
+/* ── TAG ROW ── */
+.tag-row { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 1rem; }
+
+@media (max-width: 600px) {
+  .proj-hero { padding: 2rem 1rem 1.5rem; }
+  .proj-body { padding: 2rem 1rem 4rem; }
+  .metrics { gap: 0.6rem; }
+  .metric { min-width: 100px; }
+  .agent-grid { grid-template-columns: 1fr; }
+  pre { font-size: 0.72rem; }
 }
 </style>
 </head>
 <body>
-
 <div class="hexgrid"></div>
+<div class="glow-overlay" style="background:radial-gradient(ellipse 60% 40% at 20% 20%,rgba(0,212,255,0.04),transparent)"></div>
 
-<!-- SITE NAV -->
 <nav class="site-nav">
-  <a class="nav-logo" href="../index.html">
-    <span class="dot"></span>RN
-  </a>
-  <div class="hamburger" id="hamburger"><span></span><span></span><span></span></div>
+  <a class="nav-logo" href="/index.html">RN <span class="dot"></span></a>
   <div class="nav-links" id="nav-links">
-    <a href="../index.html">Home</a>
-    <a href="../index.html#projects">Projects</a>
-    <a href="study-material.html">Study Material</a>
-    <a href="../index.html#contact">Contact</a>
+    <a href="/index.html">Home</a>
+    <div class="nav-item">
+      <button class="nav-btn" aria-haspopup="true">Projects <span class="nav-arrow">▾</span></button>
+      <div class="nav-dropdown">
+        <a href="/projects/loaniq.html" class="active">LoanIQ — Underwriter Agent</a>
+        <a href="/projects/salesforce-agent.html">Salesforce AI Agent</a>
+        <a href="/projects/findocqa.html">FinDoc QA</a>
+        <a href="/projects/finbot.html">FinBot</a>
+        <a href="/projects/wfo-risk.html">WFO Risk Engine</a>
+        <hr>
+        <a href="/projects/evolution.html">Technical Journey</a>
+      </div>
+    </div>
+    <div class="nav-item">
+      <button class="nav-btn" aria-haspopup="true">Study <span class="nav-arrow">▾</span></button>
+      <div class="nav-dropdown">
+        <a href="/study/index.html">Study Hub</a>
+        <a href="/study/guide.html">Complete Guide</a>
+        <a href="/study/checklist.html">Interview Checklist</a>
+        <a href="/study/scenarios.html">100 Scenarios</a>
+        <a href="/study/architecture.html">Architecture Map</a>
+      </div>
+    </div>
+    <a href="/documents.html">Documents</a>
+    <a href="/index.html#contact">Contact</a>
   </div>
   <div class="nav-right">
-    <div class="theme-toggle" id="themeToggle">
+    <div class="theme-toggle" role="button" aria-label="Toggle theme">
       <div class="toggle-track"><div class="toggle-thumb"></div></div>
       <span class="theme-label">LIGHT</span>
     </div>
+    <button class="hamburger" id="hamburger" aria-label="Open menu">
+      <span></span><span></span><span></span>
+    </button>
   </div>
 </nav>
 
-<div class="page-frame">
-  <!-- BREADCRUMB BAR -->
-  <div class="back-bar">
-    <a class="back-link" href="../index.html">← Home</a>
-    <span class="back-sep">/</span>
-    <span class="back-crumb">LoanIQ · Architecture</span>
-    <div class="project-nav-pills">
-      <a href="findocqa.html">FinDoc QA</a>
-      <a href="finbot.html">FinBot</a>
-      <a href="wfo-risk-original.html">WFO Risk</a>
+<div class="page-wrap">
+<main data-section="Projects" data-section-url="/index.html#projects" data-title="LoanIQ — Underwriter Agent" data-back-url="/index.html#projects" data-back-label="Projects">
+
+  <div class="proj-hero">
+    <div class="proj-eyebrow">Production Project · Multi-Agent Orchestration</div>
+    <div class="proj-badge">Featured · GenAI · LangGraph</div>
+    <h1 class="proj-title">Underwriter Multi-Agent Orchestration</h1>
+    <div class="proj-subtitle">// Production mortgage underwriting system — 7 specialised agents, hybrid RAG, AWS Bedrock</div>
+    <div class="metrics">
+      <div class="metric"><div class="metric-val">95%</div><div class="metric-lbl">Decision accuracy</div></div>
+      <div class="metric"><div class="metric-val">7</div><div class="metric-lbl">Specialised agents</div></div>
+      <div class="metric"><div class="metric-val">Hybrid</div><div class="metric-lbl">RAG retrieval</div></div>
+      <div class="metric"><div class="metric-val">&lt;3s</div><div class="metric-lbl">Avg decision time</div></div>
+      <div class="metric"><div class="metric-val">Full</div><div class="metric-lbl">Audit trail</div></div>
     </div>
   </div>
 
-  <!-- EMBED ORIGINAL PROJECT PAGE -->
-  <iframe
-    class="project-iframe"
-    src="loaniq-original.html"
-    title="LoanIQ Architecture"
-    id="projectFrame"
-  ></iframe>
+  <div class="proj-body">
+
+    <h2>Problem Statement</h2>
+    <p>Traditional mortgage underwriting is manual, slow, and inconsistent — underwriters spend 60–80% of their time gathering documents, running calculations, and looking up policy rules. Decisions vary across reviewers and are difficult to audit.</p>
+    <p>The goal was a production-grade autonomous pipeline that ingests loan application documents, performs all analytical steps in parallel, checks policy compliance, scores risk, and produces a fully-reasoned underwriting decision — with a complete audit trail — in under 3 seconds.</p>
+
+    <h2>Architecture Overview</h2>
+    <p>Built on <strong>LangGraph</strong> with 7 specialised agents operating as a directed state graph. Each agent receives the shared state object, performs its function, and writes results back. Agents that are independent of each other run in parallel via LangGraph's branching edges.</p>
+
+    <div class="agent-grid">
+      <div class="agent-card">
+        <div class="agent-num">Agent 01</div>
+        <div class="agent-name">Document Intake Agent</div>
+        <div class="agent-desc">PDF ingestion, OCR fallback via AWS Textract, structured extraction of applicant fields, income statements, and asset documents. Validates completeness before passing downstream.</div>
+      </div>
+      <div class="agent-card">
+        <div class="agent-num">Agent 02</div>
+        <div class="agent-name">Financial Ratio Agent</div>
+        <div class="agent-desc">Computes DTI, LTV, housing ratio, and reserve months. Flags values outside acceptable bands. Runs in parallel with Agents 03 and 04.</div>
+      </div>
+      <div class="agent-card">
+        <div class="agent-num">Agent 03</div>
+        <div class="agent-name">Credit Analysis Agent</div>
+        <div class="agent-desc">Analyses credit score, payment history, derogatory marks, and credit utilisation. Classifies credit profile tier and generates narrative summary.</div>
+      </div>
+      <div class="agent-card">
+        <div class="agent-num">Agent 04</div>
+        <div class="agent-name">Property Valuation Agent</div>
+        <div class="agent-desc">Retrieves comparable sales via API, validates appraisal figures, computes LTV against market value, and flags collateral risk.</div>
+      </div>
+      <div class="agent-card">
+        <div class="agent-num">Agent 05</div>
+        <div class="agent-name">Policy RAG Agent</div>
+        <div class="agent-desc">Hybrid retrieval (BM25 + pgvector + RRF fusion) against the policy knowledge base. Cross-encoder reranking. Checks each ratio and credit flag against applicable policy rules and returns citations.</div>
+      </div>
+      <div class="agent-card">
+        <div class="agent-num">Agent 06</div>
+        <div class="agent-name">Risk Scoring Agent</div>
+        <div class="agent-desc">Aggregates all agent outputs into a composite risk score. Applies weighting model. Produces risk tier (Approve / Conditional / Decline) with confidence band.</div>
+      </div>
+      <div class="agent-card">
+        <div class="agent-num">Agent 07</div>
+        <div class="agent-name">Decision Writer Agent</div>
+        <div class="agent-desc">Synthesises all agent outputs into a structured underwriting decision letter — reasoning, policy citations, risk summary, conditions if applicable. Writes to database with full state snapshot for audit.</div>
+      </div>
+    </div>
+
+    <h2>RAG Retrieval Stack</h2>
+    <p>The Policy RAG Agent uses a <strong>hybrid retrieval</strong> approach — sparse BM25 for exact policy terminology plus dense pgvector semantic search, fused with <strong>Reciprocal Rank Fusion (RRF)</strong>. A cross-encoder reranks the top-20 candidates before passing context to the LLM.</p>
+
+<pre>
+# Hybrid retrieval with RRF fusion
+bm25_results   = bm25_retriever.get_relevant_documents(query, k=20)
+vector_results = pgvector_retriever.get_relevant_documents(query, k=20)
+fused          = reciprocal_rank_fusion([bm25_results, vector_results])
+reranked       = cross_encoder.rerank(query, fused[:20])
+return reranked[:5]
+</pre>
+
+    <div class="hl">Policy documents are chunked using semantic chunking (sentence-transformers similarity threshold) to keep policy clauses intact. Each chunk stores <code>policy_section</code>, <code>product_type</code>, and <code>effective_date</code> as metadata for pre-filtering.</div>
+
+    <h2>End-to-End Flow</h2>
+    <div class="flow">
+      <div class="flow-step">
+        <div class="step-num">01</div>
+        <div class="step-body">
+          <div class="step-title">Document Ingestion</div>
+          <div class="step-desc">Application PDF uploaded to S3. Lambda triggers ingestion pipeline. Agent 01 extracts structured fields using AWS Textract + LLM parsing.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-num">02</div>
+        <div class="step-body">
+          <div class="step-title">Parallel Analysis</div>
+          <div class="step-desc">Agents 02, 03, and 04 run in parallel via LangGraph branching. Financial ratios, credit analysis, and property valuation computed simultaneously.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-num">03</div>
+        <div class="step-body">
+          <div class="step-title">Policy Compliance Check</div>
+          <div class="step-desc">Agent 05 retrieves relevant policy sections for each flagged item. Returns pass/fail per rule with citation. Stored in state for Agent 07.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-num">04</div>
+        <div class="step-body">
+          <div class="step-title">Risk Scoring</div>
+          <div class="step-desc">Agent 06 aggregates all outputs. Weighted composite score determines tier. Confidence interval computed from ratio variance.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-num">05</div>
+        <div class="step-body">
+          <div class="step-title">Decision &amp; Audit</div>
+          <div class="step-desc">Agent 07 writes structured decision letter. Full LangGraph state snapshot saved to PostgreSQL. LangSmith traces every agent call for observability.</div>
+        </div>
+      </div>
+    </div>
+
+    <h2>Infrastructure</h2>
+    <table>
+      <tr><th>Layer</th><th>Technology</th><th>Purpose</th></tr>
+      <tr><td>Orchestration</td><td>LangGraph</td><td>Agent state graph, conditional routing, parallel edges</td></tr>
+      <tr><td>LLM</td><td>AWS Bedrock (Claude 3)</td><td>All agent LLM calls — no OpenAI dependency</td></tr>
+      <tr><td>Vector DB</td><td>pgvector (PostgreSQL)</td><td>Dense semantic retrieval for policy RAG</td></tr>
+      <tr><td>Sparse Retrieval</td><td>BM25 (rank-bm25)</td><td>Keyword-exact policy terminology matching</td></tr>
+      <tr><td>Reranker</td><td>Cross-encoder (ms-marco)</td><td>Top-20 candidate reranking</td></tr>
+      <tr><td>OCR</td><td>AWS Textract</td><td>Scanned document extraction fallback</td></tr>
+      <tr><td>Storage</td><td>AWS S3 + PostgreSQL</td><td>Document store + structured data + audit log</td></tr>
+      <tr><td>Caching</td><td>Redis (semantic cache)</td><td>Identical query deduplication at 0.92 cosine threshold</td></tr>
+      <tr><td>Observability</td><td>LangSmith</td><td>Trace every agent, token counts, latency</td></tr>
+      <tr><td>API</td><td>FastAPI on ECS Fargate</td><td>REST endpoints, async processing</td></tr>
+      <tr><td>CI/CD</td><td>GitHub Actions → ECR → ECS</td><td>Automated deploy pipeline</td></tr>
+    </table>
+
+    <h2>Key Engineering Decisions</h2>
+    <h3>Why LangGraph over LangChain LCEL?</h3>
+    <p>LCEL chains are linear. The underwriting flow requires <strong>parallel branches</strong> (agents 02/03/04 run simultaneously), <strong>conditional routing</strong> (high-risk applications trigger additional checks), and <strong>state persistence</strong> across agent hops. LangGraph's directed graph model handles all three natively.</p>
+
+    <h3>Why pgvector over Weaviate/Pinecone?</h3>
+    <p>Policy documents already live in PostgreSQL. Adding pgvector keeps the retrieval stack in a single database — no network hop to an external vector service, simpler ops, and SQL metadata filtering with zero additional infrastructure.</p>
+
+    <h3>Semantic Caching</h3>
+    <p>Policy questions repeat across applications. Redis semantic cache (cosine similarity threshold 0.92) means identical or near-identical policy queries skip the LLM entirely — reducing cost and latency by ~40% in steady-state traffic.</p>
+
+    <div class="tag-row">
+      <span class="tag">LangGraph</span><span class="tag">AWS Bedrock</span><span class="tag">FastAPI</span>
+      <span class="tag">pgvector</span><span class="tag">BM25</span><span class="tag">LangSmith</span>
+      <span class="tag">Redis</span><span class="tag">AWS Textract</span><span class="tag">ECS Fargate</span>
+      <span class="tag">PostgreSQL</span><span class="tag">RAGAS</span><span class="tag">Cross-Encoder</span>
+    </div>
+
+  </div>
+</main>
+
+<footer class="site-footer">
+  <p>&copy; 2025 Rahul Naik &middot; LoanIQ &mdash; Underwriter Multi-Agent Orchestration</p>
+  <p style="margin-top:0.4rem">
+    <a href="/index.html">Home</a> &middot;
+    <a href="/index.html#projects">Projects</a> &middot;
+    <a href="/projects/findocqa.html">FinDoc QA</a> &middot;
+    <a href="/projects/finbot.html">FinBot</a>
+  </p>
+</footer>
 </div>
 
-<script src="../assets/js/main.js"></script>
-<script>
-document.getElementById('hamburger').addEventListener('click', function() {
-  this.classList.toggle('open');
-  document.getElementById('nav-links').classList.toggle('open');
-  // Close menu when a link is clicked
-  document.querySelectorAll('#nav-links a').forEach(function(link) {
-    link.addEventListener('click', function() {
-      document.getElementById('hamburger').classList.remove('open');
-      document.getElementById('nav-links').classList.remove('open');
-    });
-  });
-});
-
-// Resize iframe to content height
-const frame = document.getElementById('projectFrame');
-if (frame) {
-  frame.addEventListener('load', function() {
-    try {
-      const h = frame.contentDocument.body.scrollHeight;
-      if (h > 200) frame.style.height = h + 'px';
-    } catch(e) {}
-  });
-}
-</script>
-<a href="https://api.whatsapp.com/send/?phone=919591522079" target="_blank" rel="noopener" style="position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;width:52px;height:52px;background:#25d366;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(37,211,102,0.4);text-decoration:none;" aria-label="WhatsApp">
-  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width:26px;height:26px;fill:#fff"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+<a href="https://api.whatsapp.com/send/?phone=919591522079" target="_blank" rel="noopener" class="wa-float" aria-label="Chat on WhatsApp">
+  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
 </a>
+
+<script src="../assets/js/main.js"></script>
 </body>
 </html>

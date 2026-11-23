@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<script>(function(){var K="rn-theme-manual",D=K+"-date";function h(){var n=new Date(),u=n.getTime()+n.getTimezoneOffset()*60000,i=new Date(u+19800000);return i.getHours();}function d(){var n=new Date(),u=n.getTime()+n.getTimezoneOffset()*60000,i=new Date(u+19800000);return i.getFullYear()+"-"+i.getMonth()+"-"+i.getDate();}var m=localStorage.getItem(K),day=localStorage.getItem(D),today=d();document.documentElement.setAttribute("data-theme",(m&&day===today)?m:((h()>=6&&h()<19)?"light":"dark"));})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fine-Tuning — Gen AI Study Guide</title>
+<link rel="stylesheet" href="../assets/css/theme.css">
+<style>
+html { scroll-behavior: smooth; }
+
+.page-wrap { padding-top: 60px; }
+
+.content {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 3rem 2rem 5rem;
+}
+
+.page-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--cyan);
+  margin-bottom: 0.5rem;
+}
+
+.content h1 {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 4vw, 2.4rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.page-sub {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--muted);
+  letter-spacing: 0.05em;
+  margin-bottom: 2rem;
+  margin-top: 0.4rem;
+}
+
+.content h2 {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--cyan);
+  margin: 2.5rem 0 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.content h2::before {
+  content: '';
+  display: inline-block;
+  width: 4px; height: 18px;
+  background: var(--cyan);
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.content h3 {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 1.75rem 0 0.5rem;
+}
+.content h3::before {
+  content: '// ';
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  font-weight: 400;
+}
+
+.content p { margin: 0.6rem 0; color: var(--text2); font-size: 0.95rem; line-height: 1.8; }
+
+.content ul, .content ol { padding-left: 1.5rem; margin: 0.5rem 0; }
+.content li { margin: 0.3rem 0; color: var(--text2); font-size: 0.95rem; }
+.content li > strong { color: var(--text); }
+
+.content strong { color: var(--text); font-weight: 600; }
+.content em { color: var(--muted); }
+
+.content a { color: var(--cyan); text-decoration: none; }
+.content a:hover { text-decoration: underline; }
+
+.content hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 2rem 0;
+}
+
+pre, code {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+}
+code:not(pre code) {
+  background: rgba(0, 212, 255, 0.08);
+  color: var(--cyan);
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid rgba(0, 212, 255, 0.15);
+}
+pre {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--purple);
+  padding: 1.25rem 1.5rem;
+  border-radius: 0 8px 8px 0;
+  overflow-x: auto;
+  margin: 1.25rem 0;
+}
+pre code { color: var(--text2); background: none; border: none; padding: 0; }
+
+table { width: 100%; border-collapse: collapse; margin: 1.25rem 0; font-size: 0.88rem; display: block; overflow-x: auto; }
+th {
+  background: var(--s2);
+  color: var(--cyan);
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  text-align: left;
+}
+td {
+  padding: 9px 14px;
+  border: 1px solid var(--border);
+  color: var(--text2);
+  vertical-align: top;
+}
+tr:nth-child(even) td { background: var(--bg1); }
+
+blockquote {
+  border-left: 3px solid var(--yellow);
+  background: rgba(255, 183, 0, 0.05);
+  padding: 1rem 1.25rem;
+  border-radius: 0 8px 8px 0;
+  margin: 1.25rem 0;
+  color: var(--text2);
+  font-style: italic;
+}
+
+.module-nav {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+.module-nav-btn {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  padding: 0.6rem 1.1rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--muted);
+  text-decoration: none;
+  transition: all 0.15s;
+}
+.module-nav-btn:hover {
+  border-color: var(--cyan);
+  color: var(--cyan);
+  text-decoration: none;
+}
+
+@media (max-width: 600px) {
+  .content { padding: 2rem 1rem 4rem; }
+  .module-nav { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+
+<div class="hexgrid"></div>
+<div class="glow-overlay" style="background:radial-gradient(ellipse 50% 40% at 80% 10%,rgba(124,58,237,0.05),transparent)"></div>
+
+<nav class="site-nav">
+  <a class="nav-logo" href="/index.html">RN <span class="dot"></span></a>
+  <div class="nav-links" id="nav-links">
+    <a href="/index.html">Home</a>
+    <div class="nav-item">
+      <button class="nav-btn" aria-haspopup="true">Projects <span class="nav-arrow">▾</span></button>
+      <div class="nav-dropdown">
+        <a href="/projects/loaniq.html">LoanIQ — Underwriter Agent</a>
+        <a href="/projects/salesforce-agent.html">Salesforce AI Agent</a>
+        <a href="/projects/findocqa.html">FinDoc QA</a>
+        <a href="/projects/finbot.html">FinBot</a>
+        <a href="/projects/wfo-risk.html">WFO Risk Engine</a>
+        <hr><a href="/projects/evolution.html">Technical Journey</a>
+      </div>
+    </div>
+    <div class="nav-item">
+      <button class="nav-btn" aria-haspopup="true">Study <span class="nav-arrow">▾</span></button>
+      <div class="nav-dropdown">
+        <a href="/study/index.html">Study Hub</a>
+        <a href="/study/guide.html">Complete Guide</a>
+        <a href="/study/checklist.html">Interview Checklist</a>
+        <a href="/study/scenarios.html">100 Scenarios</a>
+        <a href="/study/architecture.html">Architecture Map</a>
+      </div>
+    </div>
+    <a href="/documents.html">Documents</a>
+    <a href="/index.html#contact">Contact</a>
+  </div>
+  <div class="nav-right">
+    <div class="theme-toggle" role="button" aria-label="Toggle theme">
+      <div class="toggle-track"><div class="toggle-thumb"></div></div>
+      <span class="theme-label">LIGHT</span>
+    </div>
+    <button class="hamburger" id="hamburger" aria-label="Open menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<div class="page-wrap">
+  <main data-section="Study" data-section-url="/study/index.html" data-title="Fine-Tuning" data-back-url="/study/index.html" data-back-label="Study Hub">
+    <div class="content">
+      <div class="page-eyebrow">Module 05 · Gen AI Study Guide</div>
+
+<h1>Fine-Tuning LLMs</h1>
+<p class="page-sub">When to fine-tune · LoRA / QLoRA · PEFT · SFT · RLHF · Fine-tune vs RAG</p>
+<hr>
+
+<h2>Fine-Tuning vs RAG — The Core Decision</h2>
+<table>
+  <tr><th>Dimension</th><th>Fine-Tuning</th><th>RAG</th></tr>
+  <tr><td>Updates knowledge?</td><td>Yes — baked into weights</td><td>Yes — via retrieval at runtime</td></tr>
+  <tr><td>Knowledge freshness</td><td>Static after training</td><td>Real-time with DB updates</td></tr>
+  <tr><td>Cost</td><td>High upfront, cheap inference</td><td>Low upfront, retrieval cost per query</td></tr>
+  <tr><td>Data needed</td><td>100s–10,000s labelled examples</td><td>Source documents only</td></tr>
+  <tr><td>Best for</td><td>Style, tone, format, domain-specific behaviour</td><td>Knowledge-intensive Q&A, grounded answers</td></tr>
+  <tr><td>Hallucination risk</td><td>Higher (no grounding)</td><td>Lower (grounded in retrieved docs)</td></tr>
+  <tr><td>Explainability</td><td>Low — black box</td><td>High — can cite sources</td></tr>
+</table>
+
+<blockquote>Fine-tune to change HOW the model behaves. Use RAG to change WHAT the model knows.</blockquote>
+
+<h2>When Fine-Tuning Makes Sense</h2>
+<ul>
+  <li>You need a specific <strong>output format</strong> the base model doesn't follow reliably (JSON schema, structured reports)</li>
+  <li>Domain-specific <strong>vocabulary or style</strong> that prompting doesn't capture (legal, medical, financial)</li>
+  <li><strong>Latency requirements</strong> — fine-tuned smaller model beats large model with long context</li>
+  <li>You have <strong>proprietary labelled data</strong> that gives competitive advantage</li>
+  <li>Privacy — can't send data to external API; self-hosted fine-tuned model is the answer</li>
+</ul>
+
+<h2>LoRA — Low-Rank Adaptation</h2>
+<p>Instead of updating all model weights (billions of parameters), LoRA freezes the base model and adds small trainable <strong>low-rank matrices</strong> alongside the frozen weight matrices. Only these adapter weights are trained and stored.</p>
+<pre>
+# Weight update decomposed into low-rank matrices
+W_new = W_frozen + (A @ B)
+# where A is (d x r), B is (r x k), r << d,k
+# rank r is typically 4, 8, or 16
+</pre>
+<p><strong>Benefits:</strong> 100–1000x fewer trainable parameters, fits on a single GPU, swap adapters without reloading the base model, merge back into base weights for zero-latency inference.</p>
+
+<h2>QLoRA — Quantised LoRA</h2>
+<p>QLoRA adds <strong>4-bit quantisation</strong> of the base model to LoRA. The base model is loaded in 4-bit (NF4 or FP4), reducing VRAM by ~4x. LoRA adapters train in 16-bit. Enables fine-tuning a 70B model on a single 48GB GPU.</p>
+<pre>
+from transformers import BitsAndBytesConfig
+from peft import LoraConfig, get_peft_model
+
+bnb_config = BitsAndBytesConfig(
+    load_in_4bit=True,
+    bnb_4bit_quant_type="nf4",
+    bnb_4bit_compute_dtype=torch.float16,
+)
+
+lora_config = LoraConfig(
+    r=16,
+    lora_alpha=32,
+    target_modules=["q_proj", "v_proj"],
+    lora_dropout=0.05,
+    bias="none",
+    task_type="CAUSAL_LM",
+)
+
+model = AutoModelForCausalLM.from_pretrained(base_model, quantization_config=bnb_config)
+model = get_peft_model(model, lora_config)
+model.print_trainable_parameters()
+# trainable params: 4,194,304 || all params: 6,742,609,920 || trainable%: 0.0622
+</pre>
+
+<h2>Supervised Fine-Tuning (SFT)</h2>
+<p>The most common form. You provide <code>(instruction, response)</code> pairs and train the model to predict the response given the instruction. Uses standard next-token prediction loss on the response tokens only (input tokens are masked).</p>
+<pre>
+# Dataset format for instruction fine-tuning
+{
+  "instruction": "Extract the DTI ratio from this mortgage application",
+  "input": "Monthly debt payments: $2,400. Gross monthly income: $8,000.",
+  "output": "DTI ratio: 30% (2400/8000 = 0.30)"
+}
+</pre>
+
+<h2>RLHF — Reinforcement Learning from Human Feedback</h2>
+<p>Three stages: (1) SFT on demonstration data, (2) Train a <strong>reward model</strong> on human preference pairs (response A vs response B — which is better?), (3) Fine-tune the SFT model with <strong>PPO</strong> to maximise reward model score. Used by OpenAI for InstructGPT / ChatGPT.</p>
+<p><strong>DPO (Direct Preference Optimisation)</strong> — simpler alternative to RLHF. Skips the reward model entirely; directly optimises on preference pairs using a modified cross-entropy loss. Increasingly preferred for production fine-tuning.</p>
+
+<h2>Evaluation After Fine-Tuning</h2>
+<ul>
+  <li><strong>Held-out task accuracy</strong> — performance on format/task the model was trained for</li>
+  <li><strong>Perplexity</strong> — lower is better; sanity check for training convergence</li>
+  <li><strong>Catastrophic forgetting</strong> — test general capabilities after fine-tuning; ensure base skills aren't degraded</li>
+  <li><strong>MMLU / HellaSwag</strong> — standard benchmarks for general reasoning degradation</li>
+</ul>
+
+<h2>Common Interview Questions</h2>
+<h3>Q: What rank (r) to use for LoRA?</h3>
+<p>Start with r=8. Higher rank = more expressive but more parameters. For format/style tasks r=4 or 8 is usually enough. For complex domain adaptation r=16 or 32. Monitor validation loss — if it doesn't converge, increase rank.</p>
+
+<h3>Q: How do you prevent catastrophic forgetting?</h3>
+<p>Use a low learning rate (1e-4 to 1e-5). Keep LoRA rank small. Add a small proportion of general-instruction data to your training mix (~10%). Evaluate on held-out general benchmarks throughout training, not just at the end.</p>
+
+<h3>Q: Fine-tuning vs prompting — where's the line?</h3>
+<p>Try prompting first — it's cheaper and faster to iterate. Fine-tune when: few-shot examples push context too long, prompting is inconsistent across runs, you need guaranteed output structure, or you're running thousands of queries where a smaller fine-tuned model is cheaper per token.</p>
+
+      <div class="module-nav">
+        <a href="/study/04-langchain-langgraph.html" class="module-nav-btn">← LangChain &amp; LangGraph</a>
+        <a href="/study/06-ml-transformers.html" class="module-nav-btn">ML &amp; Transformers →</a>
+      </div>
+    </div>
+  </main>
+</div>
+
+<a href="https://api.whatsapp.com/send/?phone=919591522079" target="_blank" rel="noopener" class="wa-float" aria-label="Chat on WhatsApp"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></a>
+
+<script src="../assets/js/main.js"></script>
+</body>
+</html>

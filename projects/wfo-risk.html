@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <script id="rn-early-theme">(function(){var K="rn-theme-manual",D=K+"-date";function h(){var n=new Date(),u=n.getTime()+n.getTimezoneOffset()*60000,i=new Date(u+19800000);return i.getHours();}function d(){var n=new Date(),u=n.getTime()+n.getTimezoneOffset()*60000,i=new Date(u+19800000);return i.getFullYear()+"-"+i.getMonth()+"-"+i.getDate();}var m=localStorage.getItem(K),day=localStorage.getItem(D),today=d();document.documentElement.setAttribute("data-theme",(m&&day===today)?m:((h()>=6&&h()<19)?"light":"dark"));})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WFO Risk Engine — Rahul Naik</title>
+<link rel="stylesheet" href="../assets/css/theme.css">
+<style>
+.page-wrap { padding-top: 60px; position: relative; z-index: 5; }
+
+/* ── HERO ── */
+.proj-hero {
+  padding: 4rem 2rem 3rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+.proj-badge {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.52rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: 0.25rem 0.7rem;
+  border: 1px solid var(--yellow);
+  border-radius: 4px;
+  color: var(--yellow);
+  background: rgba(255,183,0,0.05);
+  margin-bottom: 1.2rem;
+}
+.proj-title {
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 5vw, 3.8rem);
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.05;
+  margin-bottom: 0.5rem;
+}
+.proj-subtitle {
+  font-size: 0.78rem;
+  color: var(--yellow);
+  font-weight: 600;
+  margin-bottom: 1.2rem;
+  font-family: var(--font-mono);
+  letter-spacing: 0.08em;
+}
+.proj-desc {
+  font-size: 0.95rem;
+  color: var(--text2);
+  line-height: 1.8;
+  max-width: 680px;
+}
+
+/* ── METRICS ── */
+.metrics-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin: 2.5rem auto;
+  max-width: 900px;
+  padding: 0 2rem;
+}
+.metric-card {
+  flex: 1;
+  min-width: 140px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-top: 3px solid var(--yellow);
+  border-radius: 10px;
+  padding: 1.1rem 1rem;
+  text-align: center;
+}
+.metric-card .val {
+  font-family: var(--font-display);
+  font-size: 1.7rem;
+  font-weight: 800;
+  color: var(--yellow);
+  line-height: 1;
+  margin-bottom: 0.3rem;
+}
+.metric-card .lbl {
+  font-family: var(--font-mono);
+  font-size: 0.5rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* ── TAB NAV ── */
+.proj-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem 2rem;
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg1);
+  position: relative;
+  z-index: 10;
+}
+.proj-tab {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.4rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  border: 1px solid var(--b2);
+  color: var(--muted);
+  background: transparent;
+  transition: all 0.2s;
+}
+.proj-tab:hover { border-color: var(--yellow); color: var(--yellow); }
+.proj-tab.active {
+  background: rgba(255,183,0,0.08);
+  border-color: var(--yellow);
+  color: var(--yellow);
+}
+
+/* ── SECTION CONTENT ── */
+.proj-section-wrap { display: none; }
+.proj-section-wrap.active { display: block; }
+
+.proj-body {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 2rem 4rem;
+}
+.proj-section { margin-bottom: 3rem; }
+.proj-section-title {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--yellow);
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.proj-p {
+  font-size: 0.88rem;
+  color: var(--text2);
+  line-height: 1.85;
+  margin-bottom: 0.9rem;
+}
+
+/* ── HIGHLIGHT BOX ── */
+.highlight-box {
+  background: linear-gradient(135deg, rgba(255,183,0,0.06), rgba(255,159,67,0.04));
+  border: 1px solid rgba(255,183,0,0.25);
+  border-radius: 10px;
+  padding: 1.2rem 1.4rem;
+  margin: 1.2rem 0;
+}
+.highlight-box .hl-title {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--yellow);
+  margin-bottom: 0.6rem;
+}
+.highlight-box p {
+  font-size: 0.87rem;
+  line-height: 1.75;
+  color: var(--text);
+  margin: 0;
+}
+.highlight-box strong { color: var(--yellow); }
+
+/* ── STORY ITEMS ── */
+.story-item { display: flex; gap: 1rem; margin-bottom: 1.5rem; }
+.story-dot {
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  background: var(--c, var(--yellow));
+  flex-shrink: 0;
+  margin-top: 0.3rem;
+  box-shadow: 0 0 8px var(--c, var(--yellow));
+}
+.story-body { flex: 1; }
+.story-head { font-size: 0.9rem; font-weight: 700; color: var(--text); margin-bottom: 0.3rem; }
+.story-text { font-size: 0.84rem; line-height: 1.7; color: var(--muted); }
+.story-text strong { color: var(--text); }
+
+/* ── PIPELINE ── */
+.pipeline {
+  background: var(--surface);
+  border: 1px solid var(--b2);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+}
+.pipeline-title {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--yellow);
+  margin-bottom: 1.2rem;
+}
+.pipeline-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  justify-content: center;
+  margin-bottom: 0.8rem;
+}
+.p-box {
+  background: var(--bg2);
+  border: 1px solid var(--c, var(--b2));
+  border-radius: 8px;
+  padding: 0.5rem 0.9rem;
+  text-align: center;
+  min-width: 100px;
+}
+.p-label {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  color: var(--c, var(--muted));
+  font-weight: 600;
+}
+.p-sub { font-family: var(--font-mono); font-size: 0.5rem; color: var(--muted); margin-top: 0.1rem; }
+.p-arrow { color: var(--muted); font-size: 1rem; flex-shrink: 0; }
+.p-vs {
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  color: var(--yellow);
+  padding: 0.3rem 0.6rem;
+  background: rgba(255,183,0,0.1);
+  border-radius: 4px;
+}
+
+/* ── STEP CARDS ── */
+.step-cards { margin-top: 1.5rem; }
+.step-card {
+  display: flex;
+  gap: 1.2rem;
+  margin-bottom: 1.2rem;
+  position: relative;
+}
+.step-card::before {
+  content: '';
+  position: absolute;
+  left: 22px; top: 52px; bottom: -20px;
+  width: 2px;
+  background: linear-gradient(to bottom, var(--c, var(--b2)), transparent);
+  opacity: 0.4;
+}
+.step-card:last-child::before { display: none; }
+.step-num {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  background: var(--bg2);
+  border: 2px solid var(--c, var(--b2));
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--c, var(--muted));
+  flex-shrink: 0;
+}
+.step-body-card {
+  flex: 1;
+  background: var(--surface);
+  border: 1px solid var(--b2);
+  border-radius: 10px;
+  padding: 1.1rem 1.3rem;
+  border-left: 3px solid var(--c, var(--b2));
+}
+.step-title { font-size: 0.95rem; font-weight: 700; color: var(--text); margin-bottom: 0.3rem; }
+.step-why {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--c, var(--muted));
+  letter-spacing: 0.08em;
+  margin-bottom: 0.6rem;
+  text-transform: uppercase;
+}
+.step-desc { font-size: 0.84rem; line-height: 1.7; color: var(--muted); }
+.step-desc strong { color: var(--text); }
+.step-desc code {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  background: var(--bg2);
+  border: 1px solid var(--b2);
+  padding: 0.1rem 0.3rem;
+  border-radius: 3px;
+  color: var(--cyan);
+}
+.step-cmd {
+  background: var(--bg2);
+  border: 1px solid var(--b2);
+  border-radius: 6px;
+  padding: 0.6rem 0.9rem;
+  margin-top: 0.7rem;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--emerald);
+  letter-spacing: 0.04em;
+  line-height: 1.6;
+}
+
+/* ── RESUME CARDS ── */
+.resume-card {
+  background: var(--surface);
+  border: 1px solid var(--b2);
+  border-radius: 12px;
+  padding: 1.8rem 2rem;
+  margin-bottom: 1.5rem;
+  position: relative;
+  overflow: hidden;
+}
+.resume-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, var(--yellow), var(--orange));
+}
+.rc-label {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--yellow);
+  margin-bottom: 0.6rem;
+}
+.rc-title { font-size: 1.1rem; font-weight: 700; color: var(--text); margin-bottom: 0.3rem; }
+.rc-period { font-family: var(--font-mono); font-size: 0.6rem; color: var(--muted); margin-bottom: 0.8rem; }
+.rc-tech {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--orange);
+  background: rgba(255,159,67,0.08);
+  border: 1px solid rgba(255,159,67,0.2);
+  border-radius: 4px;
+  padding: 0.3rem 0.6rem;
+  display: inline-block;
+  margin-bottom: 1rem;
+}
+.rc-bullets { list-style: none; padding: 0; }
+.rc-bullets li {
+  display: flex;
+  gap: 0.7rem;
+  align-items: flex-start;
+  padding: 0.35rem 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.88rem;
+  line-height: 1.6;
+  color: var(--text);
+}
+.rc-bullets li:last-child { border-bottom: none; }
+.rc-bullets li::before { content: '▸'; color: var(--yellow); flex-shrink: 0; margin-top: 0.1rem; }
+
+/* ── COMPARE TABLE ── */
+.compare-table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.85rem; }
+.compare-table th {
+  background: var(--bg2);
+  color: var(--yellow);
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.6rem 1rem;
+  text-align: left;
+  border-bottom: 2px solid var(--b2);
+}
+.compare-table td { padding: 0.55rem 1rem; border-bottom: 1px solid var(--border); color: var(--text); }
+.compare-table tr:hover td { background: rgba(255,183,0,0.03); }
+.badge { font-family: var(--font-mono); font-size: 0.55rem; padding: 0.15rem 0.5rem; border-radius: 3px; }
+.badge-win { background: rgba(11,232,129,0.15); color: var(--emerald); border: 1px solid rgba(11,232,129,0.3); }
+.badge-lose { background: rgba(255,107,61,0.1); color: #ff6b3d; border: 1px solid rgba(255,107,61,0.2); }
+
+/* ── CONCEPT GRID ── */
+.concept-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+.concept-card {
+  background: var(--surface);
+  border: 1px solid var(--b2);
+  border-radius: 10px;
+  padding: 1.1rem 1.3rem;
+  border-top: 3px solid var(--c, var(--b2));
+}
+.cc-icon { font-size: 1.4rem; margin-bottom: 0.5rem; }
+.cc-title { font-size: 0.9rem; font-weight: 700; color: var(--text); margin-bottom: 0.4rem; }
+.cc-desc { font-size: 0.8rem; line-height: 1.6; color: var(--muted); }
+
+/* ── SKILL TAGS ── */
+.skill-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 1rem 0; }
+.stag {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 4px;
+  background: rgba(255,183,0,0.07);
+  border: 1px solid rgba(255,183,0,0.2);
+  color: var(--yellow);
+}
+
+/* ── QA ACCORDION ── */
+.qa-card {
+  background: var(--surface);
+  border: 1px solid var(--b2);
+  border-radius: 10px;
+  margin-bottom: 1rem;
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+.qa-card:hover { border-color: var(--yellow); }
+.qa-card.open { border-color: var(--gold); }
+.qa-q { display: flex; align-items: center; gap: 0.8rem; padding: 0.9rem 1.1rem; }
+.qa-icon { font-size: 1rem; flex-shrink: 0; }
+.qa-text { flex: 1; font-size: 0.9rem; font-weight: 600; color: var(--text); }
+.qa-tag {
+  font-family: var(--font-mono);
+  font-size: 0.52rem;
+  letter-spacing: 0.1em;
+  padding: 0.15rem 0.4rem;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+.tag-easy { background: rgba(11,232,129,0.12); color: var(--emerald); border: 1px solid rgba(11,232,129,0.25); }
+.tag-med { background: rgba(255,183,0,0.12); color: var(--yellow); border: 1px solid rgba(255,183,0,0.25); }
+.tag-hard { background: rgba(255,107,61,0.12); color: #ff6b3d; border: 1px solid rgba(255,107,61,0.2); }
+.qa-arr { color: var(--muted); transition: transform 0.25s; flex-shrink: 0; }
+.qa-card.open .qa-arr { transform: rotate(180deg); }
+.qa-a { display: none; padding: 0 1.1rem 1rem; border-top: 1px solid var(--border); }
+.qa-card.open .qa-a { display: block; }
+.qa-a-inner { padding: 0.8rem 0; font-size: 0.87rem; line-height: 1.75; color: var(--muted); }
+.qa-a-inner strong { color: var(--text); }
+.qa-a-inner code {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  background: var(--bg2);
+  border: 1px solid var(--b2);
+  border-radius: 3px;
+  padding: 0.1rem 0.3rem;
+  color: var(--cyan);
+}
+
+/* ── CONTACT ── */
+.contact-section { text-align: center; padding: 4rem 2rem; border-top: 1px solid var(--border); }
+.contact-section h2 { font-family: var(--font-display); font-size: 1.8rem; font-weight: 800; color: var(--text); margin-bottom: 0.8rem; }
+.contact-section p { color: var(--text2); font-size: 0.9rem; margin-bottom: 1.8rem; }
+.contact-links { display: flex; gap: 0.8rem; flex-wrap: wrap; justify-content: center; }
+</style>
+</head>
+<body>
+<div class="hexgrid"></div>
+<div class="glow-overlay" style="background:radial-gradient(ellipse 60% 40% at 20% 20%,rgba(255,183,0,0.03),transparent)"></div>
+
+<nav class="site-nav">
+  <a class="nav-logo" href="/index.html">RN <span class="dot"></span></a>
+  <div class="nav-links" id="nav-links">
+    <a href="/index.html">Home</a>
+    <div class="nav-item">
+      <button class="nav-btn" aria-haspopup="true">Projects <span class="nav-arrow">▾</span></button>
+      <div class="nav-dropdown">
+        <a href="/projects/loaniq.html">LoanIQ — Underwriter Agent</a>
+        <a href="/projects/salesforce-agent.html">Salesforce AI Agent</a>
+        <a href="/projects/findocqa.html">FinDoc QA</a>
+        <a href="/projects/finbot.html">FinBot</a>
+        <a href="/projects/wfo-risk.html">WFO Risk Engine</a>
+        <hr>
+        <a href="/projects/evolution.html">Technical Journey</a>
+      </div>
+    </div>
+    <div class="nav-item">
+      <button class="nav-btn" aria-haspopup="true">Study <span class="nav-arrow">▾</span></button>
+      <div class="nav-dropdown">
+        <a href="/study/index.html">Study Hub</a>
+        <a href="/study/guide.html">Complete Guide</a>
+        <a href="/study/checklist.html">Interview Checklist</a>
+        <a href="/study/scenarios.html">100 Scenarios</a>
+        <a href="/study/architecture.html">Architecture Map</a>
+      </div>
+    </div>
+    <a href="/documents.html">Documents</a>
+    <a href="/index.html#contact">Contact</a>
+  </div>
+  <div class="nav-right">
+    <div class="theme-toggle" role="button" aria-label="Toggle theme">
+      <div class="toggle-track"><div class="toggle-thumb"></div></div>
+      <span class="theme-label">LIGHT</span>
+    </div>
+    <button class="hamburger" id="hamburger" aria-label="Open menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<div class="page-wrap">
+<main data-section="Projects" data-section-url="/index.html#projects" data-title="WFO Risk Engine" data-back-url="/index.html#projects" data-back-label="Projects">
+
+  <div class="proj-hero">
+    <div class="proj-badge">ML · Scikit-learn · FastAPI · Streamlit · 2022</div>
+    <h1 class="proj-title">WFO Risk<br>Engine</h1>
+    <div class="proj-subtitle">// Employee Health Risk Tracker — Post-Pandemic Return-to-Office</div>
+    <p class="proj-desc">
+      An ML system predicting which employees are unlikely to return to the office post-pandemic —
+      scoring each person 0–100% risk using 10 HR features, with a Streamlit dashboard for HR teams
+      and a FastAPI endpoint for downstream integration.
+    </p>
+  </div>
+
+  <!-- METRICS -->
+  <div class="metrics-row">
+    <div class="metric-card">
+      <div class="val">10</div>
+      <div class="lbl">HR Features</div>
+    </div>
+    <div class="metric-card">
+      <div class="val" style="color:var(--green)">0.91</div>
+      <div class="lbl">ROC-AUC</div>
+    </div>
+    <div class="metric-card">
+      <div class="val" style="color:var(--blue)">2</div>
+      <div class="lbl">Models Compared</div>
+    </div>
+    <div class="metric-card">
+      <div class="val" style="color:var(--purple)">3</div>
+      <div class="lbl">Dashboard Panels</div>
+    </div>
+    <div class="metric-card">
+      <div class="val" style="color:var(--cyan)">1K</div>
+      <div class="lbl">Synthetic Employees</div>
+    </div>
+  </div>
+
+  <!-- TAB NAV -->
+  <div class="proj-tabs">
+    <button class="proj-tab active" onclick="showTab('story',this)">📖 Project Story</button>
+    <button class="proj-tab" onclick="showTab('resume',this)">📄 Resume Description</button>
+    <button class="proj-tab" onclick="showTab('build',this)">🔨 How I Built It</button>
+    <button class="proj-tab" onclick="showTab('concepts',this)">🧠 Key Concepts</button>
+    <button class="proj-tab" onclick="showTab('interview',this)">🎯 Interview Q&amp;A</button>
+  </div>
+
+  <!-- ══ TAB 1: STORY ══ -->
+  <div class="proj-section-wrap active" id="tab-story">
+    <div class="proj-body">
+      <div class="proj-section">
+        <div class="proj-section-title">The Project Story</div>
+
+        <div class="highlight-box">
+          <div class="hl-title">💡 The One-Line Pitch</div>
+          <p>"Employee Health Risk Tracker is an ML system that predicts which employees are unlikely to return to the office post-pandemic — scoring each person 0–100% risk using 10 HR features, with a Streamlit dashboard for HR teams and a FastAPI endpoint for downstream integration."</p>
+        </div>
+
+        <!-- Pipeline Diagram -->
+        <div class="pipeline">
+          <div class="pipeline-title">⚙️ End-to-End ML Pipeline</div>
+          <div class="pipeline-row">
+            <div class="p-box" style="--c:var(--cyan)"><div class="p-label" style="color:var(--cyan)">📋 HR Data</div><div class="p-sub">10 features</div></div>
+            <div class="p-arrow">→</div>
+            <div class="p-box" style="--c:var(--yellow)"><div class="p-label" style="color:var(--yellow)">🧹 Preprocessing</div><div class="p-sub">StandardScaler</div></div>
+            <div class="p-arrow">→</div>
+            <div class="p-vs">VS</div>
+            <div class="p-arrow"></div>
+            <div class="p-box" style="--c:var(--blue)"><div class="p-label" style="color:var(--blue)">📊 Logistic Reg</div><div class="p-sub">Baseline model</div></div>
+            <div class="p-arrow">+</div>
+            <div class="p-box" style="--c:var(--green)"><div class="p-label" style="color:var(--green)">🌲 Random Forest</div><div class="p-sub">100 estimators</div></div>
+          </div>
+          <div class="pipeline-row">
+            <div class="p-box" style="--c:var(--orange)"><div class="p-label" style="color:var(--orange)">📐 CV ROC-AUC</div><div class="p-sub">5-fold comparison</div></div>
+            <div class="p-arrow">→</div>
+            <div class="p-box" style="--c:var(--emerald)"><div class="p-label" style="color:var(--emerald)">✅ Best Model</div><div class="p-sub">joblib saved</div></div>
+            <div class="p-arrow">→</div>
+            <div class="p-box" style="--c:var(--pink)"><div class="p-label" style="color:var(--pink)">⚡ FastAPI</div><div class="p-sub">/predict endpoint</div></div>
+            <div class="p-arrow">→</div>
+            <div class="p-box" style="--c:var(--purple)"><div class="p-label" style="color:var(--purple)">📊 Streamlit UI</div><div class="p-sub">HR Dashboard</div></div>
+          </div>
+        </div>
+
+        <div class="story-item">
+          <div class="story-dot" style="--c:var(--cyan)"></div>
+          <div class="story-body">
+            <div class="story-head">🌍 The 2022 Context — Post-Pandemic WFO Problem</div>
+            <div class="story-text">
+              In early 2022, companies globally were announcing return-to-office mandates. HR teams faced a new challenge: <strong>which employees will actually come back, and who needs intervention?</strong> Some employees had long commutes, young children, health anxieties, or had become so productive working from home that returning felt pointless. Blanket mandates ignored these differences and caused attrition. Companies needed data-driven employee risk segmentation — not guesswork.
+            </div>
+          </div>
+        </div>
+
+        <div class="story-item">
+          <div class="story-dot" style="--c:var(--yellow)"></div>
+          <div class="story-body">
+            <div class="story-head">💡 The Solution — ML Risk Scoring</div>
+            <div class="story-text">
+              Predict each employee's WFO risk score (0–100%) using 10 HR factors: commute distance, vaccination status, children under 5, pre-pandemic office habits, home internet quality, team size, manager behaviour, anxiety score, and WFH productivity rating. HR teams get a ranked list — <strong>High / Medium / Low risk</strong> — with specific recommendations per employee. Instead of one-size-fits-all mandates, HR can offer targeted support: transport allowances for long commuters, childcare assistance for parents, anxiety support programs.
+            </div>
+          </div>
+        </div>
+
+        <div class="story-item">
+          <div class="story-dot" style="--c:var(--green)"></div>
+          <div class="story-body">
+            <div class="story-head">⚙️ Why Two Models? Why Not Just Pick One?</div>
+            <div class="story-text">
+              <strong>Logistic Regression</strong> is the baseline — fast, interpretable, works well when feature relationships are roughly linear. HR teams can understand "commute distance has this much weight."
+              <br><br>
+              <strong>Random Forest</strong> captures non-linear interactions — for example, the combination of long commute + children + high anxiety is more than the sum of parts. It also gives feature importances, showing HR <em>which factors drive risk most</em>.
+              <br><br>
+              I train both, compare using 5-fold cross-validated ROC-AUC (not just test accuracy — avoids lucky train/test splits), and automatically save the winner.
+            </div>
+          </div>
+        </div>
+
+        <div class="story-item">
+          <div class="story-dot" style="--c:var(--orange)"></div>
+          <div class="story-body">
+            <div class="story-head">📊 The Dashboard — For Non-Technical HR Teams</div>
+            <div class="story-text">
+              The Streamlit dashboard has three views: <strong>Dataset Overview</strong> (risk distribution pie, histogram, scatter plots), <strong>Predict Employee</strong> (enter any employee's details, get a real-time risk score with a gauge chart and recommendation), and <strong>Model Comparison</strong> (side-by-side metrics, confusion matrices, feature importance chart). Non-technical HR managers see the prediction and recommendation; data-savvy analysts see under the hood.
+            </div>
+          </div>
+        </div>
+
+        <div class="highlight-box">
+          <div class="hl-title">🎤 2-Minute Interview Pitch</div>
+          <p><em style="color:var(--muted)">"Employee Health Risk Tracker is an ML project I built in the 2022 post-pandemic context — companies were mandating return-to-office but had no visibility into which employees were actually likely to comply versus resist or quit. I framed it as a binary classification problem: predict whether each employee is high or low WFO risk based on 10 HR factors like commute distance, childcare responsibilities, vaccination status, and WFH productivity score.<br><br>
+          I trained two models — Logistic Regression as the interpretable baseline and Random Forest to capture non-linear interactions. I selected the best model using 5-fold cross-validated ROC-AUC. Random Forest typically wins because it captures compound effects — the combination of long commute, young children, and high anxiety is worse than any single factor alone.<br><br>
+          I exposed predictions through a FastAPI service and built a Streamlit dashboard for HR teams — three views: workforce overview charts, individual employee risk prediction with a gauge chart and recommendation, and a model comparison panel showing feature importances. The whole stack runs with Docker Compose."</em></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ TAB 2: RESUME ══ -->
+  <div class="proj-section-wrap" id="tab-resume">
+    <div class="proj-body">
+      <div class="proj-section">
+        <div class="proj-section-title">Resume Description</div>
+
+        <div class="resume-card">
+          <div class="rc-label">📄 Full Version — 5 Bullets</div>
+          <div class="rc-title">Employee Health Risk Tracker — ML-Powered Return-to-Office Risk Prediction</div>
+          <div class="rc-period">Personal Project &nbsp;·&nbsp; 2022</div>
+          <div class="rc-tech">Python · Scikit-learn · Pandas · FastAPI · Streamlit · Plotly · joblib · Docker</div>
+          <ul class="rc-bullets">
+            <li>Built an end-to-end ML pipeline to predict employee return-to-office risk using 10 HR features (commute distance, vaccination status, childcare responsibilities, WFH productivity, anxiety score) — enabling HR teams to segment employees into High / Medium / Low risk categories with targeted intervention recommendations.</li>
+            <li>Trained and compared Logistic Regression and Random Forest classifiers; selected best model using 5-fold cross-validated ROC-AUC to prevent test-set overfitting — Random Forest achieved ROC-AUC of ~0.91 vs Logistic Regression's ~0.87.</li>
+            <li>Implemented StandardScaler preprocessing saved alongside the model with joblib, ensuring training-inference feature scaling consistency — a common production pitfall in ML deployment.</li>
+            <li>Exposed predictions via FastAPI REST service with Pydantic-validated endpoints supporting single and batch inference; batch endpoint returns summary counts (High/Medium/Low) for HR reporting workflows.</li>
+            <li>Built a 3-panel Streamlit dashboard for HR stakeholders: workforce risk distribution charts (Plotly), real-time risk gauge for individual employees, and model comparison panel with confusion matrices and Random Forest feature importance rankings.</li>
+          </ul>
+        </div>
+
+        <div class="resume-card">
+          <div class="rc-label">📄 Short Version — 2 Bullets</div>
+          <div class="rc-title">Employee Health Risk Tracker — ML Return-to-Office Risk Prediction</div>
+          <div class="rc-period">Personal Project &nbsp;·&nbsp; 2022</div>
+          <div class="rc-tech">Python · Scikit-learn · FastAPI · Streamlit · Plotly · Docker</div>
+          <ul class="rc-bullets">
+            <li>Built an ML pipeline comparing Logistic Regression and Random Forest to predict employee WFO risk from 10 HR features; selected best model via 5-fold CV ROC-AUC and deployed via FastAPI with Pydantic validation and batch inference support.</li>
+            <li>Built a Streamlit dashboard with Plotly charts for HR teams — workforce risk distribution overview, real-time individual risk gauge with recommendations, and model comparison panel with feature importance rankings.</li>
+          </ul>
+        </div>
+
+        <div class="resume-card">
+          <div class="rc-label">📊 Model Comparison — What You Cite in Interviews</div>
+          <table class="compare-table">
+            <thead>
+              <tr><th>Metric</th><th>Logistic Regression</th><th>Random Forest</th><th>Winner</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Accuracy</td><td>~85%</td><td>~89%</td><td><span class="badge badge-win">RF ✓</span></td></tr>
+              <tr><td>ROC-AUC</td><td>~0.87</td><td>~0.91</td><td><span class="badge badge-win">RF ✓</span></td></tr>
+              <tr><td>CV ROC-AUC</td><td>~0.86</td><td>~0.90</td><td><span class="badge badge-win">RF ✓</span></td></tr>
+              <tr><td>Interpretability</td><td>High — coefficients</td><td>Medium — importances</td><td><span class="badge badge-win">LR ✓</span></td></tr>
+              <tr><td>Training Speed</td><td>Very fast</td><td>Moderate</td><td><span class="badge badge-win">LR ✓</span></td></tr>
+              <tr><td>Non-linear capture</td><td>No</td><td>Yes</td><td><span class="badge badge-win">RF ✓</span></td></tr>
+              <tr><td>Selected as best?</td><td><span class="badge badge-lose">No</span></td><td><span class="badge badge-win">Yes ✓</span></td><td>—</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ TAB 3: BUILD ══ -->
+  <div class="proj-section-wrap" id="tab-build">
+    <div class="proj-body">
+      <div class="proj-section">
+        <div class="proj-section-title">How I Built It — Step by Step</div>
+        <div class="step-cards">
+
+          <div class="step-card" style="--c:var(--cyan)">
+            <div class="step-num" style="--c:var(--cyan)">01</div>
+            <div class="step-body-card" style="--c:var(--cyan)">
+              <div class="step-title">Feature Engineering — What Predicts WFO Risk?</div>
+              <div class="step-why">Most important step · Defines model quality</div>
+              <div class="step-desc">
+                Before writing any code, I defined 10 features based on real 2022 HR research on post-pandemic return-to-office resistance:
+                <br><br>
+                <strong>Commute distance</strong> — the single biggest factor. 50km+ commutes are a strong predictor.
+                <br><strong>Children under 5</strong> — childcare responsibility significantly increases WFH preference.
+                <br><strong>Vaccination status</strong> — unvaccinated employees had higher office anxiety in 2022.
+                <br><strong>Prior WFO days/week</strong> — pre-pandemic office habit. 5 days → likely to return.
+                <br><strong>Home internet quality</strong> — good internet = comfortable WFH = less urgency to return.
+                <br><strong>Anxiety score</strong> — self-reported anxiety about returning.
+                <br><strong>WFH productivity</strong> — high productivity at home = less incentive to return.
+                <br><strong>Manager WFO</strong> — if manager returns, employees follow. Social pressure.
+                <br><strong>Team size</strong> — larger teams feel more collaborative pressure to return.
+                <br><strong>Age</strong> — younger employees slightly more comfortable returning.
+              </div>
+            </div>
+          </div>
+
+          <div class="step-card" style="--c:var(--yellow)">
+            <div class="step-num" style="--c:var(--yellow)">02</div>
+            <div class="step-body-card" style="--c:var(--yellow)">
+              <div class="step-title">Synthetic Dataset Generation</div>
+              <div class="step-why">No real HR data available · Realistic simulation</div>
+              <div class="step-desc">
+                Real HR data is confidential. I generated a <strong>1,000-employee synthetic dataset</strong> using NumPy with realistic distributions: commute distances follow an exponential distribution, anxiety scores are uniform 1–10, vaccination rate ~82% (matching 2022 India figures).
+                <br><br>
+                The <strong>risk score formula</strong> is a weighted sum of features with added Gaussian noise — so the dataset is realistic, not perfectly separable. Binary label threshold at risk_score > 0.45 gives roughly 45% high-risk, 55% low-risk — a balanced dataset.
+              </div>
+              <div class="step-cmd">python train.py   # generates data → trains both models → saves best</div>
+            </div>
+          </div>
+
+          <div class="step-card" style="--c:var(--green)">
+            <div class="step-num" style="--c:var(--green)">03</div>
+            <div class="step-body-card" style="--c:var(--green)">
+              <div class="step-title">Preprocessing — StandardScaler</div>
+              <div class="step-why">Critical for Logistic Regression · Good practice for RF</div>
+              <div class="step-desc">
+                Features are on very different scales — age is 18–70, commute is 0–200km. Without scaling, Logistic Regression would give huge weight to commute_distance. StandardScaler normalises each feature to mean=0, std=1.
+                <br><br>
+                <strong>Critical production rule:</strong> fit the scaler only on training data (<code>scaler.fit_transform(X_train)</code>), then use <code>scaler.transform(X_test)</code>. Never refit on test or inference data — that's data leakage. I save the scaler with joblib alongside the model.
+              </div>
+              <div class="step-cmd">scaler = StandardScaler()<br>X_train_scaled = scaler.fit_transform(X_train)  # fit only on train<br>X_test_scaled  = scaler.transform(X_test)       # transform only<br>joblib.dump(scaler, "models/scaler.pkl")        # save for inference</div>
+            </div>
+          </div>
+
+          <div class="step-card" style="--c:var(--blue)">
+            <div class="step-num" style="--c:var(--blue)">04</div>
+            <div class="step-body-card" style="--c:var(--blue)">
+              <div class="step-title">Training Both Models + Cross-Validation</div>
+              <div class="step-why">Fair comparison · CV prevents lucky splits</div>
+              <div class="step-desc">
+                <strong>Logistic Regression:</strong> <code>C=1.0</code>, <code>max_iter=1000</code>. Fast, interpretable, linear decision boundary.
+                <br><br>
+                <strong>Random Forest:</strong> <code>n_estimators=100</code>, <code>max_depth=8</code>, <code>min_samples_split=10</code>, <code>n_jobs=-1</code>.
+                <br><br>
+                Model selection uses <strong>5-fold cross-validated ROC-AUC</strong>, not just test set accuracy. CV averages performance across 5 different splits, giving a more reliable estimate. ROC-AUC over accuracy because it measures ranking quality regardless of threshold.
+              </div>
+            </div>
+          </div>
+
+          <div class="step-card" style="--c:var(--pink)">
+            <div class="step-num" style="--c:var(--pink)">05</div>
+            <div class="step-body-card" style="--c:var(--pink)">
+              <div class="step-title">FastAPI Inference Service</div>
+              <div class="step-why">Serves predictions · Batch endpoint for HR reporting</div>
+              <div class="step-desc">
+                Built two prediction endpoints: <code>POST /predict</code> for single employee with full recommendation text, and <code>POST /predict/batch</code> for multiple employees returning a High/Medium/Low summary.
+                <br><br>
+                Model is loaded <strong>lazily</strong> — only on first prediction call. Pydantic validation enforces feature ranges at the API boundary — bad inputs get a 422 error before reaching the model.
+              </div>
+            </div>
+          </div>
+
+          <div class="step-card" style="--c:var(--purple)">
+            <div class="step-num" style="--c:var(--purple)">06</div>
+            <div class="step-body-card" style="--c:var(--purple)">
+              <div class="step-title">Streamlit Dashboard — 3 Views</div>
+              <div class="step-why">HR-friendly · Non-technical stakeholders</div>
+              <div class="step-desc">
+                <strong>Dataset Overview:</strong> KPI row (total employees, risk counts), risk distribution pie chart, score histogram, commute vs risk scatter.
+                <br><br>
+                <strong>Predict Employee:</strong> Sliders and dropdowns for all 10 features. Calls the FastAPI <code>/predict</code> endpoint and displays a Plotly gauge chart (0–100% with colour zones) and recommendation text. Real-time — results appear in under a second.
+                <br><br>
+                <strong>Model Comparison:</strong> Side-by-side accuracy/ROC-AUC bar chart, confusion matrices for both models, Random Forest feature importance horizontal bar chart.
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ TAB 4: CONCEPTS ══ -->
+  <div class="proj-section-wrap" id="tab-concepts">
+    <div class="proj-body">
+      <div class="proj-section">
+        <div class="proj-section-title">Key Concepts to Know</div>
+
+        <div class="concept-grid">
+          <div class="concept-card" style="--c:var(--cyan)">
+            <div class="cc-icon">🎯</div>
+            <div class="cc-title">Binary Classification</div>
+            <div class="cc-desc">Predicting one of two outcomes — High Risk (1) or Low Risk (0). The model outputs a <strong style="color:var(--cyan)">probability (0–1)</strong>, not just a class. We threshold at 0.5 for the label, but use the raw probability as the risk score shown to HR.</div>
+          </div>
+          <div class="concept-card" style="--c:var(--yellow)">
+            <div class="cc-icon">📐</div>
+            <div class="cc-title">ROC-AUC — Why Not Accuracy?</div>
+            <div class="cc-desc">Accuracy is misleading on imbalanced data. ROC-AUC measures the model's ability to <strong style="color:var(--yellow)">rank</strong> high-risk employees above low-risk ones, regardless of threshold. AUC=1.0 is perfect, AUC=0.5 is random.</div>
+          </div>
+          <div class="concept-card" style="--c:var(--green)">
+            <div class="cc-icon">🔄</div>
+            <div class="cc-title">5-Fold Cross-Validation</div>
+            <div class="cc-desc">Split data into 5 parts. Train on 4, test on 1. Repeat 5 times. Average the scores. <strong style="color:var(--green)">Much more reliable</strong> than a single train/test split — a lucky or unlucky split can misrepresent true model performance.</div>
+          </div>
+          <div class="concept-card" style="--c:var(--blue)">
+            <div class="cc-icon">📊</div>
+            <div class="cc-title">Logistic Regression</div>
+            <div class="cc-desc">Linear model that outputs a probability via the sigmoid function. Coefficients are directly interpretable. <strong style="color:var(--blue)">Fast, explainable</strong>, but only captures linear relationships between features and risk.</div>
+          </div>
+          <div class="concept-card" style="--c:var(--emerald)">
+            <div class="cc-icon">🌲</div>
+            <div class="cc-title">Random Forest</div>
+            <div class="cc-desc">Ensemble of 100 decision trees, each trained on a random subset of data and features. Final prediction = majority vote. <strong style="color:var(--emerald)">Captures non-linear interactions</strong>. Feature importances show which features reduce impurity most across all trees.</div>
+          </div>
+          <div class="concept-card" style="--c:var(--orange)">
+            <div class="cc-icon">⚖️</div>
+            <div class="cc-title">StandardScaler — Training-Inference Parity</div>
+            <div class="cc-desc">Fit scaler on training data only. Use it to transform test and inference data. <strong style="color:var(--orange)">Never refit</strong> on inference data — that would be data leakage. Scaler must be saved alongside model and loaded together for every prediction.</div>
+          </div>
+          <div class="concept-card" style="--c:var(--pink)">
+            <div class="cc-icon">💾</div>
+            <div class="cc-title">joblib — Model Serialisation</div>
+            <div class="cc-desc">Saves trained sklearn models to disk as <code style="font-family:var(--font-mono);font-size:0.75rem;color:var(--cyan)">.pkl</code> files. <strong style="color:var(--pink)">Preserves all learned parameters</strong> — weights, tree structures, feature importances. Load with joblib.load() for instant predictions without retraining.</div>
+          </div>
+          <div class="concept-card" style="--c:var(--purple)">
+            <div class="cc-icon">🔢</div>
+            <div class="cc-title">Confusion Matrix</div>
+            <div class="cc-desc">2×2 table: True Positives, True Negatives, False Positives, False Negatives. <strong style="color:var(--purple)">FN cost</strong> = missing high-risk employees (they leave — much higher business cost than a false positive).</div>
+          </div>
+        </div>
+
+        <div class="highlight-box">
+          <div class="hl-title">📚 Skills Demonstrated</div>
+          <div class="skill-tags">
+            <span class="stag">Binary Classification</span>
+            <span class="stag">Logistic Regression</span>
+            <span class="stag">Random Forest</span>
+            <span class="stag">Cross-Validation</span>
+            <span class="stag">ROC-AUC</span>
+            <span class="stag">StandardScaler</span>
+            <span class="stag">Feature Engineering</span>
+            <span class="stag">Model Comparison</span>
+            <span class="stag">joblib Serialisation</span>
+            <span class="stag">FastAPI</span>
+            <span class="stag">Pydantic</span>
+            <span class="stag">Streamlit</span>
+            <span class="stag">Plotly</span>
+            <span class="stag">Batch Inference</span>
+            <span class="stag">Docker</span>
+            <span class="stag">HR Analytics Domain</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ TAB 5: INTERVIEW ══ -->
+  <div class="proj-section-wrap" id="tab-interview">
+    <div class="proj-body">
+      <div class="proj-section">
+        <div class="proj-section-title">Interview Questions &amp; Answers</div>
+
+        <div class="qa-card" onclick="toggleQA(this)">
+          <div class="qa-q">
+            <div class="qa-icon">❓</div>
+            <div class="qa-text">Walk me through the WFO Risk project end to end.</div>
+            <div class="qa-tag tag-easy">EASY</div>
+            <div class="qa-arr">▼</div>
+          </div>
+          <div class="qa-a"><div class="qa-a-inner">
+            "Employee Health Risk Tracker is an ML system to predict employee return-to-office risk in the 2022 post-pandemic context. The problem is binary classification — High or Low risk — based on 10 HR features: commute distance, children under 5, vaccination status, pre-pandemic office habit, home internet quality, team size, manager behaviour, anxiety score, and WFH productivity score.<br><br>
+            I trained two models — Logistic Regression as the interpretable baseline and Random Forest to capture non-linear interactions. I selected the best model using 5-fold cross-validated ROC-AUC. The trained model and scaler are saved with joblib and exposed via a FastAPI service. There's also a Streamlit dashboard with three panels: workforce overview charts, individual risk prediction with a gauge chart, and model comparison with feature importances."
+          </div></div>
+        </div>
+
+        <div class="qa-card" onclick="toggleQA(this)">
+          <div class="qa-q">
+            <div class="qa-icon">❓</div>
+            <div class="qa-text">Why did you use ROC-AUC instead of accuracy to compare models?</div>
+            <div class="qa-tag tag-easy">EASY</div>
+            <div class="qa-arr">▼</div>
+          </div>
+          <div class="qa-a"><div class="qa-a-inner">
+            "Two reasons.<br><br>
+            <strong>First</strong> — accuracy is misleading on imbalanced datasets. If 60% of employees are low-risk, a model that always predicts low-risk gets 60% accuracy while being completely useless.<br><br>
+            <strong>Second</strong> — this is a risk scoring problem, not just a classification problem. HR doesn't just want a binary label — they want to rank employees by risk level. ROC-AUC directly measures the model's ability to rank high-risk employees above low-risk ones. An AUC of 0.91 means the model correctly ranks a randomly chosen high-risk employee above a randomly chosen low-risk employee 91% of the time.<br><br>
+            I also used cross-validated ROC-AUC rather than just test-set AUC to get a more reliable estimate — averaging across 5 different train/test splits removes the influence of a lucky or unlucky data split."
+          </div></div>
+        </div>
+
+        <div class="qa-card" onclick="toggleQA(this)">
+          <div class="qa-q">
+            <div class="qa-icon">❓</div>
+            <div class="qa-text">Why Random Forest over a single decision tree?</div>
+            <div class="qa-tag tag-easy">EASY</div>
+            <div class="qa-arr">▼</div>
+          </div>
+          <div class="qa-a"><div class="qa-a-inner">
+            "A single decision tree overfits badly — it memorises training data and generalises poorly. Random Forest solves this through two mechanisms.<br><br>
+            <strong>Bagging</strong> — each tree is trained on a random bootstrap sample of the training data. Different trees see different data, so they make different errors.<br><br>
+            <strong>Feature randomness</strong> — at each split, only a random subset of features is considered (typically √n features). This prevents all trees from looking identical and ensures diversity.<br><br>
+            The final prediction is the majority vote across all 100 trees. Averaging many decorrelated trees dramatically reduces variance without increasing bias."
+          </div></div>
+        </div>
+
+        <div class="qa-card" onclick="toggleQA(this)">
+          <div class="qa-q">
+            <div class="qa-icon">❓</div>
+            <div class="qa-text">What is data leakage and how did you prevent it?</div>
+            <div class="qa-tag tag-med">MEDIUM</div>
+            <div class="qa-arr">▼</div>
+          </div>
+          <div class="qa-a"><div class="qa-a-inner">
+            "Data leakage is when information from the test set (or future data) influences model training, making your evaluation metrics artificially optimistic.<br><br>
+            The most common leakage in this project would be with StandardScaler. If I fit the scaler on the entire dataset (train + test combined), the scaler 'knows' the mean and std of the test set — that's leakage.<br><br>
+            I prevented it by calling <code>scaler.fit_transform(X_train)</code> — fitting only on training data — then <code>scaler.transform(X_test)</code> — applying the training distribution's parameters to test data without refitting. The scaler is saved to disk and used the same way during inference."
+          </div></div>
+        </div>
+
+        <div class="qa-card" onclick="toggleQA(this)">
+          <div class="qa-q">
+            <div class="qa-icon">❓</div>
+            <div class="qa-text">What are the hyperparameters you chose for Random Forest and why?</div>
+            <div class="qa-tag tag-med">MEDIUM</div>
+            <div class="qa-arr">▼</div>
+          </div>
+          <div class="qa-a"><div class="qa-a-inner">
+            "<strong>n_estimators=100</strong> — 100 trees. Beyond ~100, performance improvement is minimal while training time keeps increasing.<br><br>
+            <strong>max_depth=8</strong> — limits tree depth to prevent overfitting. An unconstrained tree will grow until every training sample is a leaf, memorising noise.<br><br>
+            <strong>min_samples_split=10</strong> — a node must have at least 10 samples before it's allowed to split further. Prevents the tree from creating splits based on tiny subgroups — another overfitting guard.<br><br>
+            <strong>n_jobs=-1</strong> — uses all available CPU cores for parallel tree training. With 100 trees, parallelism gives a significant speedup on multi-core machines."
+          </div></div>
+        </div>
+
+        <div class="qa-card" onclick="toggleQA(this)">
+          <div class="qa-q">
+            <div class="qa-icon">❓</div>
+            <div class="qa-text">What does the confusion matrix tell you? What's the cost of each error type here?</div>
+            <div class="qa-tag tag-med">MEDIUM</div>
+            <div class="qa-arr">▼</div>
+          </div>
+          <div class="qa-a"><div class="qa-a-inner">
+            "The confusion matrix has four cells: True Positives (correctly identified high-risk), True Negatives (correctly identified low-risk), False Positives (low-risk flagged as high-risk), False Negatives (high-risk missed, predicted as low-risk).<br><br>
+            <strong>False Positives</strong> — low-risk employee flagged as high-risk. Cost: HR spends time intervening with someone who would have returned anyway. Relatively low cost.<br><br>
+            <strong>False Negatives</strong> — high-risk employee not flagged. Cost: employee quietly resists the mandate, disengages, or leaves. Much higher business cost — losing an employee costs 50–200% of their annual salary.<br><br>
+            This means <strong>recall (sensitivity) matters more than precision</strong> — we'd rather over-flag and waste some HR time than miss employees who are about to leave."
+          </div></div>
+        </div>
+
+        <div class="qa-card" onclick="toggleQA(this)">
+          <div class="qa-q">
+            <div class="qa-icon">❓</div>
+            <div class="qa-text">How would you improve this model if you had more time?</div>
+            <div class="qa-tag tag-hard">ADVANCED</div>
+            <div class="qa-arr">▼</div>
+          </div>
+          <div class="qa-a"><div class="qa-a-inner">
+            "Three concrete improvements.<br><br>
+            <strong>1. Hyperparameter tuning with RandomizedSearchCV</strong> — I used sensible defaults for Random Forest, but the optimal max_depth, n_estimators, and min_samples_split depend on the data. RandomizedSearchCV would try many combinations and find better parameters, likely improving ROC-AUC by 2–4%.<br><br>
+            <strong>2. SHAP values for explainability</strong> — feature importances tell you global feature relevance. SHAP gives per-prediction explanations — 'For Employee EMP0042, commute distance contributed +0.15 to risk score.' This is critical for HR — they need to justify why an employee is flagged.<br><br>
+            <strong>3. Threshold optimisation</strong> — I'd use the ROC curve to find the threshold that maximises recall while keeping precision above a minimum acceptable level (e.g., precision ≥ 0.6). The default 0.5 threshold is not optimal for most business problems."
+          </div></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</main>
+
+  <section class="contact-section" id="contact">
+    <h2>Interested in this project?</h2>
+    <p>Let's discuss the approach or explore collaboration opportunities.</p>
+    <div class="contact-links">
+      <a href="mailto:rahulnaik99@outlook.com" class="btn btn-primary">Get in Touch</a>
+      <a href="https://www.linkedin.com/in/rahul-naik-ai/" target="_blank" rel="noopener" class="btn btn-ghost">LinkedIn</a>
+      <a href="https://api.whatsapp.com/send/?phone=919591522079" target="_blank" rel="noopener" class="btn btn-ghost" style="border-color:#25d366;color:#25d366">WhatsApp</a>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <p>© 2025 Rahul Naik · Senior GenAI Engineer</p>
+    <p style="margin-top:0.4rem">
+      <a href="/index.html">Home</a> ·
+      <a href="/index.html#projects">Projects</a> ·
+      <a href="/study/index.html">Study Hub</a>
+    </p>
+  </footer>
+</div>
+
+<!-- WhatsApp Float -->
+<a href="https://api.whatsapp.com/send/?phone=919591522079" target="_blank" rel="noopener" class="wa-float" aria-label="Chat on WhatsApp">
+  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+</a>
+
+<script src="../assets/js/main.js"></script>
+<script>
+function showTab(name, btn) {
+  document.querySelectorAll('.proj-section-wrap').forEach(function(s) { s.classList.remove('active'); });
+  document.querySelectorAll('.proj-tab').forEach(function(t) { t.classList.remove('active'); });
+  document.getElementById('tab-' + name).classList.add('active');
+  if (btn) btn.classList.add('active');
+}
+function toggleQA(card) {
+  var isOpen = card.classList.contains('open');
+  document.querySelectorAll('.qa-card.open').forEach(function(c) { c.classList.remove('open'); });
+  if (!isOpen) card.classList.add('open');
+}
+// Open first QA on load
+window.addEventListener('load', function() {
+  setTimeout(function() {
+    var f = document.querySelector('.qa-card');
+    if (f) f.classList.add('open');
+  }, 400);
+});
+</script>
+</body>
+</html>
