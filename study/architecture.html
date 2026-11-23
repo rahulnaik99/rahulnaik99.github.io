@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
 <script>(function(){var K="rn-theme-manual",D=K+"-date";function h(){var n=new Date(),u=n.getTime()+n.getTimezoneOffset()*60000,i=new Date(u+19800000);return i.getHours();}function d(){var n=new Date(),u=n.getTime()+n.getTimezoneOffset()*60000,i=new Date(u+19800000);return i.getFullYear()+"-"+i.getMonth()+"-"+i.getDate();}var m=localStorage.getItem(K),day=localStorage.getItem(D),today=d();document.documentElement.setAttribute("data-theme",(m&&day===today)?m:((h()>=6&&h()<19)?"light":"dark"));})();</script>
 <meta charset="UTF-8">
@@ -7,11 +7,8 @@
 <title>GenAI + RAG Architecture Map · Study</title>
 <link rel="stylesheet" href="../assets/css/theme.css">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap');
-
 /* Poster uses its own dark palette regardless of theme */
 .poster-outer {
-  padding-top: 60px;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
 }
@@ -19,9 +16,9 @@
 /* Mobile notice */
 .mobile-notice {
   display: none;
-  background: rgba(234,179,8,0.12);
-  border: 1px solid rgba(234,179,8,0.3);
-  color: #facc15;
+  background: rgba(var(--yellow-rgb, 234,179,8), 0.12);
+  border: 1px solid rgba(var(--yellow-rgb, 234,179,8), 0.3);
+  color: var(--yellow);
   font-family: var(--font-mono);
   font-size: 0.72rem;
   letter-spacing: 0.05em;
@@ -37,9 +34,9 @@
   position: fixed; bottom: 1.5rem; right: 70px; z-index: 100;
 }
 .print-btn-wrap button {
-  background: #3b82f6; color: white; border: none;
+  background: var(--blue); color: var(--bg); border: none;
   padding: 10px 20px; border-radius: 8px;
-  font-family: 'JetBrains Mono', monospace; font-size: 12px;
+  font-family: var(--font-mono); font-size: 12px;
   cursor: pointer; font-weight: 700; letter-spacing: 1px;
 }
 @media print {

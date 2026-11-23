@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
 <head>
+<script>(function(){var K="rn-theme-manual",D=K+"-date";function h(){var n=new Date(),u=n.getTime()+n.getTimezoneOffset()*60000,i=new Date(u+19800000);return i.getHours();}function d(){var n=new Date(),u=n.getTime()+n.getTimezoneOffset()*60000,i=new Date(u+19800000);return i.getFullYear()+"-"+i.getMonth()+"-"+i.getDate();}var m=localStorage.getItem(K),day=localStorage.getItem(D),today=d();document.documentElement.setAttribute("data-theme",(m&&day===today)?m:((h()>=6&&h()<19)?"light":"dark"));})();</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Python &amp; System Design — Gen AI Study Guide</title>
-<script>(function(){var K="rn-theme-manual",D=K+"-date";function h(){var n=new Date(),u=n.getTime()+n.getTimezoneOffset()*60000,i=new Date(u+19800000);return i.getHours();}function d(){var n=new Date(),u=n.getTime()+n.getTimezoneOffset()*60000,i=new Date(u+19800000);return i.getFullYear()+"-"+i.getMonth()+"-"+i.getDate();}var m=localStorage.getItem(K),day=localStorage.getItem(D),today=d();document.documentElement.setAttribute("data-theme",(m&&day===today)?m:((h()>=6&&h()<19)?"light":"dark"));})();</script>
 <link rel="stylesheet" href="../assets/css/theme.css">
 <style>
 /* Page-specific layout */
@@ -173,10 +173,31 @@
 }
 .content h2.interview-heading::before { background: var(--yellow); }
 
+/* Module nav */
+.module-nav {
+  display: flex; gap: 0.5rem; flex-wrap: wrap;
+  margin-bottom: 2rem;
+}
+.module-nav a {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.06em;
+  padding: 0.3rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  color: var(--muted);
+  text-decoration: none;
+  transition: all 0.15s;
+}
+.module-nav a:hover, .module-nav a.current {
+  border-color: var(--purple);
+  color: var(--purple);
+}
+
 /* Module nav footer */
 .module-footer {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   padding-top: 2rem;
   margin-top: 3rem;
   border-top: 1px solid var(--border);
@@ -258,6 +279,16 @@
       <div class="module-eyebrow">Module 08 · Python</div>
       <h1 class="module-title">Python &amp; System Design</h1>
       <p class="module-sub">Async Python · FastAPI · Pydantic · System Design for Gen AI</p>
+    </div>
+    <div class="module-nav">
+      <a href="/study/01-rag-ingestion.html">01 Ingestion</a>
+      <a href="/study/02-rag-retrieval.html">02 Retrieval</a>
+      <a href="/study/03-rag-generation.html">03 Generation</a>
+      <a href="/study/04-langchain-langgraph.html">04 LangChain</a>
+      <a href="/study/05-fine-tuning.html">05 Fine-Tuning</a>
+      <a href="/study/06-ml-transformers.html">06 ML &amp; Transformers</a>
+      <a href="/study/07-docker-aws.html">07 Docker &amp; Bedrock</a>
+      <a href="/study/08-python-system-design.html" class="current">08 Python &amp; System Design</a>
     </div>
     <div class="content">
 

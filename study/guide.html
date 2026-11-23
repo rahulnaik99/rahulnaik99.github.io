@@ -35,9 +35,9 @@
 
 /* Tags */
 .tag { display: inline-block; font-size: 0.58rem; padding: 0.08rem 0.4rem; border-radius: 4px; font-weight: 700; margin-left: 0.35rem; vertical-align: middle; font-family: var(--font-mono); letter-spacing: 0.06em; }
-.tag-must { background: rgba(220,38,38,0.1); color: #dc2626; border: 1px solid rgba(220,38,38,0.25); }
-.tag-good { background: rgba(37,99,235,0.1); color: #2563eb; border: 1px solid rgba(37,99,235,0.25); }
-.tag-nice { background: rgba(5,150,105,0.1); color: #059669; border: 1px solid rgba(5,150,105,0.25); }
+.tag-must { background: rgba(220,38,38,0.1); color: var(--red); border: 1px solid rgba(220,38,38,0.25); }
+.tag-good { background: rgba(37,99,235,0.1); color: var(--blue); border: 1px solid rgba(37,99,235,0.25); }
+.tag-nice { background: rgba(5,150,105,0.1); color: var(--green); border: 1px solid rgba(5,150,105,0.25); }
 
 /* Category filter nav */
 .cat-nav { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 2rem; }
@@ -100,7 +100,7 @@
   </div>
 </nav>
 
-<main data-section="Study" data-section-url="/study/index.html" data-title="Complete Guide" data-back-url="/study/index.html" data-back-label="Study Hub" style="padding-top:60px">
+<main data-section="Study" data-section-url="/study/index.html" data-title="Complete AI Engineering Guide" data-back-url="/study/index.html" data-back-label="Study Hub" style="padding-top:60px">
   <div class="guide-wrap">
 
     <div class="guide-header">
@@ -117,16 +117,16 @@
 
     <div class="cat-nav">
       <button class="cat-btn active" onclick="showAll(this)">All</button>
-      <button class="cat-btn" onclick="filterCat('rag',this)" style="color:#7c3aed">RAG</button>
-      <button class="cat-btn" onclick="filterCat('lc',this)" style="color:#2563eb">LangChain</button>
-      <button class="cat-btn" onclick="filterCat('lg',this)" style="color:#0891b2">LangGraph</button>
-      <button class="cat-btn" onclick="filterCat('ft',this)" style="color:#d97706">Fine-Tuning</button>
-      <button class="cat-btn" onclick="filterCat('ml',this)" style="color:#059669">ML Concepts</button>
-      <button class="cat-btn" onclick="filterCat('tr',this)" style="color:#db2777">Transformers</button>
-      <button class="cat-btn" onclick="filterCat('dk',this)" style="color:#6366f1">Docker</button>
-      <button class="cat-btn" onclick="filterCat('aws',this)" style="color:#ea580c">AWS Bedrock</button>
-      <button class="cat-btn" onclick="filterCat('py',this)" style="color:#16a34a">Python</button>
-      <button class="cat-btn" onclick="filterCat('sys',this)" style="color:#9333ea">System Design</button>
+      <button class="cat-btn" onclick="filterCat('rag',this)" style="color:var(--purple)">RAG</button>
+      <button class="cat-btn" onclick="filterCat('lc',this)" style="color:var(--blue)">LangChain</button>
+      <button class="cat-btn" onclick="filterCat('lg',this)" style="color:var(--cyan)">LangGraph</button>
+      <button class="cat-btn" onclick="filterCat('ft',this)" style="color:var(--orange)">Fine-Tuning</button>
+      <button class="cat-btn" onclick="filterCat('ml',this)" style="color:var(--green)">ML Concepts</button>
+      <button class="cat-btn" onclick="filterCat('tr',this)" style="color:var(--pink)">Transformers</button>
+      <button class="cat-btn" onclick="filterCat('dk',this)" style="color:var(--blue)">Docker</button>
+      <button class="cat-btn" onclick="filterCat('aws',this)" style="color:var(--orange)">AWS Bedrock</button>
+      <button class="cat-btn" onclick="filterCat('py',this)" style="color:var(--green)">Python</button>
+      <button class="cat-btn" onclick="filterCat('sys',this)" style="color:var(--purple)">System Design</button>
     </div>
 
     <div class="content">
